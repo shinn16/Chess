@@ -24,7 +24,7 @@ public class Controller {
     @FXML
     Canvas canvas = new Canvas();
 
-    // Graphics Junk
+    // Graphics junk used for drawing the board and such
     GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
 
     // this will initialize the change listeners and such
