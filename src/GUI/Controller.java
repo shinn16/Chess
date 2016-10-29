@@ -8,6 +8,8 @@ import javafx.scene.layout.Pane;
 
 /***
  * Controller Class
+ * This class is responsible for managing the logic behind the GUI.
+ * Intensive logic processes should be run in a separate thread as they will cause the GUI to freeze.
  *
  * @author Patrick Shinn
  * @version 10/28/16
