@@ -16,4 +16,9 @@ public class MasterPiece implements Piece{
     public boolean hasMove() {
         return false;
     }
+
+    @Override
+    public void makeMove() {
+
+    }
 }
