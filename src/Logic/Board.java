@@ -3,23 +3,23 @@ package Logic;
 import Pieces.MasterPiece;
 
 /**
- * board
+ * Board
  *
  * @author Patrick Shinn
  * @version 10/28/16
  */
-public class board {
+public class Board {
     private MasterPiece[][] board = new MasterPiece[5][5]; // creates a 2d array that is 5X5
     private int turnCounter = 0;
     private Player player1;
     private Player player2;
 
-    public board(Player player1, Player player2){
+    public Board(Player player1, Player player2){
         this.player1 = player1;
         this.player2 = player2;
     }
 
-    public MasterPiece[][] getBoard(){ // this will be used to feed the AI a board
+    public MasterPiece[][] getBoard(){ // this will be used to feed the AI a Board
         return this.board;
     }
 
@@ -30,7 +30,7 @@ public class board {
             turnCounter ++; // increase to the next one.
         }
         else{ // it is player two's turn.
-            // // TODO: 11/2/16  make this do stuff. Flip the board and such
+            // // TODO: 11/2/16  make this do stuff. Take coordinate from piece and negate it to flip it.
             turnCounter = 0;
         }
 

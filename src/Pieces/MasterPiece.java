@@ -18,7 +18,7 @@ public class MasterPiece implements Piece{
     }
 
     @Override
-    public void makeMove() {
-
+    public Coordinate makeMove() {
+        return new Coordinate(1,1);
     }
 }

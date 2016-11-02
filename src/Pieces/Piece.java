@@ -9,6 +9,6 @@ package Pieces;
 public interface Piece {
     boolean hasMove();
     boolean hasAttack();
-    void makeMove();
+    Coordinate makeMove();
 
 }
