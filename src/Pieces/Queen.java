@@ -6,5 +6,5 @@ package Pieces;
  * @author Patrick Shinn
  * @version 11/2/16
  */
-public class Queen {
+public class Queen extends MasterPiece {
 }
