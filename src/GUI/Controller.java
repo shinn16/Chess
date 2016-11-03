@@ -39,8 +39,8 @@ public class Controller {
 
     // Board Shit and such
     Board board; // the board for the game.
-    Player White;
-    Player Black;
+    Player white;
+    Player black;
 
     // Graphics junk used for drawing the Board and such
     GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
@@ -149,6 +149,56 @@ public class Controller {
         }
     }
 
+    // // TODO: 11/3/16 fix this up to work with this program
+    public class WarningWindow {
+        private String windowTitle;
+        private String warning, theme;
+
+        public WarningWindow(String windowTitle, String warning, String mapTheme) {
+            this.windowTitle = windowTitle;
+            this.warning = warning;
+            this.theme = mapTheme;
+        }
+
+        public void display() {
+            // displays the window
+            Stage window = new Stage();
+            window.setTitle(windowTitle);
+            window.initModality(Modality.APPLICATION_MODAL); // means that while this window is open, you can't interact with the main program.
+
+            // buttons
+            Button closeBtn = new Button("Close");
+            closeBtn.setOnAction(e -> window.close());
+
+            // labels
+            Label warningLabel = new Label(warning);
+
+            // images
+            ImageView warningImage = new ImageView(new Image(getClass().getResourceAsStream("/graphics/warning.png")));
+
+            // Building the window
+            VBox layout = new VBox(10);
+            HBox closeBox = new HBox();
+            closeBox.getChildren().addAll(closeBtn);
+            closeBox.setAlignment(Pos.CENTER_RIGHT);
+            closeBox.setPadding(new Insets(5, 5, 5, 5));
+            HBox hBox = new HBox(10);
+            hBox.getChildren().addAll(warningImage, warningLabel);
+            hBox.setAlignment(Pos.CENTER);
+            layout.getChildren().addAll(hBox, closeBox);
+            layout.setAlignment(Pos.CENTER);
+
+            // Showing the window
+            Scene scene = new Scene(layout);
+            scene.getStylesheets().addAll("/graphics/css/" + theme + ".css");
+            window.setScene(scene);
+            window.setHeight(200.00);
+            window.setWidth(550.00);
+            window.getIcons().add(new Image(getClass().getResourceAsStream("/graphics/AppIcon.png")));
+            window.show();
+        }
+    }
+
     private class NewGameWindow {
         private Stage primaryStage = new Stage();
         private Button playBtn = new Button("Play");
@@ -157,6 +207,10 @@ public class Controller {
         private Label blackLbl = new Label("Black");
         private ComboBox<String> whiteOptions = new ComboBox<>();
         private ComboBox<String> blackOptions = new ComboBox<>();
+
+        // board drawing components
+        private Image blackSpot = new Image(getClass().getResourceAsStream("/Graphics/Images/blackSpot.png"));
+        private Image whiteSpot = new Image(getClass().getResourceAsStream("/Graphics/Images/whiteSpot.png"));
 
         private NewGameWindow() {
             display();
@@ -211,9 +265,28 @@ public class Controller {
         }
 
         private void playBtnMethod() {
+            String playerOneType = whiteOptions.getValue();
+            String playerTwoType = blackOptions.getValue();
+            
+            if (playerOneType.equals("None") || playerTwoType.equals("None")){ // if the player failed to set one of the players properly
+                // // TODO: 11/3/16 make the warning window, must have two players. 
+            }
+            else { // if the player has set up the right options for the game
+                white = new Player(playerOneType); // set the player types
+                black = new Player(playerTwoType);
+                board = new Board(white, black); // set the board up with white going first.
 
+                // draw the new board for the new game.
+                for (int y = 0; y < 5; y ++){ // for the y
+                    for (int x = 0; x < 5; x ++){ // for the y
+                        if ((x+y)%2 == 0){ // tells us which images to use for this spot on the board.
+                            // // TODO: 11/3/16 finish later 
+                        }
+                    }
+                }
+            }
         }
-            // // TODO: 11/2/16 apply the logic for the board
+           
     }
 
 

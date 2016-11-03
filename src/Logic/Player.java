@@ -7,7 +7,12 @@ package Logic;
  * @version 11/2/16
  */
 public class Player {
-    public Player(){
+    private String type;
+    public Player(String type){
+        this.type = type;
+    }
 
+    public String getType() {
+        return type;
     }
 }
