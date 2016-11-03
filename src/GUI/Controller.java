@@ -11,7 +11,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -40,14 +39,14 @@ public class Controller {
 
     // Board Shit and such
     Board board; // the board for the game.
-    Player player1;
-    Player player2;
+    Player White;
+    Player Black;
 
     // Graphics junk used for drawing the Board and such
     GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
 
     // this will initialize the change listeners and such
-    void initialize(){
+    void initialize() {
 
         // this binds the canvas to the pane, so if the pane resizes, so does the canvas.
         canvas.heightProperty().bind(gamePane.heightProperty());
@@ -55,33 +54,36 @@ public class Controller {
     }
 
     // settings dialogue
-    public void settings(){}
+    public void settings() {
+    }
 
     // opens the about dialogue
-    public void about(){
+    public void about() {
 
     }
 
     // creates a new game
-    public void newGame(){
+    public void newGame() {
         new NewGameWindow();
     }
 
     // undo the last move.
-    public void undo(){
+    public void undo() {
 
     }
 
     // gets the current mouse location
-    void getMouseHover(){}
+    void getMouseHover() {
+    }
 
     //gets the current location of the mouse click
-    void getMouseClick(){}
+    void getMouseClick() {
+    }
 
     // ------------------------------ Private internal classes ------------------------------
 
     private class AboutWindow {
-        private String windowName ,
+        private String windowName,
                 developer,
                 version,
                 appName,
@@ -91,7 +93,7 @@ public class Controller {
 
         private AboutWindow(String windowName, String appName,
                             String version, String aboutApp,
-                            String developer, String website){
+                            String developer, String website) {
             this.windowName = windowName;
             this.appName = appName;
             this.version = version;
@@ -100,7 +102,8 @@ public class Controller {
             this.website = website;
             display();
         }
-        private void display(){
+
+        private void display() {
             // Stage setup
             window = new Stage();
             window.setTitle(windowName);
@@ -126,7 +129,7 @@ public class Controller {
             HBox closeBox = new HBox();
             closeBox.getChildren().addAll(closeBtn);
             closeBox.setAlignment(Pos.CENTER_RIGHT);
-            closeBox.setPadding(new Insets(5,5,5,5));
+            closeBox.setPadding(new Insets(5, 5, 5, 5));
             layout.getChildren().addAll(imageView, appNameLabel, developerLabel, versionLabel, aboutAppLabel, websiteLabel, closeBox);
             layout.setAlignment(Pos.CENTER);
 
@@ -146,106 +149,74 @@ public class Controller {
         }
     }
 
-    private class NewGameWindow{
+    private class NewGameWindow {
         private Stage primaryStage = new Stage();
         private Button playBtn = new Button("Play");
         private Button closeBtn = new Button("Cancel");
-
-        // all of these are for player settings.
-        private ComboBox[] playerComboBoxes = new ComboBox[5];
-
-        // text entry spots for board sizes.
-        private TextField xSize = new TextField();
-        private TextField ySize = new TextField();
-        private TextField zSize = new TextField();
-
-        // other labels
-        private final Label playerSettings = new Label("Player Settings");
-        private final Label boardSettings = new Label("Board Settings");
+        private Label whiteLbl = new Label("White");
+        private Label blackLbl = new Label("Black");
+        private ComboBox<String> whiteOptions = new ComboBox<>();
+        private ComboBox<String> blackOptions = new ComboBox<>();
 
         private NewGameWindow() {
-            xSize.setPromptText("Width");
-            ySize.setPromptText("Length");
-            zSize.setPromptText("Height");
             display();
         }
-        private void display(){
-                // setting up the buttons
-                closeBtn.setOnAction(e -> primaryStage.close());
-                playBtn.setOnAction(e -> playBtnMethod());
 
-                //text field alignment settings
-                xSize.setAlignment(Pos.CENTER);
-                ySize.setAlignment(Pos.CENTER);
-                zSize.setAlignment(Pos.CENTER);
+        private void display() {
+            // setting up the buttons
+            closeBtn.setOnAction(e -> primaryStage.close());
+            playBtn.setOnAction(e -> playBtnMethod());
 
-                //settings up player options
-                for (int i = 0; i < playerComboBoxes.length; i++) {
-                    ComboBox<String> cb = new ComboBox<>();
-
-                    cb.getItems().addAll("None", "Human", "AI (Smarty)");
-                    cb.setPrefSize(125, 25);
-                    cb.setValue("None");
-
-                    playerComboBoxes[i] = cb;
-                }
-
-                // layout setup
-                VBox layout = new VBox(10);
-
-                // "Player Settings" label
-                layout.getChildren().add(playerSettings);
-
-                // Add combo boxes for each player slot
-                for (int i = 0; i < playerComboBoxes.length; i++) {
-                    HBox section = new HBox(10);
-                    section.getChildren().addAll(new Label("Player " + (i+1)), playerComboBoxes[i]);
-                    section.setAlignment(Pos.CENTER);
-                    layout.getChildren().add(section);
-                }
-
-                VBox boardSectionVertical = new VBox(10);
-                HBox boardSectionHorizontal = new HBox(10);
-                boardSectionHorizontal.getChildren().addAll(xSize, ySize, zSize);
-                boardSectionHorizontal.setAlignment(Pos.CENTER);
-                boardSectionVertical.getChildren().addAll(boardSettings, boardSectionHorizontal);
-                boardSectionVertical.setAlignment(Pos.CENTER);
+            //settings up player options
+            whiteOptions.getItems().addAll("Human", "AI");
+            blackOptions.getItems().addAll("Human", "AI");
 
 
-                HBox buttonsSection = new HBox(10);
-                buttonsSection.setAlignment(Pos.CENTER_RIGHT);
-                buttonsSection.getChildren().addAll(closeBtn, playBtn);
-                buttonsSection.setPadding(new Insets(5,5,5,5)); // setting spacing around the Hbox
+            // layout setup
+            VBox layout = new VBox(10);
 
-                // building main layout
-                layout.getChildren().addAll(boardSectionVertical, buttonsSection);
-                layout.setAlignment(Pos.CENTER);
-
-                // building window
-                Scene scene = new Scene(layout);
-                scene.getStylesheets().addAll("/Graphics/CSS/StyleSheet.css"); // sets the style sheet.
-                primaryStage.setScene(scene);
-                primaryStage.setTitle("New Game");
-                primaryStage.initModality(Modality.APPLICATION_MODAL); // sets the window to be modal, meaning the underlying window cannot be used until this one is closed.
-                primaryStage.setWidth(245);
-                primaryStage.setHeight(350);
-                primaryStage.setResizable(false); // this window cannot be resized.
-                primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/Graphics/Images/appIcon.png"))); // window icon
-                primaryStage.show(); // displays the window
-            }
-
-            private void playBtnMethod(){
+            // white options section
+            HBox whiteSection = new HBox(10);
+            whiteOptions.setValue("None"); // value
+            whiteSection.getChildren().addAll(whiteLbl, whiteOptions);
+            whiteSection.setAlignment(Pos.CENTER);
 
 
+            // black section options
+            HBox blackSection = new HBox(10);
+            blackOptions.setValue("None"); // initial value
+            blackSection.getChildren().addAll(blackLbl, blackOptions);
+            blackSection.setAlignment(Pos.CENTER);
 
-            }
+            // button section
+            HBox buttonsSection = new HBox(10);
+            buttonsSection.setAlignment(Pos.CENTER_RIGHT);
+            buttonsSection.getChildren().addAll(closeBtn, playBtn);
+            buttonsSection.setPadding(new Insets(5, 5, 5, 5)); // setting spacing around the Hbox
+
+            // building main layout
+            layout.getChildren().addAll(whiteSection, blackSection, buttonsSection);
+            layout.setAlignment(Pos.CENTER);
+
+            // building window
+            Scene scene = new Scene(layout);
+            scene.getStylesheets().addAll("/Graphics/CSS/StyleSheet.css"); // sets the style sheet.
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("New Game");
+            primaryStage.initModality(Modality.APPLICATION_MODAL); // sets the window to be modal, meaning the underlying window cannot be used until this one is closed.
+            primaryStage.setWidth(245);
+            primaryStage.setHeight(160);
+            primaryStage.setResizable(false); // this window cannot be resized.
+            primaryStage.show(); // displays the window
         }
 
+        private void playBtnMethod() {
 
-
-
-
+        }
+            // // TODO: 11/2/16 apply the logic for the board
     }
+
 
     // ------------------------------ Threading classes -------------------------------------
 
+}
