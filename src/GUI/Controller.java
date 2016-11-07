@@ -42,20 +42,23 @@ public class Controller {
     Player black;
 
     // Graphics junk used for drawing the Board and such
+    GraphicsContext graphics;
 
     // this will initialize the change listeners and such
-    void initialize() {
+   public void initialize() {
+        // this creates a canvas and binds the size to the size of the canvas
+        System.out.println("Ran init");
+        Canvas canvas = new Canvas();
+        canvas.setHeight(2000);
+        canvas.setWidth(2000);
 
-    }
+        // adds the canvas to the gamePane
+        gamePane.getChildren().addAll(canvas);
 
-    public void drawDamnit(){ // // TODO: 11/7/16 fix this shit 
-        Canvas workDamnit = new Canvas();
-        workDamnit.setHeight(200);
-        workDamnit.setWidth(200);
-        gamePane.getChildren().addAll(workDamnit);
-        Image image = new Image(getClass().getResourceAsStream("/Graphics/Images/blackSpot.png"));
-        GraphicsContext graphicsContext = workDamnit.getGraphicsContext2D();
-        graphicsContext.drawImage(image, 0 ,0);
+        // gets the ability to draw on canvas
+        graphics = canvas.getGraphicsContext2D();
+
+       System.out.println(canvas.getHeight());
     }
 
     // settings dialogue
@@ -298,6 +301,24 @@ public class Controller {
                 board = new Board(white, black); // set the board up with white going first.
 
                 // draw the new board for the new game.
+                double startX = gamePane.getWidth()/2 - 250; // trying to get the center of window so we can center the board.
+                double startY = gamePane.getHeight()/ + 250;
+
+                System.out.println("startX: " + startX + " startY: " + startY);
+
+                for (int y = 0; y < 5; y ++){ // for the y
+                    for (int x = 0; x < 5; x ++){ // for the x
+                        if ((x+y)%2 == 0){ // tells us which images to use for this spot on the board.
+                            graphics.drawImage(blackSpot, (x * 100) + startX, (y * 100) + startY); // draws a 50X50 black spot
+                            System.out.println("black. Y: " + y + " X: " + x);
+                        }else {
+                            graphics.drawImage(whiteSpot, (x * 100) + startX, (y * 100) + startY); // draws a 50X50 white spot
+                            System.out.println("White.  Y: " + y + " X: " + x);
+                        }
+                    }
+                }
+
+
 
             }
         }

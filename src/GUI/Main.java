@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -11,12 +12,13 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("GUI.fxml"));
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("Chess Game");
         primaryStage.setScene(new Scene(root, 600, 500)); // sets the size of the window at open
 
         // sets the minimum size for the window
         primaryStage.setMinHeight(500); // sets the minimum size for the window
         primaryStage.setMinWidth(600);
+        primaryStage.getIcons().addAll(new Image("/Graphics/Images/App.png"));
         primaryStage.show();
     }
 
