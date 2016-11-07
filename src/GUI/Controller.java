@@ -35,7 +35,6 @@ public class Controller {
     @FXML
     Pane gamePane = new Pane();
     @FXML
-    Canvas canvas = new Canvas();
 
     // Board Shit and such
     Board board; // the board for the game.
@@ -43,14 +42,20 @@ public class Controller {
     Player black;
 
     // Graphics junk used for drawing the Board and such
-    GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
 
     // this will initialize the change listeners and such
     void initialize() {
 
-        // this binds the canvas to the pane, so if the pane resizes, so does the canvas.
-        canvas.heightProperty().bind(gamePane.heightProperty());
-        canvas.heightProperty().bind(gamePane.widthProperty());
+    }
+
+    public void drawDamnit(){ // // TODO: 11/7/16 fix this shit 
+        Canvas workDamnit = new Canvas();
+        workDamnit.setHeight(200);
+        workDamnit.setWidth(200);
+        gamePane.getChildren().addAll(workDamnit);
+        Image image = new Image(getClass().getResourceAsStream("/Graphics/Images/blackSpot.png"));
+        GraphicsContext graphicsContext = workDamnit.getGraphicsContext2D();
+        graphicsContext.drawImage(image, 0 ,0);
     }
 
     // settings dialogue
@@ -150,14 +155,14 @@ public class Controller {
     }
 
     // // TODO: 11/3/16 fix this up to work with this program
-    public class WarningWindow {
+    public class WarningWindow { // a warning window for when the user does something wrong.
         private String windowTitle;
-        private String warning, theme;
+        private String warning;
 
-        public WarningWindow(String windowTitle, String warning, String mapTheme) {
+        public WarningWindow(String windowTitle, String warning) {
             this.windowTitle = windowTitle;
             this.warning = warning;
-            this.theme = mapTheme;
+
         }
 
         public void display() {
@@ -190,7 +195,7 @@ public class Controller {
 
             // Showing the window
             Scene scene = new Scene(layout);
-            scene.getStylesheets().addAll("/graphics/css/" + theme + ".css");
+            scene.getStylesheets().addAll("Graphics/CSS/StyleSheet.css");
             window.setScene(scene);
             window.setHeight(200.00);
             window.setWidth(550.00);
@@ -212,11 +217,26 @@ public class Controller {
         private Image blackSpot = new Image(getClass().getResourceAsStream("/Graphics/Images/blackSpot.png"));
         private Image whiteSpot = new Image(getClass().getResourceAsStream("/Graphics/Images/whiteSpot.png"));
 
+        // pieces
+        private Image whitePawn = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whitePawn.png"));
+        private Image whiteKnight = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteKnight.png"));
+        private Image whiteRook = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteRook.png"));
+        private Image whiteBishop = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteBishop.png"));
+        private Image whiteQueen = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteQueen.png"));
+        private Image whiteKing = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteKing.png"));
+
+        private Image blackPawn = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackPawn.png"));
+        private Image blackKnight = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackKnight.png"));
+        private Image blackRook = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackRook.png"));
+        private Image blackBishop = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackBishop.png"));
+        private Image blackQueen = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackQueen.png"));
+        private Image blackKing = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackKing.png"));
+
         private NewGameWindow() {
             display();
         }
 
-        private void display() {
+        private void display() { // builds and displays the window.
             // setting up the buttons
             closeBtn.setOnAction(e -> primaryStage.close());
             playBtn.setOnAction(e -> playBtnMethod());
@@ -265,6 +285,7 @@ public class Controller {
         }
 
         private void playBtnMethod() {
+            System.out.println("New game");
             String playerOneType = whiteOptions.getValue();
             String playerTwoType = blackOptions.getValue();
             
@@ -277,13 +298,7 @@ public class Controller {
                 board = new Board(white, black); // set the board up with white going first.
 
                 // draw the new board for the new game.
-                for (int y = 0; y < 5; y ++){ // for the y
-                    for (int x = 0; x < 5; x ++){ // for the y
-                        if ((x+y)%2 == 0){ // tells us which images to use for this spot on the board.
-                            // // TODO: 11/3/16 finish later 
-                        }
-                    }
-                }
+
             }
         }
            

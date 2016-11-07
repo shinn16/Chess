@@ -45,13 +45,11 @@
                </HBox.margin>
             </Label>
             <Region HBox.hgrow="ALWAYS" />
+            <Button mnemonicParsing="false" onAction="#drawDamnit" text="Draw Damnit" />
          </children>
       </HBox>
    </bottom>
    <center>
-      <Pane fx:id="gamePane" prefHeight="409.0" prefWidth="600.0" BorderPane.alignment="CENTER">
-         <children>
-            <Canvas fx:id="canvas" height="200.0" layoutX="186.0" layoutY="116.0" width="200.0" />
-         </children></Pane>
+      <Pane fx:id="gamePane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>
