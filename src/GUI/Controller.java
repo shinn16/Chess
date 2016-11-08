@@ -34,31 +34,25 @@ public class Controller {
     Label statusLbl = new Label();
     @FXML
     Pane gamePane = new Pane();
-    @FXML
-
     // Board Shit and such
     Board board; // the board for the game.
     Player white;
     Player black;
 
     // Graphics junk used for drawing the Board and such
+
     GraphicsContext graphics;
 
     // this will initialize the change listeners and such
    public void initialize() {
-        // this creates a canvas and binds the size to the size of the canvas
-        System.out.println("Ran init");
-        Canvas canvas = new Canvas();
-        canvas.setHeight(2000);
-        canvas.setWidth(2000);
+       //create a canvas to draw on
+       Canvas canvas = new Canvas(700,700);
 
-        // adds the canvas to the gamePane
-        gamePane.getChildren().addAll(canvas);
+       // get the ability to draw on it
+       graphics = canvas.getGraphicsContext2D();
 
-        // gets the ability to draw on canvas
-        graphics = canvas.getGraphicsContext2D();
-
-       System.out.println(canvas.getHeight());
+       // add the canvas to the gamePane
+       gamePane.getChildren().addAll(canvas);
     }
 
     // settings dialogue
@@ -182,7 +176,7 @@ public class Controller {
             Label warningLabel = new Label(warning);
 
             // images
-            ImageView warningImage = new ImageView(new Image(getClass().getResourceAsStream("/graphics/warning.png")));
+            ImageView warningImage = new ImageView(new Image(getClass().getResourceAsStream("/Graphics/Images/warning.png")));
 
             // Building the window
             VBox layout = new VBox(10);
@@ -202,7 +196,7 @@ public class Controller {
             window.setScene(scene);
             window.setHeight(200.00);
             window.setWidth(550.00);
-            window.getIcons().add(new Image(getClass().getResourceAsStream("/graphics/AppIcon.png")));
+            window.getIcons().add(new Image(getClass().getResourceAsStream("/Graphics/Images/App.png")));
             window.show();
         }
     }
@@ -301,22 +295,34 @@ public class Controller {
                 board = new Board(white, black); // set the board up with white going first.
 
                 // draw the new board for the new game.
-                double startX = gamePane.getWidth()/2 - 250; // trying to get the center of window so we can center the board.
-                double startY = gamePane.getHeight()/ + 250;
-
-                System.out.println("startX: " + startX + " startY: " + startY);
-
                 for (int y = 0; y < 5; y ++){ // for the y
                     for (int x = 0; x < 5; x ++){ // for the x
                         if ((x+y)%2 == 0){ // tells us which images to use for this spot on the board.
-                            graphics.drawImage(blackSpot, (x * 100) + startX, (y * 100) + startY); // draws a 50X50 black spot
+                            graphics.drawImage(blackSpot, (x * 100) + 150, (y * 100) +100); // draws a 50X50 black spot
                             System.out.println("black. Y: " + y + " X: " + x);
                         }else {
-                            graphics.drawImage(whiteSpot, (x * 100) + startX, (y * 100) + startY); // draws a 50X50 white spot
+                            graphics.drawImage(whiteSpot, (x * 100) + 150, (y * 100) + 100); // draws a 50X50 white spot
                             System.out.println("White.  Y: " + y + " X: " + x);
                         }
                     }
                 }
+
+                // draw the pieces on the board
+                // black side
+                graphics.drawImage(blackKing, 150, 100);
+                graphics.drawImage(blackQueen, 250, 100);
+                graphics.drawImage(blackBishop, 350, 100);
+                graphics.drawImage(blackKnight, 450, 100);
+                graphics.drawImage(blackRook, 550, 100);
+                for (int i = 1; i < 6; i ++) graphics.drawImage(blackPawn, i*100 + 50, 200);
+
+                // white side
+                graphics.drawImage(whiteRook, 150, 500);
+                graphics.drawImage(whiteKnight, 250, 500);
+                graphics.drawImage(whiteBishop, 350, 500);
+                graphics.drawImage(whiteQueen, 450, 500);
+                graphics.drawImage(whiteKing, 550, 500);
+                for (int i = 1; i < 6; i ++) graphics.drawImage(whitePawn, i*100 + 50, 400);
 
 
 

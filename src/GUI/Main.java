@@ -13,11 +13,9 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("GUI.fxml"));
         primaryStage.setTitle("Chess Game");
-        primaryStage.setScene(new Scene(root, 600, 500)); // sets the size of the window at open
+        primaryStage.setScene(new Scene(root, 800, 800)); // sets the size of the window at open
 
-        // sets the minimum size for the window
-        primaryStage.setMinHeight(500); // sets the minimum size for the window
-        primaryStage.setMinWidth(600);
+        primaryStage.setResizable(false);
         primaryStage.getIcons().addAll(new Image("/Graphics/Images/App.png"));
         primaryStage.show();
     }
