@@ -152,17 +152,18 @@ public class Controller {
     }
 
     // // TODO: 11/3/16 fix this up to work with this program
-    public class WarningWindow { // a warning window for when the user does something wrong.
+     class WarningWindow { // a warning window for when the user does something wrong.
         private String windowTitle;
         private String warning;
 
-        public WarningWindow(String windowTitle, String warning) {
+         WarningWindow(String windowTitle, String warning) {
             this.windowTitle = windowTitle;
             this.warning = warning;
+            display();
 
         }
 
-        public void display() {
+        private void display() {
             // displays the window
             Stage window = new Stage();
             window.setTitle(windowTitle);
@@ -211,8 +212,8 @@ public class Controller {
         private ComboBox<String> blackOptions = new ComboBox<>();
 
         // board drawing components
-        private Image blackSpot = new Image(getClass().getResourceAsStream("/Graphics/Images/blackSpot.png"));
-        private Image whiteSpot = new Image(getClass().getResourceAsStream("/Graphics/Images/whiteSpot.png"));
+        private Image blackSpot = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackSpot.png"));
+        private Image whiteSpot = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteSpot.png"));
 
         // pieces
         private Image whitePawn = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whitePawn.png"));
@@ -287,22 +288,20 @@ public class Controller {
             String playerTwoType = blackOptions.getValue();
             
             if (playerOneType.equals("None") || playerTwoType.equals("None")){ // if the player failed to set one of the players properly
-                // // TODO: 11/3/16 make the warning window, must have two players. 
+                new WarningWindow("Looks like there is something wrong with your settings...", "You have to apply settings for both players!");
             }
             else { // if the player has set up the right options for the game
-                white = new Player(playerOneType); // set the player types
-                black = new Player(playerTwoType);
+                white = new Player(playerOneType, 0); // set the player types
+                black = new Player(playerTwoType, 1);
                 board = new Board(white, black); // set the board up with white going first.
 
                 // draw the new board for the new game.
                 for (int y = 0; y < 5; y ++){ // for the y
                     for (int x = 0; x < 5; x ++){ // for the x
                         if ((x+y)%2 == 0){ // tells us which images to use for this spot on the board.
-                            graphics.drawImage(blackSpot, (x * 100) + 150, (y * 100) +100); // draws a 50X50 black spot
-                            System.out.println("black. Y: " + y + " X: " + x);
+                            graphics.drawImage(blackSpot, (x * 100) + 150, (y * 100) +100); // draws a 100X100 black spot centered
                         }else {
-                            graphics.drawImage(whiteSpot, (x * 100) + 150, (y * 100) + 100); // draws a 50X50 white spot
-                            System.out.println("White.  Y: " + y + " X: " + x);
+                            graphics.drawImage(whiteSpot, (x * 100) + 150, (y * 100) + 100); // draws a 100X100 white spot centered
                         }
                     }
                 }
@@ -323,9 +322,6 @@ public class Controller {
                 graphics.drawImage(whiteQueen, 450, 500);
                 graphics.drawImage(whiteKing, 550, 500);
                 for (int i = 1; i < 6; i ++) graphics.drawImage(whitePawn, i*100 + 50, 400);
-
-
-
             }
         }
            

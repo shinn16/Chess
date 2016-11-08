@@ -7,12 +7,13 @@ package Pieces;
  * @version 11/2/16
  */
 public class Pawn extends MasterPiece {
-    Logic.Board board = new Logic.Board(player1, player2);
     Coordinate coords = new Coordinate(1,1);
-    public Pawn(int x, int y, int playerID){
-        super(x,y,playerID);
+
+    public Pawn(int x, int y, int playerID, int arrayIndex){
+        super(x,y,playerID, arrayIndex);
     }
-    public boolean hasAttack(){
+
+   /* public boolean hasAttack(){
         if (board.getBoard()[coords.getCoords()[0]+1][coords.getCoords()[1]+1] != null && playerID != board.getBoard()[coords.getCoords()[0]+1][coords.getCoords()[1]+1].getPlayerID()){
             return true;
         }
@@ -27,6 +28,7 @@ public class Pawn extends MasterPiece {
         }
         else return false;
     }
+    */
     public Coordinate makeMove(){
         if (hasAttack()){
             //TODO 11/7/16 Figure out how to allow for the choice of different moves.

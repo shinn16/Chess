@@ -7,8 +7,8 @@ package Pieces;
  * @version 11/2/16
  */
 public class Bishop extends MasterPiece{
-    Bishop(int x, int y, int z){
-        super(x, y, z);
+    public Bishop(int x, int y, int playerID, int arrayIndex){
+        super(x, y, playerID, arrayIndex);
     }
-
 }
+

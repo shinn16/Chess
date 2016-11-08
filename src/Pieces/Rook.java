@@ -8,7 +8,7 @@ package Pieces;
  */
 public class Rook extends MasterPiece {
 
-    Rook(int x, int y, int z){
-        super(x,y,z);
+    public Rook(int x, int y, int playerID, int arrayIndex){
+        super(x,y,playerID, arrayIndex);
     }
 }

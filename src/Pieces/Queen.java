@@ -7,7 +7,7 @@ package Pieces;
  * @version 11/2/16
  */
 public class Queen extends MasterPiece {
-    Queen(int x, int y, int z){
-        super(x, y, z);
+    public Queen(int x, int y, int playerID, int arrayIndex) {
+        super(x, y, playerID, arrayIndex);
     }
 }

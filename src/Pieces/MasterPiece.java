@@ -1,5 +1,7 @@
 package Pieces;
 
+import Logic.Board;
+
 /**
  * MasterPiece
  *
@@ -7,12 +9,16 @@ package Pieces;
  * @version 11/2/16
  */
 public class MasterPiece implements Piece{
-    public Logic.Player player1;
-    public Logic.Player player2;
-    public int playerID;
-    public MasterPiece(int x, int y, int playerID){
-        Coordinate coords = new Coordinate(x,y);
+    
+    private Board board; //// TODO: 11/7/16 each peice will need to somehow deal with the board. 
+    private int playerID;
+    private Coordinate coords;
+    private int arrayIndex;
+    
+    public MasterPiece(int x, int y, int playerID, int arrayIndex){
+        this.coords = new Coordinate(x,y);
         this.playerID = playerID;
+        this.arrayIndex = arrayIndex;
     }
     @Override
     public boolean hasAttack() {
@@ -30,4 +36,9 @@ public class MasterPiece implements Piece{
     }
 
     public int getPlayerID(){return playerID;}
+
+    public int getArrayIndex() { // used for managing pieces in the piece array of the player class.
+        return arrayIndex;
+    }
+
 }
