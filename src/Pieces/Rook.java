@@ -8,7 +8,14 @@ package Pieces;
  */
 public class Rook extends MasterPiece {
 
+    // value of the piece for AI
+    private final int value = 4;
+
     public Rook(int x, int y, int playerID, int arrayIndex){
         super(x,y,playerID, arrayIndex);
+    }
+
+    public int getValue() {
+        return value;
     }
 }

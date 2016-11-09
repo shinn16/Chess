@@ -8,6 +8,8 @@ package Pieces;
  */
 public class Pawn extends MasterPiece {
     Coordinate coords = new Coordinate(1,1);
+    // value of the piece for AI
+    private final int value = 1;
 
     public Pawn(int x, int y, int playerID, int arrayIndex){
         super(x,y,playerID, arrayIndex);
@@ -37,5 +39,9 @@ public class Pawn extends MasterPiece {
             coords.setCoords(coords.getCoords()[0], coords.getCoords()[1]+1);
         }
         return coords;
+    }
+
+    public int getValue() {
+        return value;
     }
 }

@@ -14,7 +14,6 @@ public class MasterPiece{
     private int playerID;
     private Coordinate coords;
     private int arrayIndex;
-    
     public MasterPiece(int x, int y, int playerID, int arrayIndex){
         this.coords = new Coordinate(x,y);
         this.playerID = playerID;
@@ -39,6 +38,7 @@ public class MasterPiece{
     public int getArrayIndex() { // used for managing pieces in the piece array of the player class.
         return arrayIndex;
     }
+
 
     @Override
     public String toString(){
