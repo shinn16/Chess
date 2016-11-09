@@ -13,6 +13,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -35,13 +36,13 @@ public class Controller {
     @FXML
     Pane gamePane = new Pane();
     // Board Shit and such
-    Board board; // the board for the game.
-    Player white;
-    Player black;
+    private Board board; // the board for the game.
+    private Player white;
+    private Player black;
 
     // Graphics junk used for drawing the Board and such
 
-    GraphicsContext graphics;
+    private GraphicsContext graphics;
 
     // this will initialize the change listeners and such
    public void initialize() {
@@ -53,6 +54,9 @@ public class Controller {
 
        // add the canvas to the gamePane
        gamePane.getChildren().addAll(canvas);
+
+       // setting up an event listener for the mouse movement
+
     }
 
     // settings dialogue
@@ -61,7 +65,8 @@ public class Controller {
 
     // opens the about dialogue
     public void about() {
-
+        new AboutWindow("About", "Wahjudi’s Highly Advanced Chess", "1.0",
+                "This is an insane version of chess!", "Can't Trump This", "https://github.com/shinn16/Chess");
     }
 
     // creates a new game
@@ -75,11 +80,17 @@ public class Controller {
     }
 
     // gets the current mouse location
-    void getMouseHover() {
+    public void getMouseHover(MouseEvent event) {
+        int mouse_x = (int)event.getSceneX();
+        int mouse_y = (int)event.getSceneY();
+
     }
 
     //gets the current location of the mouse click
-    void getMouseClick() {
+    public void getMouseClick(MouseEvent event) {
+        int mouse_x = (int)event.getSceneX();
+        int mouse_y = (int)event.getSceneY();
+        System.out.println("Clicked @ X: " + mouse_x + " Y: " + mouse_y);
     }
 
     // ------------------------------ Private internal classes ------------------------------
@@ -124,7 +135,7 @@ public class Controller {
             Label versionLabel = new Label("Version: " + version);
 
             // Images
-            ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/Graphics/Images/appIcon.png")));
+            ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/Graphics/Images/App.png")));
 
             // Layout type
             VBox layout = new VBox(10);
@@ -142,17 +153,13 @@ public class Controller {
             window.setHeight(400);
             window.setWidth(550);
             window.setResizable(false);
-            window.getIcons().add(new Image(getClass().getResourceAsStream("/Graphics/Images/appIcon.png")));
+            window.getIcons().add(new Image(getClass().getResourceAsStream("/Graphics/Images/App.png")));
             window.show();
         }
 
-        private void closeAction() {
-            window.close();
-        }
     }
 
-    // // TODO: 11/3/16 fix this up to work with this program
-     class WarningWindow { // a warning window for when the user does something wrong.
+     private class WarningWindow { // a warning window for when the user does something wrong.
         private String windowTitle;
         private String warning;
 

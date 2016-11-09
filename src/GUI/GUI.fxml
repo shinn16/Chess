@@ -10,7 +10,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="800.0" stylesheets="@../Graphics/CSS/StyleSheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#getMouseClick" onMouseMoved="#getMouseHover" prefHeight="800.0" prefWidth="800.0" stylesheets="@../Graphics/CSS/StyleSheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Controller">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -34,7 +34,7 @@
       </MenuBar>
    </top>
    <bottom>
-      <HBox BorderPane.alignment="CENTER">
+      <HBox styleClass="statusBar" BorderPane.alignment="CENTER">
          <children>
             <Label fx:id="statusLbl" text="Status Label">
                <padding>
