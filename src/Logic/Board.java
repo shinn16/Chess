@@ -12,6 +12,7 @@ public class Board {
     private MasterPiece[][] board = new MasterPiece[5][5]; // creates a 2d array that is 5X5
     private int turnCounter = 0;
 
+    // contructor
     public Board(Player player1, Player player2){
 
         // adding player1 pieces to the board
@@ -39,10 +40,12 @@ public class Board {
 
     }
 
+    // gets the piece at the current location specified.
     public MasterPiece getPiece(int y, int x){
         return board[y][x];
     }
 
+    // returns the board.
     public MasterPiece[][] getBoard(){ // this will be used to feed the AI a Board
         return this.board;
     }

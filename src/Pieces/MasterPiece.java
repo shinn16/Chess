@@ -26,6 +26,7 @@ public class MasterPiece{
     }
 
     public boolean hasMove() {
+        hasAttack(); // has move will enforce the attack method.
         return false;
     }
 
