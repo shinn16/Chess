@@ -35,6 +35,7 @@ public class Pawn extends MasterPiece {
         else return false;
     }
     */
+   // comment for push
     public Coordinate[] getMoves(Board board){
         Coordinate[] moves = new Coordinate[0];
         if (getPlayerID() == 0){

@@ -45,6 +45,8 @@ public class Board {
         return board[y][x];
     }
 
+    //// TODO: 11/9/16 Delete me 
+    
     // returns the board.
     public MasterPiece[][] getBoard(){ // this will be used to feed the AI a Board
         return this.board;
