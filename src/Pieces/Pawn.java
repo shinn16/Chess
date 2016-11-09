@@ -1,5 +1,9 @@
 package Pieces;
 
+import Logic.Board;
+
+import java.util.Arrays;
+
 /**
  * Pawn
  *
@@ -31,14 +35,18 @@ public class Pawn extends MasterPiece {
         else return false;
     }
     */
-    public Coordinate makeMove(){
-        if (hasAttack()){
-            //TODO 11/7/16 Figure out how to allow for the choice of different moves.
+    public Coordinate[] getMoves(Board board){
+        Coordinate[] moves = new Coordinate[0];
+        if (getPlayerID() == 0){
+            if(board.getPiece(coords.getCoords()[1] + 1, coords.getCoords()[0]) == null){ // check to see if the spot is empty
+                moves = Arrays.copyOf(moves, moves.length + 1);
+                moves[moves.length - 1] = new Coordinate(coords.getCoords()[0], coords.getCoords()[1] +1); // add the new coordinate to the list
+            }else if (board.getPiece(coords.getCoords()[1] + 1, coords.getCoords()[0]).getPlayerID() != getPlayerID()){ //
+                // // TODO: 11/9/16 Attack stuff
+            }
+
         }
-        else if (hasMove()){
-            coords.setCoords(coords.getCoords()[0], coords.getCoords()[1]+1);
-        }
-        return coords;
+        return moves;
     }
 
     public int getValue() {
