@@ -17,8 +17,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import java.sql.SQLSyntaxErrorException;
 
 /***
  * Controller Class
@@ -90,7 +93,24 @@ public class Controller {
     public void getMouseClick(MouseEvent event) {
         int mouse_x = (int)event.getSceneX();
         int mouse_y = (int)event.getSceneY();
-        System.out.println("Clicked @ X: " + mouse_x + " Y: " + mouse_y);
+
+
+        // this will return the index of the board position.
+        mouse_x = (mouse_x - 50)/100 -1;
+        mouse_y = (mouse_y - 30)/100 -1;
+        if (mouse_x < 0 || mouse_y < 0 || mouse_x > 4 || mouse_y > 4){  // ensures we are on the board.
+            System.out.println("Mouse is off the board");
+        }else { // if we are on the board, highlight the tile and print out what piece is there and who owns it.
+            if (board.getPiece(mouse_y, mouse_x) == null) System.out.println("Clicked @ X: " + mouse_x + " Y: " + mouse_y + "This position is empty.");
+            else {
+                System.out.println("Clicked @ X: " + mouse_x + " Y: " + mouse_y + "\n\t Piece at location: " + board.getPiece(mouse_y, mouse_x).toString()
+                        + "\n\t Belongs to: " + board.getPiece(mouse_y, mouse_x).getPlayerID());
+                graphics.strokeRect((mouse_x +1)*100 + 50, (mouse_y + 1 ) * 100, 100, 100);// we will fill around the tile by expanding the index back into coordinates on the board.
+                graphics.save();
+
+            }
+
+        }
     }
 
     // ------------------------------ Private internal classes ------------------------------
@@ -303,6 +323,10 @@ public class Controller {
                 board = new Board(white, black); // set the board up with white going first.
 
                 // draw the new board for the new game.
+                graphics.setStroke(Color.BLACK); // settings up to draw a black border for the board.
+                graphics.setLineWidth(5); // sets the weight of the line for the border
+                graphics.strokeRect(150, 100, 500, 500); // draws rectangle
+                // draws the board.
                 for (int y = 0; y < 5; y ++){ // for the y
                     for (int x = 0; x < 5; x ++){ // for the x
                         if ((x+y)%2 == 0){ // tells us which images to use for this spot on the board.
@@ -329,6 +353,10 @@ public class Controller {
                 graphics.drawImage(whiteQueen, 450, 500);
                 graphics.drawImage(whiteKing, 550, 500);
                 for (int i = 1; i < 6; i ++) graphics.drawImage(whitePawn, i*100 + 50, 400);
+
+                // reset the stroke color to be used for highlighting, then reduce the line weight
+                graphics.setStroke(Color.AQUA);
+                graphics.setLineWidth(2);
             }
         }
            

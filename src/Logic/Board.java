@@ -39,6 +39,10 @@ public class Board {
 
     }
 
+    public MasterPiece getPiece(int y, int x){
+        return board[y][x];
+    }
+
     public MasterPiece[][] getBoard(){ // this will be used to feed the AI a Board
         return this.board;
     }
