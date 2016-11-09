@@ -2,6 +2,7 @@ package GUI;
 
 import Logic.Board;
 import Logic.Player;
+import Pieces.Coordinate;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -21,7 +22,9 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.sql.Array;
 import java.sql.SQLSyntaxErrorException;
+import java.util.Arrays;
 
 /***
  * Controller Class
@@ -101,12 +104,17 @@ public class Controller {
         if (mouse_x < 0 || mouse_y < 0 || mouse_x > 4 || mouse_y > 4){  // ensures we are on the board.
             System.out.println("Mouse is off the board");
         }else { // if we are on the board, highlight the tile and print out what piece is there and who owns it.
-            if (board.getPiece(mouse_y, mouse_x) == null) System.out.println("Clicked @ X: " + mouse_x + " Y: " + mouse_y + "This position is empty.");
-            else {
+            if (board.getPiece(mouse_y, mouse_x) == null) {
+                System.out.println("Clicked @ X: " + mouse_x + " Y: " + mouse_y + "This position is empty.");
+            } else {
                 System.out.println("Clicked @ X: " + mouse_x + " Y: " + mouse_y + "\n\t Piece at location: " + board.getPiece(mouse_y, mouse_x).toString()
-                        + "\n\t Belongs to: " + board.getPiece(mouse_y, mouse_x).getPlayerID());
+                        + "\n\t Belongs to: " + board.getPiece(mouse_y, mouse_x).getPlayerID()
+                + "\n\t Real Coords: " + Arrays.toString(board.getPiece(mouse_y, mouse_x).getCoords().getCoords()));
                 graphics.strokeRect((mouse_x +1)*100 + 50, (mouse_y + 1 ) * 100, 100, 100);// we will fill around the tile by expanding the index back into coordinates on the board.
                 graphics.save();
+
+                System.out.println(Arrays.toString(board.getPiece(mouse_y, mouse_x).getMoves(board)));
+
 
             }
 

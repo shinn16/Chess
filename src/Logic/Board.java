@@ -45,8 +45,13 @@ public class Board {
         return board[y][x];
     }
 
-    //// TODO: 11/9/16 Delete me 
-    
+    // moves piece, used for general movement and attacks.
+    public void makeMove(MasterPiece piece, int y, int x){
+        board[y][x] = piece; // move the piece to the new position
+        board[piece.getCoords().getCoords()[1]][ piece.getCoords().getCoords()[0]] = null; // set the old position to null
+        piece.setCoords(y, x); // update coords in piece.
+    }
+
     // returns the board.
     public MasterPiece[][] getBoard(){ // this will be used to feed the AI a Board
         return this.board;

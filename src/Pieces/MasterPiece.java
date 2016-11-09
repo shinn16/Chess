@@ -10,7 +10,7 @@ import Logic.Board;
  */
 public class MasterPiece{
     
-    private Board board; //// TODO: 11/7/16 each peice will need to somehow deal with the board. 
+    private Board board; //// TODO: 11/7/16 each piece will need to somehow deal with the board.
     private int playerID;
     private Coordinate coords;
     private int arrayIndex;
@@ -35,8 +35,16 @@ public class MasterPiece{
 
     public int getPlayerID(){return playerID;}
 
+    public void setCoords(int y, int x){
+        coords.setCoords(x, y);
+    }
+
     public int getArrayIndex() { // used for managing pieces in the piece array of the player class.
         return arrayIndex;
+    }
+
+    public Coordinate[] getMoves(Board board){
+        return new Coordinate[0];
     }
 
 

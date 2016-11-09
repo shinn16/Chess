@@ -11,7 +11,6 @@ import java.util.Arrays;
  * @version 11/2/16
  */
 public class Pawn extends MasterPiece {
-    Coordinate coords = new Coordinate(1,1);
     // value of the piece for AI
     private final int value = 1;
 
@@ -36,14 +35,14 @@ public class Pawn extends MasterPiece {
     }
     */
    // comment for push
+    @Override
     public Coordinate[] getMoves(Board board){
         Coordinate[] moves = new Coordinate[0];
         if (getPlayerID() == 0){
-            if(board.getPiece(coords.getCoords()[1] + 1, coords.getCoords()[0]) == null){ // check to see if the spot is empty
+            if(board.getPiece(super.getCoords().getCoords()[1] + 1, super.getCoords().getCoords()[0]) == null){ // check to see if the spot is empty
                 moves = Arrays.copyOf(moves, moves.length + 1);
-                moves[moves.length - 1] = new Coordinate(coords.getCoords()[0], coords.getCoords()[1] +1); // add the new coordinate to the list
-            }else if (board.getPiece(coords.getCoords()[1] + 1, coords.getCoords()[0]).getPlayerID() != getPlayerID()){ //
-                // // TODO: 11/9/16 Attack stuff
+
+                moves[moves.length - 1] = new Coordinate(super.getCoords().getCoords()[0], super.getCoords().getCoords()[1] +1); // add the new coordinate to the list
             }
 
         }

@@ -21,4 +21,9 @@ public class Coordinate {
         this.coords[0] = x;
         this.coords[1] = y;
     }
+
+    @Override
+    public String toString(){
+        return "X: " + coords[0] + " Y: " + coords[1];
+    }
 }
