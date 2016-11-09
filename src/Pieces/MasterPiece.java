@@ -8,7 +8,7 @@ import Logic.Board;
  * @author Patrick Shinn
  * @version 11/2/16
  */
-public class MasterPiece implements Piece{
+public class MasterPiece{
     
     private Board board; //// TODO: 11/7/16 each peice will need to somehow deal with the board. 
     private int playerID;
@@ -20,25 +20,28 @@ public class MasterPiece implements Piece{
         this.playerID = playerID;
         this.arrayIndex = arrayIndex;
     }
-    @Override
+
     public boolean hasAttack() {
         return false;
     }
 
-    @Override
     public boolean hasMove() {
         return false;
     }
 
-    @Override
-    public Coordinate makeMove() {
-        return new Coordinate(1,1);
+    public Coordinate getCoords() {
+        return coords;
     }
 
     public int getPlayerID(){return playerID;}
 
     public int getArrayIndex() { // used for managing pieces in the piece array of the player class.
         return arrayIndex;
+    }
+
+    @Override
+    public String toString(){
+        return getClass().toString();
     }
 
 }

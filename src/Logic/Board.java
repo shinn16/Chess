@@ -1,7 +1,7 @@
 package Logic;
 
+import Pieces.Coordinate;
 import Pieces.MasterPiece;
-
 /**
  * Board
  *
@@ -11,12 +11,32 @@ import Pieces.MasterPiece;
 public class Board {
     private MasterPiece[][] board = new MasterPiece[5][5]; // creates a 2d array that is 5X5
     private int turnCounter = 0;
-    private Player player1;
-    private Player player2;
 
     public Board(Player player1, Player player2){
-        this.player1 = player1;
-        this.player2 = player2;
+
+        // adding player1 pieces to the board
+        MasterPiece[] player1Pieces = player1.getPieces();
+        for (MasterPiece piece: player1Pieces){
+            Coordinate coords = piece.getCoords();
+            board[coords.getCoords()[1]][coords.getCoords()[0]] = piece;
+        }
+
+        // adding player2 pieces to the board
+        MasterPiece[] player2Pieces = player2.getPieces();
+        for (MasterPiece piece: player2Pieces) {
+            Coordinate coords = piece.getCoords();
+            board[coords.getCoords()[1]][coords.getCoords()[0]] = piece;
+        }
+
+        // // TODO: 11/8/16 remove debug
+        for (MasterPiece[] Pieces: board){
+            for (MasterPiece piece: Pieces){
+                if (piece == null) System.out.println("Null");
+                else  System.out.println(piece.toString());
+
+            }
+        }
+
     }
 
     public MasterPiece[][] getBoard(){ // this will be used to feed the AI a Board
@@ -24,15 +44,4 @@ public class Board {
     }
 
 
-    public void commitMove(){
-        if (turnCounter == 0){   // if it is player1's move
-            // // TODO: 11/2/16 make this do shit.
-            turnCounter ++; // increase to the next one.
-        }
-        else{ // it is player two's turn.
-            // // TODO: 11/2/16  make this do stuff. Take coordinate from piece and negate it to flip it.
-            turnCounter = 0;
-        }
-
-    }
 }
