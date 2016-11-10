@@ -169,7 +169,6 @@ public class Controller {
 
             // reset the stroke color to be used for highlighting.
             graphics.setStroke(Color.AQUA);
-            graphics.setLineWidth(6);
         }
     }
 
@@ -196,23 +195,28 @@ public class Controller {
             drawPieces();
             clicked = false;
             currentMoveSet = null;
-        } else if (board.getPiece(mouse_y, mouse_x) != null) {// highlight the piece and where it can move.
-            if (clicked) { // if we have already selected a piece
-                for (Coordinate move: currentMoveSet){
-                    if (mouse_x == move.getCoords()[0] && mouse_y == move.getCoords()[1]){ // if the current click is in the move set, make the move.
-                        board.makeMove(board.getPiece(currentPeice.getCoords()[1], currentPeice.getCoords()[0]), mouse_y, mouse_x);
-                        freshBoard(); // update the board.
-                        drawPieces();
-                    }else{ // else, clear the stuff.
-                        currentMoveSet = null;
-                        currentPeice= null;
-                        clicked = false;
-                        freshBoard();
-                        drawPieces();
-                    }
+        } else if (clicked) { // if we have already selected a piece
+            for (Coordinate move: currentMoveSet){
+                System.out.println("Mouse X" + mouse_x + "move X: " + move.getCoords()[0] + " Mouse Y: " + mouse_y + " Move Y: " + move.getCoords()[1]);
+                if (mouse_x == move.getCoords()[0] && mouse_y == move.getCoords()[1]){ // if the current click is in the move set, make the move.
+                    System.out.println("Move set clicked");
+                    board.makeMove(board.getPiece(currentPeice.getCoords()[1], currentPeice.getCoords()[0]), mouse_y, mouse_x);
+                    freshBoard(); // update the board.
+                    drawPieces();
+                    clicked = false;
+                    currentPeice = null;
+                    currentMoveSet = null;
+                }else{ // else, clear the stuff.
+                    currentMoveSet = null;
+                    currentPeice= null;
+                    clicked = false;
+                    freshBoard();
+                    drawPieces();
                 }
+            }
 
-            } else{ // get the info for the selected piece.
+        }else if (board.getPiece(mouse_y, mouse_x) != null) {// if we have not already selected a piece and there is a piece at the current position.
+              // get the info for the selected piece.
                 graphics.strokeRect((mouse_x + 1) * 100 + 52, (mouse_y + 1) * 100 + 2, 98, 98);// highlight the piece tile
                 Coordinate[] moves = board.getPiece(mouse_y, mouse_x).getMoves(board); // gets the move set of the current piece.
                 for (Coordinate coordinate : moves) { //for every move in the move set, highlight the spots.
@@ -229,7 +233,7 @@ public class Controller {
                 currentPeice = board.getPiece(mouse_y, mouse_x).getCoords(); // store this info for the next click
                 currentMoveSet = board.getPiece(mouse_y, mouse_x).getMoves(board);
 
-            }
+
     }
 
 
