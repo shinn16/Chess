@@ -11,10 +11,13 @@ import Pieces.MasterPiece;
 public class Board {
     private MasterPiece[][] board = new MasterPiece[5][5]; // creates a 2d array that is 5X5
     private int turnCounter = 0;
+    private Player[] players = new Player[2];
 
     // contructor
     public Board(Player player1, Player player2){
 
+        players[0] = player1;
+        players[1] = player2;
         // adding player1 pieces to the board
         MasterPiece[] player1Pieces = player1.getPieces();
         for (MasterPiece piece: player1Pieces){
@@ -57,5 +60,8 @@ public class Board {
         return this.board;
     }
 
-
+    // returns the players.
+    public Player[] getPlayers() {
+        return players;
+    }
 }

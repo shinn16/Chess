@@ -1,5 +1,7 @@
 package Pieces;
 
+import javafx.scene.image.Image;
+
 /**
  * Bishop
  *

@@ -3,10 +3,12 @@ package GUI;
 import Logic.Board;
 import Logic.Player;
 import Pieces.Coordinate;
+import Pieces.MasterPiece;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -14,6 +16,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -43,17 +46,38 @@ public class Controller {
     Pane gamePane = new Pane();
     // Board Shit and such
     private Board board; // the board for the game.
-    private Player white;
-    private Player black;
 
-    // Graphics junk used for drawing the Board and such
+    // board drawing components
+    private Image blackSpot = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackSpot.png"));
+    private Image whiteSpot = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteSpot.png"));
 
+    // pieces
+    private Image whitePawn = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whitePawn.png"));
+    private Image whiteKnight = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteKnight.png"));
+    private Image whiteRook = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteRook.png"));
+    private Image whiteBishop = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteBishop.png"));
+    private Image whiteQueen = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteQueen.png"));
+    private Image whiteKing = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteKing.png"));
+
+    private Image blackPawn = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackPawn.png"));
+    private Image blackKnight = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackKnight.png"));
+    private Image blackRook = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackRook.png"));
+    private Image blackBishop = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackBishop.png"));
+    private Image blackQueen = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackQueen.png"));
+    private Image blackKing = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackKing.png"));
+
+    // other variables
     private GraphicsContext graphics;
+    private Canvas canvas = null;
+    private boolean clicked = false;
+    private boolean game = false;
+    private Coordinate[] currentMoveSet = null;
+    private Coordinate currentPeice = null;
 
     // this will initialize the change listeners and such
    public void initialize() {
        //create a canvas to draw on
-       Canvas canvas = new Canvas(700,700);
+       canvas = new Canvas(700,700);
 
        // get the ability to draw on it
        graphics = canvas.getGraphicsContext2D();
@@ -85,6 +109,70 @@ public class Controller {
 
     }
 
+    private void freshBoard(){
+        // draw the new board for the new game.
+        graphics.setStroke(Color.BLACK); // settings up to draw a black border for the board.
+        graphics.setLineWidth(5); // sets the weight of the line for the border
+        graphics.strokeRect(150, 100, 500, 500); // draws rectangle
+        // draws the board.
+        for (int y = 0; y < 5; y ++){ // for the y
+            for (int x = 0; x < 5; x ++){ // for the x
+                if ((x+y)%2 == 0){ // tells us which images to use for this spot on the board.
+                    graphics.drawImage(blackSpot, (x * 100) + 150, (y * 100) +100); // draws a 100X100 black spot centered
+                }else {
+                    graphics.drawImage(whiteSpot, (x * 100) + 150, (y * 100) + 100); // draws a 100X100 white spot centered
+                }
+            }
+        }
+        graphics.setStroke(Color.AQUA); // new highlight color
+        graphics.setLineWidth(2); // new line width.
+    }
+
+    private void drawPieces(){
+        // draw the pieces on the board
+        // black side
+        if (game){ // if there is a game on, we will draw the pieces at their given coordinates.
+            MasterPiece[] player0Pieces = board.getPlayers()[0].getPieces();
+            MasterPiece[] player1Pieces = board.getPlayers()[1].getPieces();
+
+            // white pieces
+            for (int i = 0; i < 5; i++) graphics.drawImage(whitePawn, (player0Pieces[i].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[i].getCoords().getCoords()[1]+1)*100);
+            graphics.drawImage(whiteRook, (player0Pieces[5].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[5].getCoords().getCoords()[1]+1)*100);
+            graphics.drawImage(whiteKnight, (player0Pieces[6].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[6].getCoords().getCoords()[1]+1)*100);
+            graphics.drawImage(whiteBishop, (player0Pieces[7].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[7].getCoords().getCoords()[1]+1)*100);
+            graphics.drawImage(whiteQueen, (player0Pieces[8].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[8].getCoords().getCoords()[1]+1)*100);
+            graphics.drawImage(whiteKing,  (player0Pieces[9].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[9].getCoords().getCoords()[1]+1)*100);
+
+            // black pieces
+            for (int i = 0; i < 5; i++) graphics.drawImage(blackPawn, (player1Pieces[i].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[i].getCoords().getCoords()[1]+1)*100);
+            graphics.drawImage(blackRook, (player1Pieces[5].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[5].getCoords().getCoords()[1]+1)*100);
+            graphics.drawImage(blackKnight, (player1Pieces[6].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[6].getCoords().getCoords()[1]+1)*100);
+            graphics.drawImage(blackBishop, (player1Pieces[7].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[7].getCoords().getCoords()[1]+1)*100);
+            graphics.drawImage(blackQueen, (player1Pieces[8].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[8].getCoords().getCoords()[1]+1)*100);
+            graphics.drawImage(blackKing,  (player1Pieces[9].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[9].getCoords().getCoords()[1]+1)*100);
+
+        }else { // fresh set of pieces
+            graphics.drawImage(blackKing, 150, 100);
+            graphics.drawImage(blackQueen, 250, 100);
+            graphics.drawImage(blackBishop, 350, 100);
+            graphics.drawImage(blackKnight, 450, 100);
+            graphics.drawImage(blackRook, 550, 100);
+            for (int i = 1; i < 6; i++) graphics.drawImage(blackPawn, i * 100 + 50, 200);
+
+            // white side
+            graphics.drawImage(whiteRook, 150, 500);
+            graphics.drawImage(whiteKnight, 250, 500);
+            graphics.drawImage(whiteBishop, 350, 500);
+            graphics.drawImage(whiteQueen, 450, 500);
+            graphics.drawImage(whiteKing, 550, 500);
+            for (int i = 1; i < 6; i++) graphics.drawImage(whitePawn, i * 100 + 50, 400);
+
+            // reset the stroke color to be used for highlighting.
+            graphics.setStroke(Color.AQUA);
+            graphics.setLineWidth(6);
+        }
+    }
+
     // gets the current mouse location
     public void getMouseHover(MouseEvent event) {
         int mouse_x = (int)event.getSceneX();
@@ -94,31 +182,57 @@ public class Controller {
 
     //gets the current location of the mouse click
     public void getMouseClick(MouseEvent event) {
-        int mouse_x = (int)event.getSceneX();
-        int mouse_y = (int)event.getSceneY();
-
+        int mouse_x = (int) event.getSceneX();
+        int mouse_y = (int) event.getSceneY();
 
         // this will return the index of the board position.
-        mouse_x = (mouse_x - 50)/100 -1;
-        mouse_y = (mouse_y - 30)/100 -1;
-        if (mouse_x < 0 || mouse_y < 0 || mouse_x > 4 || mouse_y > 4){  // ensures we are on the board.
+        mouse_x = (mouse_x - 50) / 100 - 1;
+        mouse_y = (mouse_y - 30) / 100 - 1;
+
+        // now we try to get a piece at these coordinates.
+        if (mouse_x < 0 || mouse_y < 0 || mouse_x > 4 || mouse_y > 4) {  // ensures we are on the board, otherwise resets all graphics in current state.
             System.out.println("Mouse is off the board");
-        }else { // if we are on the board, highlight the tile and print out what piece is there and who owns it.
-            if (board.getPiece(mouse_y, mouse_x) == null) {
-                System.out.println("Clicked @ X: " + mouse_x + " Y: " + mouse_y + "This position is empty.");
-            } else {
-                System.out.println("Clicked @ X: " + mouse_x + " Y: " + mouse_y + "\n\t Piece at location: " + board.getPiece(mouse_y, mouse_x).toString()
-                        + "\n\t Belongs to: " + board.getPiece(mouse_y, mouse_x).getPlayerID()
-                + "\n\t Real Coords: " + Arrays.toString(board.getPiece(mouse_y, mouse_x).getCoords().getCoords()));
-                graphics.strokeRect((mouse_x +1)*100 + 50, (mouse_y + 1 ) * 100, 100, 100);// we will fill around the tile by expanding the index back into coordinates on the board.
-                graphics.save();
+            freshBoard();
+            drawPieces();
+            clicked = false;
+            currentMoveSet = null;
+        } else if (board.getPiece(mouse_y, mouse_x) != null) {// highlight the piece and where it can move.
+            if (clicked) { // if we have already selected a piece
+                for (Coordinate move: currentMoveSet){
+                    if (mouse_x == move.getCoords()[0] && mouse_y == move.getCoords()[1]){ // if the current click is in the move set, make the move.
+                        board.makeMove(board.getPiece(currentPeice.getCoords()[1], currentPeice.getCoords()[0]), mouse_y, mouse_x);
+                        freshBoard(); // update the board.
+                        drawPieces();
+                    }else{ // else, clear the stuff.
+                        currentMoveSet = null;
+                        currentPeice= null;
+                        clicked = false;
+                        freshBoard();
+                        drawPieces();
+                    }
+                }
 
-                System.out.println(Arrays.toString(board.getPiece(mouse_y, mouse_x).getMoves(board)));
-
+            } else{ // get the info for the selected piece.
+                graphics.strokeRect((mouse_x + 1) * 100 + 52, (mouse_y + 1) * 100 + 2, 98, 98);// highlight the piece tile
+                Coordinate[] moves = board.getPiece(mouse_y, mouse_x).getMoves(board); // gets the move set of the current piece.
+                for (Coordinate coordinate : moves) { //for every move in the move set, highlight the spots.
+                    if (board.getPiece(coordinate.getCoords()[1], coordinate.getCoords()[1]) != null) { // if there is a piece at this postion.
+                        if (board.getPiece(coordinate.getCoords()[1], coordinate.getCoords()[1]).getPlayerID() != board.getPiece(mouse_y, mouse_x).getPlayerID()) // if the second spot clicked is enemy.
+                            graphics.setStroke(Color.RED);
+                    } else { // if its just a move, make it yellow.
+                        graphics.setStroke(Color.YELLOW);
+                    }
+                    graphics.strokeRect((coordinate.getCoords()[0] + 1) * 100 + 52, (coordinate.getCoords()[1] + 1) * 100 + 2, 98, 98);
+                }
+                graphics.setStroke(Color.AQUA); // reset color
+                clicked = true; // we have clicked a piece
+                currentPeice = board.getPiece(mouse_y, mouse_x).getCoords(); // store this info for the next click
+                currentMoveSet = board.getPiece(mouse_y, mouse_x).getMoves(board);
 
             }
+    }
 
-        }
+
     }
 
     // ------------------------------ Private internal classes ------------------------------
@@ -246,24 +360,6 @@ public class Controller {
         private ComboBox<String> whiteOptions = new ComboBox<>();
         private ComboBox<String> blackOptions = new ComboBox<>();
 
-        // board drawing components
-        private Image blackSpot = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackSpot.png"));
-        private Image whiteSpot = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteSpot.png"));
-
-        // pieces
-        private Image whitePawn = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whitePawn.png"));
-        private Image whiteKnight = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteKnight.png"));
-        private Image whiteRook = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteRook.png"));
-        private Image whiteBishop = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteBishop.png"));
-        private Image whiteQueen = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteQueen.png"));
-        private Image whiteKing = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteKing.png"));
-
-        private Image blackPawn = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackPawn.png"));
-        private Image blackKnight = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackKnight.png"));
-        private Image blackRook = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackRook.png"));
-        private Image blackBishop = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackBishop.png"));
-        private Image blackQueen = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackQueen.png"));
-        private Image blackKing = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackKing.png"));
 
         private NewGameWindow() {
             display();
@@ -326,45 +422,14 @@ public class Controller {
                 new WarningWindow("Looks like there is something wrong with your settings...", "You have to apply settings for both players!");
             }
             else { // if the player has set up the right options for the game
-                white = new Player(playerOneType, 0); // set the player types
-                black = new Player(playerTwoType, 1);
+                Player white = new Player(playerOneType, 0); // set the player types
+                Player black = new Player(playerTwoType, 1);
                 board = new Board(white, black); // set the board up with white going first.
 
-                // draw the new board for the new game.
-                graphics.setStroke(Color.BLACK); // settings up to draw a black border for the board.
-                graphics.setLineWidth(5); // sets the weight of the line for the border
-                graphics.strokeRect(150, 100, 500, 500); // draws rectangle
-                // draws the board.
-                for (int y = 0; y < 5; y ++){ // for the y
-                    for (int x = 0; x < 5; x ++){ // for the x
-                        if ((x+y)%2 == 0){ // tells us which images to use for this spot on the board.
-                            graphics.drawImage(blackSpot, (x * 100) + 150, (y * 100) +100); // draws a 100X100 black spot centered
-                        }else {
-                            graphics.drawImage(whiteSpot, (x * 100) + 150, (y * 100) + 100); // draws a 100X100 white spot centered
-                        }
-                    }
-                }
+                freshBoard();
+                drawPieces();
+                game = true; // we are now playing a game.
 
-                // draw the pieces on the board
-                // black side
-                graphics.drawImage(blackKing, 150, 100);
-                graphics.drawImage(blackQueen, 250, 100);
-                graphics.drawImage(blackBishop, 350, 100);
-                graphics.drawImage(blackKnight, 450, 100);
-                graphics.drawImage(blackRook, 550, 100);
-                for (int i = 1; i < 6; i ++) graphics.drawImage(blackPawn, i*100 + 50, 200);
-
-                // white side
-                graphics.drawImage(whiteRook, 150, 500);
-                graphics.drawImage(whiteKnight, 250, 500);
-                graphics.drawImage(whiteBishop, 350, 500);
-                graphics.drawImage(whiteQueen, 450, 500);
-                graphics.drawImage(whiteKing, 550, 500);
-                for (int i = 1; i < 6; i ++) graphics.drawImage(whitePawn, i*100 + 50, 400);
-
-                // reset the stroke color to be used for highlighting, then reduce the line weight
-                graphics.setStroke(Color.AQUA);
-                graphics.setLineWidth(2);
             }
         }
            

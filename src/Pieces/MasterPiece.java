@@ -20,14 +20,10 @@ public class MasterPiece{
         this.arrayIndex = arrayIndex;
     }
 
-    public boolean hasAttack() {
-        return false;
+    public boolean hasAttack(Coordinate[] attacks){
+        return attacks.length > 0;
     }
 
-    public boolean hasMove() {
-        hasAttack(); // has move will enforce the attack method.
-        return false;
-    }
 
     public Coordinate getCoords() {
         return coords;
