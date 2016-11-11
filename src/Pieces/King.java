@@ -49,7 +49,7 @@ public class King extends MasterPiece {
             }else if (board.getPiece(super.getCoords().getY() - 1, super.getCoords().getX()) != null){
                 if (board.getPiece(super.getCoords().getY() - 1, super.getCoords().getX()).getPlayerID() != getPlayerID()){
                     attacks = Arrays.copyOf(attacks, attacks.length + 1);
-                    attacks[attacks.length - 1] = new Coordinate(super.getCoords().getY() - 1, super.getCoords().getX());
+                    attacks[attacks.length - 1] = new Coordinate(super.getCoords().getX(), super.getCoords().getY() - 1);
                 }
             }
         } catch (IndexOutOfBoundsException e) {
@@ -61,9 +61,9 @@ public class King extends MasterPiece {
                 moves = Arrays.copyOf(moves, moves.length + 1); // expand the moves array
                 moves[moves.length - 1] = new Coordinate(super.getCoords().getX() + 1, super.getCoords().getY()); // added the new coordinate
             }else if (board.getPiece(super.getCoords().getY(), super.getCoords().getX() + 1) != null){
-                if (board.getPiece(super.getCoords().getY(), super.getCoords().getX()).getPlayerID() != getPlayerID()){
+                if (board.getPiece(super.getCoords().getY(), super.getCoords().getX() + 1).getPlayerID() != getPlayerID()){
                     attacks = Arrays.copyOf(attacks, attacks.length + 1);
-                    attacks[attacks.length - 1] = new Coordinate(super.getCoords().getY(), super.getCoords().getX() + 1);
+                    attacks[attacks.length - 1] = new Coordinate(super.getCoords().getX() + 1, super.getCoords().getY());
                 }
             }
         } catch (IndexOutOfBoundsException e) {
@@ -77,7 +77,7 @@ public class King extends MasterPiece {
             }else{
                 if (board.getPiece(super.getCoords().getY(), super.getCoords().getX() - 1).getPlayerID() != getPlayerID()){
                     attacks = Arrays.copyOf(attacks, attacks.length + 1);
-                    attacks[attacks.length - 1] = new Coordinate(super.getCoords().getY(), super.getCoords().getX() - 1);
+                    attacks[attacks.length - 1] = new Coordinate(super.getCoords().getX() - 1, super.getCoords().getY());
                 }
             }
         } catch (IndexOutOfBoundsException e) {
@@ -91,7 +91,7 @@ public class King extends MasterPiece {
             }else {
                 if (board.getPiece(super.getCoords().getY() + 1, super.getCoords().getX() - 1).getPlayerID() != getPlayerID()){
                     attacks = Arrays.copyOf(attacks, attacks.length + 1);
-                    attacks[attacks.length - 1] = new Coordinate(super.getCoords().getY() + 1, super.getCoords().getX() - 1);
+                    attacks[attacks.length - 1] = new Coordinate(super.getCoords().getX() - 1, super.getCoords().getY() + 1);
                 }
             }
         } catch (IndexOutOfBoundsException e) {
@@ -105,7 +105,7 @@ public class King extends MasterPiece {
             }else {
                 if (board.getPiece(super.getCoords().getY() - 1, super.getCoords().getX() - 1).getPlayerID() != getPlayerID()){
                     attacks = Arrays.copyOf(attacks, attacks.length + 1);
-                    attacks[attacks.length - 1] = new Coordinate(super.getCoords().getY() - 1, super.getCoords().getX() - 1);
+                    attacks[attacks.length - 1] = new Coordinate(super.getCoords().getX() - 1, super.getCoords().getY() - 1);
                 }
             }
         } catch (IndexOutOfBoundsException e) {
@@ -119,7 +119,7 @@ public class King extends MasterPiece {
             }else {
                 if (board.getPiece(super.getCoords().getY() + 1, super.getCoords().getX() + 1).getPlayerID() != getPlayerID()){
                     attacks = Arrays.copyOf(attacks, attacks.length + 1);
-                    attacks[attacks.length - 1] = new Coordinate(super.getCoords().getY() + 1, super.getCoords().getX() + 1);
+                    attacks[attacks.length - 1] = new Coordinate(super.getCoords().getX() + 1, super.getCoords().getY() + 1);
                 }
             }
         } catch (IndexOutOfBoundsException e) {
@@ -133,7 +133,7 @@ public class King extends MasterPiece {
             }else {
                 if (board.getPiece(super.getCoords().getY() - 1, super.getCoords().getX() + 1).getPlayerID() != getPlayerID()){
                     attacks = Arrays.copyOf(attacks, attacks.length + 1);
-                    attacks[attacks.length - 1] = new Coordinate(super.getCoords().getY() - 1, super.getCoords().getX() + 1);
+                    attacks[attacks.length - 1] = new Coordinate(super.getCoords().getX() + 1, super.getCoords().getY() - 1);
                 }
             }
         } catch (IndexOutOfBoundsException e) {
