@@ -23,30 +23,44 @@ public class King extends MasterPiece {
     }
 
     @Override
-    public Coordinate[] getMoves(Board board){
+    public Coordinate[] getMoves(Board board) {
         Coordinate[] moves = new Coordinate[0];
-        try {
-            if (board.getPiece(super.getCoords().getCoords()[1] + 1, super.getCoords().getCoords()[0]) == null){ // check for empty spot in front of king
-                moves = Arrays.copyOf(moves, moves.length + 1);
-                moves[moves.length - 1] = new Coordinate(super.getCoords().getCoords()[1] + 1, super.getCoords().getCoords()[0]);
+
+        try { // checking above the king
+            if (board.getPiece(super.getCoords().getY() + 1, super.getCoords().getX()) == null) {
+                moves = Arrays.copyOf(moves, moves.length + 1); // expand the moves array
+                moves[moves.length - 1] = new Coordinate(super.getCoords().getX(), super.getCoords().getY() + 1); // added the new coordinate
             }
-            else if(board.getPiece(super.getCoords().getCoords()[1] - 1, super.getCoords().getCoords()[0]) == null){ // check to see if the spot is empty behind king
-                moves = Arrays.copyOf(moves, moves.length + 1);
-                moves[moves.length - 1] = new Coordinate(super.getCoords().getCoords()[1] - 1, super.getCoords().getCoords()[0]);
-
-            }else if(board.getPiece(super.getCoords().getCoords()[1], super.getCoords().getCoords()[0] + 1) == null){ // check to see if the spot is empty to the right
-                moves = Arrays.copyOf(moves, moves.length + 1);
-                moves[moves.length - 1] = new Coordinate(super.getCoords().getCoords()[1], super.getCoords().getCoords()[0] + 1);
-
-            }else if(board.getPiece(super.getCoords().getCoords()[1], super.getCoords().getCoords()[0] -1) == null){ // check to see if the spot is empty t0 the left
-                moves = Arrays.copyOf(moves, moves.length + 1);
-                moves[moves.length - 1] = new Coordinate(super.getCoords().getCoords()[1], super.getCoords().getCoords()[0] - 1);
-
-            }
-        }catch (IndexOutOfBoundsException e){
-            // ingnore the out of bound issue.
+        } catch (IndexOutOfBoundsException e) {
+            // ignore the error
         }
 
+        try { // checking below the king
+            if (board.getPiece(super.getCoords().getY() - 1, super.getCoords().getX()) == null) {
+                moves = Arrays.copyOf(moves, moves.length + 1); // expand the moves array
+                moves[moves.length - 1] = new Coordinate(super.getCoords().getX(), super.getCoords().getY() - 1); // added the new coordinate
+            }
+        } catch (IndexOutOfBoundsException e) {
+            // ignore the error
+        }
+
+        try { // checking to the right
+            if (board.getPiece(super.getCoords().getY(), super.getCoords().getX() + 1) == null) {
+                moves = Arrays.copyOf(moves, moves.length + 1); // expand the moves array
+                moves[moves.length - 1] = new Coordinate(super.getCoords().getX() + 1, super.getCoords().getY()); // added the new coordinate
+            }
+        } catch (IndexOutOfBoundsException e) {
+            // Ignore the error
+        }
+
+        try { // checking to the left
+            if (board.getPiece(super.getCoords().getY(), super.getCoords().getX() - 1) == null) {
+                moves = Arrays.copyOf(moves, moves.length + 1); // expand the moves array
+                moves[moves.length - 1] = new Coordinate(super.getCoords().getX() - 1, super.getCoords().getY()); // added the new coordinate
+            }
+        } catch (IndexOutOfBoundsException e) {
+            // Ignore the error
+        }
         return moves;
     }
 }
