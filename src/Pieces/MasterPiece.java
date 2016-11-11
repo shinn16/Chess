@@ -10,7 +10,6 @@ import Logic.Board;
  */
 public class MasterPiece{
     
-    private Board board; //// TODO: 11/7/16 each piece will need to somehow deal with the board.
     private int playerID;
     private Coordinate coords;
     private int arrayIndex;
@@ -19,11 +18,6 @@ public class MasterPiece{
         this.playerID = playerID;
         this.arrayIndex = arrayIndex;
     }
-
-    public boolean hasAttack(Coordinate[] attacks){
-        return attacks.length > 0;
-    }
-
 
     public Coordinate getCoords() {
         return coords;
@@ -42,7 +36,6 @@ public class MasterPiece{
     public Coordinate[] getMoves(Board board){
         return new Coordinate[0];
     }
-
 
     @Override
     public String toString(){

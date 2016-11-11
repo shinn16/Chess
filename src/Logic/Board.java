@@ -10,10 +10,10 @@ import Pieces.MasterPiece;
  */
 public class Board {
     private MasterPiece[][] board = new MasterPiece[5][5]; // creates a 2d array that is 5X5
-    private int turnCounter = 0;
+    private int turnCounter = 1;
     private Player[] players = new Player[2];
 
-    // contructor
+    // constructor
     public Board(Player player1, Player player2){
 
         players[0] = player1;
@@ -31,16 +31,6 @@ public class Board {
             Coordinate coords = piece.getCoords();
             board[coords.getCoords()[1]][coords.getCoords()[0]] = piece;
         }
-
-        // // TODO: 11/8/16 remove debug
-        for (MasterPiece[] Pieces: board){
-            for (MasterPiece piece: Pieces){
-                if (piece == null) System.out.println("Null");
-                else  System.out.println(piece.toString());
-
-            }
-        }
-
     }
 
     // gets the piece at the current location specified.
@@ -63,5 +53,16 @@ public class Board {
     // returns the players.
     public Player[] getPlayers() {
         return players;
+    }
+
+    // get the turn
+    public int getTurnCounter() {
+        return turnCounter;
+    }
+
+    // go to next turn
+    public void nextTurn(){
+        if (turnCounter == 1) turnCounter = 0;
+        else turnCounter = 1;
     }
 }

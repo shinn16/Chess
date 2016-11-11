@@ -48,6 +48,7 @@ public class Queen extends MasterPiece {
             while (!done) {
                 try {
                     if (board.getPiece(checkValues[1] - 1, checkValues[0]) == null) {
+                        System.out.println("Got y - 1");
                         moves = Arrays.copyOf(moves, moves.length + 1);
                         moves[moves.length - 1] = new Coordinate(checkValues[0], checkValues[1]);
                         checkValues[1] -= 1;

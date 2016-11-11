@@ -50,4 +50,8 @@ public class Player {
     public MasterPiece[] getPieces() {
         return pieces;
     }
+
+    public void capturePiece(int pieceIndex){
+        pieces[pieceIndex] = null;
+    }
 }

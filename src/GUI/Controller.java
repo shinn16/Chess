@@ -136,20 +136,60 @@ public class Controller {
             MasterPiece[] player1Pieces = board.getPlayers()[1].getPieces();
 
             // white pieces
-            for (int i = 0; i < 5; i++) graphics.drawImage(whitePawn, (player0Pieces[i].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[i].getCoords().getCoords()[1]+1)*100);
-            graphics.drawImage(whiteRook, (player0Pieces[5].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[5].getCoords().getCoords()[1]+1)*100);
-            graphics.drawImage(whiteKnight, (player0Pieces[6].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[6].getCoords().getCoords()[1]+1)*100);
-            graphics.drawImage(whiteBishop, (player0Pieces[7].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[7].getCoords().getCoords()[1]+1)*100);
-            graphics.drawImage(whiteQueen, (player0Pieces[8].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[8].getCoords().getCoords()[1]+1)*100);
-            graphics.drawImage(whiteKing,  (player0Pieces[9].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[9].getCoords().getCoords()[1]+1)*100);
+            for (int i = 0; i < 5; i++) {
+                try{
+                    graphics.drawImage(whitePawn, (player0Pieces[i].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[i].getCoords().getCoords()[1]+1)*100);
+                }catch (NullPointerException e){// ignore, this means the piece has been captured.
+                }
+            }
+            try {
+                graphics.drawImage(whiteRook, (player0Pieces[5].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[5].getCoords().getCoords()[1]+1)*100);
+            }catch (NullPointerException e) {// ignore
+            }
+            try {
+                graphics.drawImage(whiteKnight, (player0Pieces[6].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[6].getCoords().getCoords()[1]+1)*100);
+            }catch (NullPointerException e) {// ignore
+            }
+            try {
+                graphics.drawImage(whiteBishop, (player0Pieces[7].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[7].getCoords().getCoords()[1]+1)*100);
+            }catch (NullPointerException e) { // ignore
+            }
+            try {
+                graphics.drawImage(whiteQueen, (player0Pieces[8].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[8].getCoords().getCoords()[1]+1)*100);
+            }catch (NullPointerException e) { // ignore
+            }
+            try {
+                graphics.drawImage(whiteKing,  (player0Pieces[9].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[9].getCoords().getCoords()[1]+1)*100);
+            }catch (NullPointerException e) { // ignore
+            }
 
             // black pieces
-            for (int i = 0; i < 5; i++) graphics.drawImage(blackPawn, (player1Pieces[i].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[i].getCoords().getCoords()[1]+1)*100);
-            graphics.drawImage(blackRook, (player1Pieces[5].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[5].getCoords().getCoords()[1]+1)*100);
-            graphics.drawImage(blackKnight, (player1Pieces[6].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[6].getCoords().getCoords()[1]+1)*100);
-            graphics.drawImage(blackBishop, (player1Pieces[7].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[7].getCoords().getCoords()[1]+1)*100);
-            graphics.drawImage(blackQueen, (player1Pieces[8].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[8].getCoords().getCoords()[1]+1)*100);
-            graphics.drawImage(blackKing,  (player1Pieces[9].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[9].getCoords().getCoords()[1]+1)*100);
+            for (int i = 0; i < 5; i++) {
+                try {
+                    graphics.drawImage(blackPawn, (player1Pieces[i].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[i].getCoords().getCoords()[1]+1)*100);
+                }catch (NullPointerException e){// ignore, this means the piece has been removed.
+                }
+            }
+            try {
+                graphics.drawImage(blackRook, (player1Pieces[5].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[5].getCoords().getCoords()[1]+1)*100);
+            }catch (NullPointerException e) { // ignore
+            }
+            try {
+                graphics.drawImage(blackKnight, (player1Pieces[6].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[6].getCoords().getCoords()[1]+1)*100);
+            }catch (NullPointerException e) { // ignore
+            }
+            try {
+                graphics.drawImage(blackBishop, (player1Pieces[7].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[7].getCoords().getCoords()[1]+1)*100);
+            }catch (NullPointerException e) { //ignore
+            }
+            try {
+                graphics.drawImage(blackQueen, (player1Pieces[8].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[8].getCoords().getCoords()[1]+1)*100);
+            }catch (NullPointerException e) { // ignore
+            }
+            try {
+                graphics.drawImage(blackKing,  (player1Pieces[9].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[9].getCoords().getCoords()[1]+1)*100);
+            }catch (NullPointerException e){ // ignore
+            }
 
         }else { // fresh set of pieces
             graphics.drawImage(blackKing, 150, 100);
@@ -179,8 +219,8 @@ public class Controller {
 
     }
 
-    //gets the current location of the mouse click
-    public void getMouseClick(MouseEvent event) { // // TODO: 11/10/16 this method breaks when a selected piece has an empty move set.
+    //gets the current location of the mouse click and does the appropriate actions
+    public void getMouseClick(MouseEvent event) {
         int mouse_x = (int) event.getSceneX();
         int mouse_y = (int) event.getSceneY();
 
@@ -190,28 +230,32 @@ public class Controller {
 
         // now we try to get a piece at these coordinates.
         if (mouse_x < 0 || mouse_y < 0 || mouse_x > 4 || mouse_y > 4) {  // ensures we are on the board, otherwise resets all graphics in current state.
-            System.out.println("Mouse is off the board");
-            freshBoard();
-            drawPieces();
+            if (game){
+                freshBoard();
+                drawPieces();
+            }
+
             clicked = false;
             currentMoveSet = null;
             currentPeice = null;
 
         }else if (clicked) { // if we have already selected a piece
             if (currentMoveSet.length == 0) { // if we have no moves, clear the board of move options.
-                System.out.println("No moves");
                 clicked = false;
                 freshBoard();
                 drawPieces();
             }else {
                 for (Coordinate move : currentMoveSet) {
-                    System.out.println("Mouse X: " + mouse_x + "move X: " + move.getX() + "\nMouse Y: " + mouse_y + " Move Y: " + move.getY());
                     if (mouse_x == move.getX() && mouse_y == move.getY()) { // if the current click is in the move set, make the move.
-                        System.out.println("Move set clicked");
+                        if (board.getPiece(move.getY(), move.getX()) != null){ // if there is an enemy piece at this point
+                            int pieceAttacked = board.getPiece(move.getY(), move.getX()).getArrayIndex(); // gets the index of the piece
+                            board.getPlayers()[board.getTurnCounter()].capturePiece(pieceAttacked); // remove the piece from the opponents list of pieces
+                        }
                         board.makeMove(board.getPiece(currentPeice.getY(), currentPeice.getX()), mouse_y, mouse_x); // move the piece
                         freshBoard(); // update the board.
                         drawPieces();
-                        clicked = false; // reset all of the values
+                        board.nextTurn(); // move to the next turn.
+                        clicked = false; // reset click
                     } else { // else, clear the stuff.
                         clicked = false;
                         freshBoard();
@@ -219,21 +263,28 @@ public class Controller {
                     }
                 }
             }
-        }else if (board.getPiece(mouse_y, mouse_x) != null) {// if we have not already selected a piece and there is a piece at the current position.
+            // if we have not already selected a piece and there is a piece at the current position, we also enforce turns here.
+        }else if (board.getPiece(mouse_y, mouse_x) != null && board.getTurnCounter() == board.getPiece(mouse_y, mouse_x).getPlayerID()) {
 
             graphics.strokeRect((mouse_x + 1) * 100 + 52, (mouse_y + 1) * 100 + 2, 98, 98);// highlight the piece tile in blue
-
-            Coordinate[] moves = board.getPiece(mouse_y, mouse_x).getMoves(board); // gets the move set of the current piece.
-            graphics.setStroke(Color.YELLOW); // set to yellow to highlight the moves
-
-            for (Coordinate coordinate : moves) { //for every move in the move set, highlight the spots.
-                graphics.strokeRect((coordinate.getX() + 1) * 100 + 52, (coordinate.getY() + 1) * 100 + 2, 98, 98);
-            }
-
-            graphics.setStroke(Color.AQUA); // reset color
-            clicked = true; // we have clicked a piece
             currentPeice = board.getPiece(mouse_y, mouse_x).getCoords(); // store this info for the next click
             currentMoveSet = board.getPiece(mouse_y, mouse_x).getMoves(board);
+
+            for (Coordinate coordinate : currentMoveSet) { //for every move in the move set, highlight the spots.
+                // if the spot contains an enemy, highlight it red
+                if (board.getPiece(coordinate.getY(), coordinate.getX()) != null){
+                    if (board.getPiece(coordinate.getY(), coordinate.getX()).getPlayerID() != board.getPiece(currentPeice.getY(), currentPeice.getX()).getPlayerID()){
+                        graphics.setStroke(Color.RED);
+                        graphics.strokeRect((coordinate.getX() + 1) * 100 + 52, (coordinate.getY() + 1) * 100 + 2, 96, 96);
+                    }
+                }
+                else { // highlight it yellow.
+                    graphics.setStroke(Color.YELLOW); // set to yellow to highlight the moves
+                    graphics.strokeRect((coordinate.getX() + 1) * 100 + 52, (coordinate.getY() + 1) * 100 + 2, 96, 96);
+                }
+            }
+            graphics.setStroke(Color.AQUA); // reset color
+            clicked = true; // we have clicked a piece
             System.out.println("Piece: " + board.getPiece(currentPeice.getY(), currentPeice.getX()));
             System.out.println("Move set: " + Arrays.toString(currentMoveSet));
 
@@ -437,6 +488,7 @@ public class Controller {
                 freshBoard();
                 drawPieces();
                 game = true; // we are now playing a game.
+                primaryStage.close();
 
             }
         }
