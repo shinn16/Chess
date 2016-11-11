@@ -113,11 +113,43 @@ public class Queen extends MasterPiece {
             for (int i = 1; i < 5; i ++){ // checking vertical up
                 if (board.getPiece((getCoords().getY() - i), getCoords().getX()) == null){ // if the spot is empty
                     moves = Arrays.copyOf(moves, moves.length + 1);
-                    moves[moves.length - 1] = new Coordinate(getCoords().getX(), getCoords().getY() + i);
+                    moves[moves.length - 1] = new Coordinate(getCoords().getX(), getCoords().getY() - i);
                 }else { // if the spot contains an enemy
                     if (board.getPiece((getCoords().getY() - i), getCoords().getX()).getPlayerID() != getPlayerID() ){
                         attacks = Arrays.copyOf(attacks, attacks.length + 1);
                         attacks[attacks.length - 1] = new Coordinate(getCoords().getX(), getCoords().getY() - i);
+                        break; // if we hit a piece to attack, break
+                    } else break; // we have hit one of our own pieces, so break
+                }
+            }
+        }catch (IndexOutOfBoundsException e) { //ignore
+        }
+
+        try {
+            for (int i = 1; i < 5; i ++){ // checking right
+                if (board.getPiece((getCoords().getY()), getCoords().getX() + i) == null){ // if the spot is empty
+                    moves = Arrays.copyOf(moves, moves.length + 1);
+                    moves[moves.length - 1] = new Coordinate(getCoords().getX() + i, getCoords().getY());
+                }else { // if the spot contains an enemy
+                    if (board.getPiece((getCoords().getY()), getCoords().getX() + i).getPlayerID() != getPlayerID() ){
+                        attacks = Arrays.copyOf(attacks, attacks.length + 1);
+                        attacks[attacks.length - 1] = new Coordinate(getCoords().getX() + i, getCoords().getY());
+                        break; // if we hit a piece to attack, break
+                    } else break; // we have hit one of our own pieces, so break
+                }
+            }
+        }catch (IndexOutOfBoundsException e) { //ignore
+        }
+
+        try {
+            for (int i = 1; i < 5; i ++){ // checking left
+                if (board.getPiece((getCoords().getY()), getCoords().getX() - i) == null){ // if the spot is empty
+                    moves = Arrays.copyOf(moves, moves.length + 1);
+                    moves[moves.length - 1] = new Coordinate(getCoords().getX() - i, getCoords().getY());
+                }else { // if the spot contains an enemy
+                    if (board.getPiece((getCoords().getY()), getCoords().getX() - i).getPlayerID() != getPlayerID() ){
+                        attacks = Arrays.copyOf(attacks, attacks.length + 1);
+                        attacks[attacks.length - 1] = new Coordinate(getCoords().getX() - i, getCoords().getY());
                         break; // if we hit a piece to attack, break
                     } else break; // we have hit one of our own pieces, so break
                 }
