@@ -23,7 +23,7 @@ public class King extends MasterPiece {
     }
 
     @Override
-    public Coordinate[] getMoves(Board board) { //// TODO: 11/11/16 This code has some bugs, it coppied and pasted too much...
+    public Coordinate[] getMoves(Board board) { //// TODO: 11/11/16 This code has some bugs, it copied and pasted too much...
         Coordinate[] finalMoves;
         Coordinate[] attacks = new Coordinate[0];
         Coordinate[] moves = new Coordinate[0];

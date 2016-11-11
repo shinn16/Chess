@@ -18,4 +18,6 @@ public class Rook extends MasterPiece {
     public int getValue() {
         return value;
     }
+
+
 }
