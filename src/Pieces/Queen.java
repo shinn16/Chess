@@ -25,46 +25,109 @@ public class Queen extends MasterPiece {
 
     @Override
     public  Coordinate[] getMoves(Board board){
+        Coordinate[] finalMoves;
+        Coordinate[] attacks = new Coordinate[0];
         Coordinate[] moves = new Coordinate[0];
-        int[] checkValues = {super.getCoords().getX(), super.getCoords().getY()};
-        Boolean done = false;
-        // while we can, we are going to check straight ahead of us.
-        while (!done){
-            try{
-                if (board.getPiece(checkValues[1] + 1, checkValues[0]) == null){
-                    moves = Arrays.copyOf(moves, moves.length + 1);
-                    moves[moves.length - 1] = new Coordinate(checkValues[0], checkValues[1]);
-                    checkValues[1] += 1;
+
+        try{ //check up and left
+            for(int i=1;i<=super.getCoords().getY();i++){
+                if (board.getPiece(super.getCoords().getY() - i, super.getCoords().getX() - i) == null) {
+                    moves = Arrays.copyOf(moves, moves.length + 1); // expand the moves array
+                    moves[moves.length - 1] = new Coordinate(super.getCoords().getX() - i, super.getCoords().getY() - i); // added the new coordinate
                 }else {
-                    checkValues[0] = super.getCoords().getX();
-                    checkValues[1] = super.getCoords().getY();
-                    break;
-                }
-            }catch (IndexOutOfBoundsException e){
-                break;
-            }
-
-            // while we can, we are going to check straight behind us of us.
-            while (!done) {
-                try {
-                    if (board.getPiece(checkValues[1] - 1, checkValues[0]) == null) {
-                        System.out.println("Got y - 1");
-                        moves = Arrays.copyOf(moves, moves.length + 1);
-                        moves[moves.length - 1] = new Coordinate(checkValues[0], checkValues[1]);
-                        checkValues[1] -= 1;
-                    } else {
-                        checkValues[0] = super.getCoords().getX();
-                        checkValues[1] = super.getCoords().getY();
+                    if (board.getPiece(super.getCoords().getY() - i, super.getCoords().getX() - i).getPlayerID() != getPlayerID()){
+                        attacks = Arrays.copyOf(attacks, attacks.length + 1);
+                        attacks[attacks.length - 1] = new Coordinate(super.getCoords().getX() - i, super.getCoords().getY() - i);
                         break;
-                    }
-                } catch (IndexOutOfBoundsException e) {
-                    break;
+                    } else break;
                 }
             }
+        }
+        catch(IndexOutOfBoundsException e){}
 
+        try{ //check up and right
+            for(int i=1;i<=super.getCoords().getY();i++){
+                if (board.getPiece(super.getCoords().getY() - i, super.getCoords().getX() + i) == null) {
+                    moves = Arrays.copyOf(moves, moves.length + 1); // expand the moves array
+                    moves[moves.length - 1] = new Coordinate(super.getCoords().getX() + i, super.getCoords().getY() - i); // added the new coordinate
+                }else {
+                    if (board.getPiece(super.getCoords().getY() - i, super.getCoords().getX() + i).getPlayerID() != getPlayerID()){
+                        attacks = Arrays.copyOf(attacks, attacks.length + 1);
+                        attacks[attacks.length - 1] = new Coordinate(super.getCoords().getX() + i, super.getCoords().getY() - i);
+                        break;
+                    } else break;
+                }
+            }
+        }
+        catch(IndexOutOfBoundsException e){}
+
+        try{ //check down and right
+            for(int i=1;i<=5;i++){
+                if (board.getPiece(super.getCoords().getY() + i, super.getCoords().getX() + i) == null) {
+                    moves = Arrays.copyOf(moves, moves.length + 1); // expand the moves array
+                    moves[moves.length - 1] = new Coordinate(super.getCoords().getX() + i, super.getCoords().getY() + i); // added the new coordinate
+                }else {
+                    if (board.getPiece(super.getCoords().getY() + i, super.getCoords().getX() + i).getPlayerID() != getPlayerID()){
+                        attacks = Arrays.copyOf(attacks, attacks.length + 1);
+                        attacks[attacks.length - 1] = new Coordinate(super.getCoords().getX() + i, super.getCoords().getY() + i);
+                        break;
+                    } else break;
+                }
+            }
+        }
+        catch(IndexOutOfBoundsException e){}
+
+        try{ //check down and left
+            for(int i=1;i<=5;i++){
+                if (board.getPiece(super.getCoords().getY() + i, super.getCoords().getX() - i) == null) {
+                    moves = Arrays.copyOf(moves, moves.length + 1); // expand the moves array
+                    moves[moves.length - 1] = new Coordinate(super.getCoords().getX() - i, super.getCoords().getY() + i); // added the new coordinate
+                }else {
+                    if (board.getPiece(super.getCoords().getY() + i, super.getCoords().getX() - i).getPlayerID() != getPlayerID()){
+                        attacks = Arrays.copyOf(attacks, attacks.length + 1);
+                        attacks[attacks.length - 1] = new Coordinate(super.getCoords().getX() - i, super.getCoords().getY() + i);
+                        break;
+                    } else break;
+                }
+            }
+        }
+        catch(IndexOutOfBoundsException e){}
+
+        try {
+            for (int i = 1; i < 5; i ++){ // checking vertical down first
+                if (board.getPiece((getCoords().getY() + i), getCoords().getX()) == null){ // if the spot is empty
+                    moves = Arrays.copyOf(moves, moves.length + 1);
+                    moves[moves.length - 1] = new Coordinate(getCoords().getX(), getCoords().getY() + i);
+                }else { // if the spot contains an enemy
+                    if (board.getPiece((getCoords().getY() + i), getCoords().getX()).getPlayerID() != getPlayerID() ){
+                        attacks = Arrays.copyOf(attacks, attacks.length + 1);
+                        attacks[attacks.length - 1] = new Coordinate(getCoords().getX(), getCoords().getY() + i);
+                        break; // if we hit a piece to attack, break
+                    } else break; // we have hit one of our own pieces, so break
+                }
+            }
+        }catch (IndexOutOfBoundsException e) { //ignore
         }
 
-        return moves;
-    }
+        try {
+            for (int i = 1; i < 5; i ++){ // checking vertical up
+                if (board.getPiece((getCoords().getY() - i), getCoords().getX()) == null){ // if the spot is empty
+                    moves = Arrays.copyOf(moves, moves.length + 1);
+                    moves[moves.length - 1] = new Coordinate(getCoords().getX(), getCoords().getY() + i);
+                }else { // if the spot contains an enemy
+                    if (board.getPiece((getCoords().getY() - i), getCoords().getX()).getPlayerID() != getPlayerID() ){
+                        attacks = Arrays.copyOf(attacks, attacks.length + 1);
+                        attacks[attacks.length - 1] = new Coordinate(getCoords().getX(), getCoords().getY() - i);
+                        break; // if we hit a piece to attack, break
+                    } else break; // we have hit one of our own pieces, so break
+                }
+            }
+        }catch (IndexOutOfBoundsException e) { //ignore
+        }
 
+        if (attacks.length == 0) finalMoves = moves;
+        else finalMoves = attacks;
+        return finalMoves;
+    }
 }
+
