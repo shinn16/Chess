@@ -25,21 +25,21 @@ public class Pawn extends MasterPiece {
         Coordinate[] moves = new Coordinate[0];
 
         // checking for moves
-        if (getPlayerID() == 0){
+        if (getPlayerID() == 0){ // black moves
             try {
-                if(board.getPiece(super.getCoords().getCoords()[1] + 1, super.getCoords().getCoords()[0]) == null){ // check to see if the spot is empty
+                if(board.getPiece(super.getCoords().getY() + 1, super.getCoords().getX()) == null){ // check to see if the spot is empty
                     moves = Arrays.copyOf(moves, moves.length + 1);
-                    moves[moves.length - 1] = new Coordinate(super.getCoords().getCoords()[0], super.getCoords().getCoords()[1] +1); // add the new coordinate to the list
+                    moves[moves.length - 1] = new Coordinate(super.getCoords().getX(), super.getCoords().getY() +1); // add the new coordinate to the list
                 }
             }catch (IndexOutOfBoundsException e){
                 // ignore
             }
 
-        }else {
+        }else { // white move
             try {
-                if(board.getPiece(super.getCoords().getCoords()[1] - 1, super.getCoords().getCoords()[0]) == null){ // check to see if the spot is empty
+                if(board.getPiece(super.getCoords().getY() - 1, super.getCoords().getX()) == null){ // check to see if the spot is empty
                     moves = Arrays.copyOf(moves, moves.length + 1);
-                    moves[moves.length - 1] = new Coordinate(super.getCoords().getCoords()[0], super.getCoords().getCoords()[1] - 1); // add the new coordinate to the list
+                    moves[moves.length - 1] = new Coordinate(super.getCoords().getX(), super.getCoords().getY() - 1); // add the new coordinate to the list
                 }
             }catch (IndexOutOfBoundsException e){
                 //ignore
@@ -56,6 +56,9 @@ public class Pawn extends MasterPiece {
                         attacks[attacks.length - 1] = new Coordinate((super.getCoords().getX() + 1), super.getCoords().getY() + 1);
                     }
                 }
+            }catch (IndexOutOfBoundsException e) { // ignore
+            }
+            try {
                 if (board.getPiece((super.getCoords().getY() + 1), super.getCoords().getX() - 1) != null){
                      if (board.getPiece((super.getCoords().getY() + 1), super.getCoords().getX() - 1).getPlayerID() != getPlayerID()) {
                         attacks = Arrays.copyOf(attacks, attacks.length + 1);
@@ -74,6 +77,9 @@ public class Pawn extends MasterPiece {
                         attacks[attacks.length - 1] = new Coordinate((super.getCoords().getX() + 1), super.getCoords().getY() - 1);
                     }
                 }
+            }catch (IndexOutOfBoundsException e) { // ignore
+            }
+            try {
                 if (board.getPiece((super.getCoords().getY() - 1), super.getCoords().getX() - 1) != null){
                       if (board.getPiece((super.getCoords().getY() - 1), super.getCoords().getX() - 1).getPlayerID() != getPlayerID() ){
                         attacks = Arrays.copyOf(attacks, attacks.length + 1);
