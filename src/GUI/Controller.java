@@ -135,60 +135,28 @@ public class Controller {
             MasterPiece[] player0Pieces = board.getPlayers()[0].getPieces();
             MasterPiece[] player1Pieces = board.getPlayers()[1].getPieces();
 
-            // white pieces
-            for (int i = 0; i < 5; i++) {
-                try{
-                    graphics.drawImage(whitePawn, (player0Pieces[i].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[i].getCoords().getCoords()[1]+1)*100);
-                }catch (NullPointerException e){// ignore, this means the piece has been captured.
-                }
-            }
-            try {
-                graphics.drawImage(whiteRook, (player0Pieces[5].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[5].getCoords().getCoords()[1]+1)*100);
-            }catch (NullPointerException e) {// ignore
-            }
-            try {
-                graphics.drawImage(whiteKnight, (player0Pieces[6].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[6].getCoords().getCoords()[1]+1)*100);
-            }catch (NullPointerException e) {// ignore
-            }
-            try {
-                graphics.drawImage(whiteBishop, (player0Pieces[7].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[7].getCoords().getCoords()[1]+1)*100);
-            }catch (NullPointerException e) { // ignore
-            }
-            try {
-                graphics.drawImage(whiteQueen, (player0Pieces[8].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[8].getCoords().getCoords()[1]+1)*100);
-            }catch (NullPointerException e) { // ignore
-            }
-            try {
-                graphics.drawImage(whiteKing,  (player0Pieces[9].getCoords().getCoords()[0]+1)*100+50,(player0Pieces[9].getCoords().getCoords()[1]+1)*100);
-            }catch (NullPointerException e) { // ignore
-            }
-
-            // black pieces
-            for (int i = 0; i < 5; i++) {
+            for (MasterPiece piece: player1Pieces){ // draw the black pieces
                 try {
-                    graphics.drawImage(blackPawn, (player1Pieces[i].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[i].getCoords().getCoords()[1]+1)*100);
-                }catch (NullPointerException e){// ignore, this means the piece has been removed.
+                    if (piece.toString().contains("King")) graphics.drawImage(blackKing, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100);
+                    else if (piece.toString().contains("Queen")) graphics.drawImage(blackQueen, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100);
+                    else if (piece.toString().contains("Rook")) graphics.drawImage(blackRook, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100);
+                    else if (piece.toString().contains("Knight")) graphics.drawImage(blackKnight, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100);
+                    else if (piece.toString().contains("Bishop")) graphics.drawImage(blackBishop, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100);
+                    else if (piece.toString().contains("Pawn")) graphics.drawImage(blackPawn, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100);
+                }catch (NullPointerException e) { // ignore
                 }
             }
-            try {
-                graphics.drawImage(blackRook, (player1Pieces[5].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[5].getCoords().getCoords()[1]+1)*100);
-            }catch (NullPointerException e) { // ignore
-            }
-            try {
-                graphics.drawImage(blackKnight, (player1Pieces[6].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[6].getCoords().getCoords()[1]+1)*100);
-            }catch (NullPointerException e) { // ignore
-            }
-            try {
-                graphics.drawImage(blackBishop, (player1Pieces[7].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[7].getCoords().getCoords()[1]+1)*100);
-            }catch (NullPointerException e) { //ignore
-            }
-            try {
-                graphics.drawImage(blackQueen, (player1Pieces[8].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[8].getCoords().getCoords()[1]+1)*100);
-            }catch (NullPointerException e) { // ignore
-            }
-            try {
-                graphics.drawImage(blackKing,  (player1Pieces[9].getCoords().getCoords()[0]+1)*100+50,(player1Pieces[9].getCoords().getCoords()[1]+1)*100);
-            }catch (NullPointerException e){ // ignore
+            for (MasterPiece piece: player0Pieces){ // draw the white pieces
+                try{
+                    if (piece.toString().contains("King"))graphics.drawImage(whiteKing, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100);
+                    else if (piece.toString().contains("Queen")) graphics.drawImage(whiteQueen, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100);
+                    else if (piece.toString().contains("Rook")) graphics.drawImage(whiteRook, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100);
+                    else if (piece.toString().contains("Knight")) graphics.drawImage(whiteKnight, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100);
+                    else if (piece.toString().contains("Bishop")) graphics.drawImage(whiteBishop, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100);
+                    else if (piece.toString().contains("Pawn")) graphics.drawImage(whitePawn, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100);
+                }catch (NullPointerException e) { // ignore
+                }
+
             }
 
         }else { // fresh set of pieces
