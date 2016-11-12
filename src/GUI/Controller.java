@@ -223,7 +223,7 @@ public class Controller {
                         freshBoard(); // update the board.
                         drawPieces();
                         clicked = false; // reset click
-                        if (board.nextTurn()){ // move to the next turn and check for a winner.
+                        if (board.nextTurn()){ // move to the next turn and check for a winner, or if a player has no moves.
                             System.out.println("Game over");
                         }
                     } else { // else, clear the stuff.

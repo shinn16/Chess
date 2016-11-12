@@ -59,29 +59,35 @@ public class Player {
     public boolean hasAttack(Board board){
         boolean attack = false;
 
-        // for every piece that the player has, we are checking for attacks
+        // for every piece that the player has, we are checking for attacks 
+        // // TODO: 11/12/16  This is broken 
         for (MasterPiece piece: pieces){
-            try {
+
                 Coordinate[] moveSet = piece.getMoves(board);
                 for (Coordinate move: moveSet){
-                    if (board.getPiece(move.getY(), move.getX()) != null){
-                        attack =true;
-                        break; // we found an attack, so an attack must be made.
+                    try {
+                        if (board.getPiece(move.getY(), move.getX()) != null){
+                            attack =true;
+                            break; // we found an attack, so an attack must be made.
+                        }
+                    }catch (NullPointerException e) {//ignore
                     }
                     if (attack)break; // if we have an attack, there is no need to keep searching for others.
                 }
-            }catch (NullPointerException e) {//ignore
-            }
+
         }
 
         return attack;
     }
 
     // checks if any piece has a move
-    boolean hasMove(Board board){
+  public boolean hasMove(Board board){
         boolean move = false;
         for (MasterPiece piece: pieces){ // for every piece
+            try {
                 if (piece.getMoves(board).length > 0) move = true; // if a move exists
+            }catch (NullPointerException e) {//ignore
+            }
             }
             return move;
         }
