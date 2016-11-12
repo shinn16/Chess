@@ -61,8 +61,14 @@ public class Board {
     }
 
     // go to next turn
-    public void nextTurn(){
+    public boolean nextTurn(){
         if (turnCounter == 1) turnCounter = 0;
         else turnCounter = 1;
+        return gameOver();
+    }
+
+    // checks for a winner
+    private boolean gameOver(){ // if either player is out of pieces, or the current player cannot make a move, the game is over.
+        return ((players[0].getPieces().length == 0 || players[1].getPieces().length == 0) || !players[turnCounter].hasMove(this));
     }
 }

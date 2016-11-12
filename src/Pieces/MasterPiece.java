@@ -37,6 +37,14 @@ public class MasterPiece{
         return new Coordinate[0];
     }
 
+    public boolean hasAttack(Board board){
+        boolean attack = false;
+        for (Coordinate move: getMoves(board)){
+            if (board.getPiece(move.getY(), move.getX()) != null) attack = true;
+        }
+        return attack;
+    }
+
     @Override
     public String toString(){
         return getClass().toString();

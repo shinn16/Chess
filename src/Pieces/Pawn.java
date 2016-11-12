@@ -13,9 +13,12 @@ import java.util.Arrays;
 public class Pawn extends MasterPiece {
     // value of the piece for AI
     private final int value = 1;
+    private int oppositeY; // y index for making a pawn a king.
 
     public Pawn(int x, int y, int playerID, int arrayIndex){
         super(x,y,playerID, arrayIndex);
+        if (y == 3) oppositeY = 0; // opposite y set based on the initial position of the pawn.
+        else  oppositeY = 4;
     }
 
     @Override
@@ -97,6 +100,12 @@ public class Pawn extends MasterPiece {
         else finalMoves = attacks;
 
         return finalMoves;
+    }
+
+    public boolean kingMe(){
+        boolean kingMe = false;
+        if (getCoords().getY() == oppositeY) kingMe = true;
+        return kingMe;
     }
 
     public int getValue() {

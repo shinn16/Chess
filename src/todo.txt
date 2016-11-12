@@ -1,0 +1,6 @@
+Enforce attacking when possible
+Make an AI / tread AI
+Win conditions / draw conditions
+Use CSS to make pretty (optional)
+The dumbass second board with the last state of the game...
+Pawn to king when it reaches enemy side of the board

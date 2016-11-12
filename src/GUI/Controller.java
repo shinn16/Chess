@@ -254,8 +254,10 @@ public class Controller {
                         board.makeMove(board.getPiece(currentPeice.getY(), currentPeice.getX()), mouse_y, mouse_x); // move the piece
                         freshBoard(); // update the board.
                         drawPieces();
-                        board.nextTurn(); // move to the next turn.
                         clicked = false; // reset click
+                        if (board.nextTurn()){ // move to the next turn and check for a winner.
+                            System.out.println("Game over");
+                        }
                     } else { // else, clear the stuff.
                         clicked = false;
                         freshBoard();
