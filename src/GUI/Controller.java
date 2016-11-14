@@ -44,6 +44,9 @@ public class Controller {
     Label statusLbl = new Label();
     @FXML
     Pane gamePane = new Pane();
+    @FXML
+    Button undoButton = new Button();
+
     // Board Shit and such
     private Board board; // the board for the game.
 
@@ -79,7 +82,7 @@ public class Controller {
        // update the status label
        statusLbl.setText("No game.");
        //create a canvas to draw on
-       canvas = new Canvas(700,700);
+       canvas = new Canvas(800, 700);
 
        // get the ability to draw on it
        graphics = canvas.getGraphicsContext2D();
@@ -87,8 +90,10 @@ public class Controller {
        // add the canvas to the gamePane
        gamePane.getChildren().addAll(canvas);
 
-       // setting up an event listener for the mouse movement
-
+       // painting on the table top and the empty board.
+       Image table = new Image(getClass().getResourceAsStream("/Graphics/Images/Tables/woodenTableTop.png"));
+       graphics.drawImage(table, 0, 50); // draws from the top part of the canvas.
+       freshBoard();
     }
 
     // settings dialogue
@@ -137,8 +142,6 @@ public class Controller {
             MasterPiece[] player0Pieces = board.getPlayers()[0].getPieces();
             MasterPiece[] player1Pieces = board.getPlayers()[1].getPieces();
             
-            //// TODO: 11/13/16 this is broken somewhere. The pawn will not update to the king. 
-
             for (MasterPiece piece: player1Pieces){ // draw the black pieces
                 try {
                     if (piece.toString().contains("King")) graphics.drawImage(blackKing, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100);
@@ -183,6 +186,10 @@ public class Controller {
             graphics.setStroke(Color.AQUA);
         }
     }
+    
+    private void updateLastMoveImage(){
+        // // TODO: 11/14/16 Mini board of the last move, the dumb shit 
+    }
 
     // gets the current mouse location
     public void getMouseHover(MouseEvent event) {
@@ -192,6 +199,7 @@ public class Controller {
     }
 
     //gets the current location of the mouse click and does the appropriate actions
+    // // TODO: 11/14/16 enforce the attack here. 
     public void getMouseClick(MouseEvent event) {
         int mouse_x = (int) event.getSceneX();
         int mouse_y = (int) event.getSceneY();
@@ -481,6 +489,7 @@ public class Controller {
                 freshBoard();
                 drawPieces();
                 game = true; // we are now playing a game.
+                undoButton.setDisable(false); // enable undo
                 primaryStage.close();
 
             }
@@ -530,8 +539,6 @@ public class Controller {
             primaryStage.show(); // displays the window
         }
     }
-
-
 
     // ------------------------------ Threading classes -------------------------------------
 

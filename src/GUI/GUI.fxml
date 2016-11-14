@@ -45,6 +45,11 @@
                </HBox.margin>
             </Label>
             <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="undoButton" disable="true" mnemonicParsing="false" onAction="#undo" text="Undo">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </Button>
             <Button mnemonicParsing="false" onAction="#newGame" text="New Game">
                <HBox.margin>
                   <Insets />

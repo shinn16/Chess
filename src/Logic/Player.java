@@ -84,7 +84,6 @@ public class Player {
         boolean attack = false;
 
         // for every piece that the player has, we are checking for attacks 
-        // // TODO: 11/12/16  This is broken
         for (MasterPiece piece: pieces){
                 Coordinate[] moveSet = piece.getMoves(board);
                 for (Coordinate move: moveSet){

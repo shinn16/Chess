@@ -3,6 +3,8 @@ package Logic;
 import Pieces.Coordinate;
 import Pieces.MasterPiece;
 
+import java.util.Stack;
+
 /**
  * Board
  *
@@ -14,6 +16,7 @@ public class Board {
     private int turnCounter = 1;
     private Player[] players = new Player[2];
     private boolean locked = false;
+    private Stack<Board> boards = new Stack<>();
 
     // constructor
     public Board(Player player1, Player player2){
@@ -46,12 +49,22 @@ public class Board {
 
     // moves piece, used for general movement and attacks.
     public void makeMove(MasterPiece piece, int y, int x){
+        boards.push(this);
         board[y][x] = piece; // move the piece to the new position
         board[piece.getCoords().getY()][ piece.getCoords().getX()] = null; // set the old position to null
         piece.setCoords(y, x); // update coords in piece.
         for (Player player: players){
             player.updatePieces(this);
         }
+    }
+
+    // undo last move
+
+    // returns whether or not an attack can be made this turn.
+    private boolean enforceAttack(){
+        boolean attack = false;
+        //// TODO: 11/14/16 enforce the attacks
+        return attack;
     }
 
     // returns the board.
@@ -83,7 +96,10 @@ public class Board {
     public void nextTurn(){
         if (turnCounter == 1) turnCounter = 0;
         else turnCounter = 1;
+
     }
+
+    // reverts to the previous instance of the board.
 
     // checks for a winner
     public boolean gameOver(){ // if either player is out of pieces, or the current player cannot make a move, the game is over.
@@ -98,10 +114,6 @@ public class Board {
             if (piece != null) player1Pieces = true; // if a piece exists, make player1Pieces true
         }
 
-        System.out.println("Black has pieces: " + player0Pieces);
-        System.out.println("White has pieces: " + player1Pieces);
-        System.out.println("Current player turn: " + turnCounter);
-        System.out.println("The current player can make a move: " + players[turnCounter].hasMove(this));
         return (player0Pieces && player1Pieces && players[turnCounter].hasMove(this)); // all of these conditions must be true for the game to end.
     }
 }
