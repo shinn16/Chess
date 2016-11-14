@@ -55,12 +55,21 @@ public class Player {
         pieces[pieceIndex] = null;
     }
 
+    // counts the number of pieces in the array.
+    public int getPieceCount(){
+        int count = 0; // starts at
+        for (MasterPiece piece: pieces){
+            if (piece != null) count ++; // for every piece that isnt null, increase count by one.
+        }
+        return count;
+    }
+
     // checks if any piece has an attack.
     public boolean hasAttack(Board board){
         boolean attack = false;
 
         // for every piece that the player has, we are checking for attacks 
-        // // TODO: 11/12/16  This is broken 
+        // // TODO: 11/12/16  This is broken
         for (MasterPiece piece: pieces){
 
                 Coordinate[] moveSet = piece.getMoves(board);
@@ -84,9 +93,8 @@ public class Player {
   public boolean hasMove(Board board){
         boolean move = false;
         for (MasterPiece piece: pieces){ // for every piece
-            try {
-                if (piece.getMoves(board).length > 0) move = true; // if a move exists
-            }catch (NullPointerException e) {//ignore
+            if (piece != null){
+                if (piece.getMoves(board).length > 0) move = true; // if there is a piece that has moves, this method returns true.
             }
             }
             return move;

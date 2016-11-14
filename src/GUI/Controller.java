@@ -76,6 +76,8 @@ public class Controller {
 
     // this will initialize the change listeners and such
    public void initialize() {
+       // update the status label
+       statusLbl.setText("No game.");
        //create a canvas to draw on
        canvas = new Canvas(700,700);
 
@@ -106,7 +108,7 @@ public class Controller {
 
     // undo the last move.
     public void undo() {
-
+        //// TODO: 11/13/16 either finish or remove this method.
     }
 
     private void freshBoard(){
@@ -192,72 +194,87 @@ public class Controller {
         int mouse_x = (int) event.getSceneX();
         int mouse_y = (int) event.getSceneY();
 
-        // this will return the index of the board position.
+        // this will give us the index of the board position.
         mouse_x = (mouse_x - 50) / 100 - 1;
         mouse_y = (mouse_y - 30) / 100 - 1;
 
         // now we try to get a piece at these coordinates.
-        if (mouse_x < 0 || mouse_y < 0 || mouse_x > 4 || mouse_y > 4) {  // ensures we are on the board, otherwise resets all graphics in current state.
-            if (game){
-                freshBoard();
-                drawPieces();
-            }
-
-            clicked = false;
-            currentMoveSet = null;
-            currentPeice = null;
-
-        }else if (clicked) { // if we have already selected a piece
-            if (currentMoveSet.length == 0) { // if we have no moves, clear the board of move options.
-                clicked = false;
-                freshBoard();
-                drawPieces();
-            }else {
-                for (Coordinate move : currentMoveSet) {
-                    if (mouse_x == move.getX() && mouse_y == move.getY()) { // if the current click is in the move set, make the move.
-                        if (board.getPiece(move.getY(), move.getX()) != null){ // if there is an enemy piece at this point
-                            int pieceAttacked = board.getPiece(move.getY(), move.getX()).getArrayIndex(); // gets the index of the piece
-                            board.getPlayers()[board.getTurnCounter()].capturePiece(pieceAttacked); // remove the piece from the opponents list of pieces
-                        }
-                        board.makeMove(board.getPiece(currentPeice.getY(), currentPeice.getX()), mouse_y, mouse_x); // move the piece
-                        freshBoard(); // update the board.
-                        drawPieces();
-                        clicked = false; // reset click
-                        if (board.nextTurn()){ // move to the next turn and check for a winner, or if a player has no moves.
-                            System.out.println("Game over");
-                        }
-                    } else { // else, clear the stuff.
-                        clicked = false;
+        // ensures we are on the board, otherwise resets all graphics in current state.
+        if (board.isLocked()) new WarningWindow("Game Over!","The game is over, start a new game if you want to play.");
+        else {
+                if (mouse_x < 0 || mouse_y < 0 || mouse_x > 4 || mouse_y > 4) {
+                    if (game){
                         freshBoard();
                         drawPieces();
                     }
+                    clicked = false;
+                    currentMoveSet = null;
+                    currentPeice = null;
+
+                }else if (clicked) { // if we have already selected a piece
+                    if (currentMoveSet.length == 0) { // if we have no moves, clear the board of move options.
+                        clicked = false;
+                        freshBoard();
+                        drawPieces();
+                    } else {
+                        for (Coordinate move : currentMoveSet) {
+                            if (mouse_x == move.getX() && mouse_y == move.getY()) { // if the current click is in the move set, make the move.
+                                if (board.getPiece(move.getY(), move.getX()) != null) { // if there is an enemy piece at this point
+                                    int pieceAttacked = board.getPiece(move.getY(), move.getX()).getArrayIndex(); // gets the index of the piece
+                                    board.getPlayers()[board.getTurnCounter()].capturePiece(pieceAttacked); // remove the piece from the opponents list of pieces
+                                }
+                                board.makeMove(board.getPiece(currentPeice.getY(), currentPeice.getX()), mouse_y, mouse_x); // move the piece
+                                freshBoard(); // update the board.
+                                drawPieces();
+                                clicked = false; // reset click
+                                if (!board.gameOver()) {
+                                    String winner = null;
+                                    // this portion determines the winner
+                                    int whitePlayerPieces = board.getPlayers()[1].getPieceCount();
+                                    int blackPlayerPieces = board.getPlayers()[0].getPieceCount();
+                                    if (whitePlayerPieces < blackPlayerPieces) winner = "Black";
+                                    else if (whitePlayerPieces > blackPlayerPieces) winner = "White";
+                                    else winner = "None";
+                                    new EndOfGameWindow(winner + " wins!");
+                                    statusLbl.setText("Game over.");
+                                    board.setLocked(true);
+                                } else {
+                                    if (board.getTurnCounter() == 0) statusLbl.setText("White's turn");
+                                    else statusLbl.setText("Black's turn.");
+                                }
+                                board.nextTurn(); // advances to the next turn.
+                            } else { // else, clear the stuff.
+                                clicked = false;
+                                freshBoard();
+                                drawPieces();
+                            }
+                    }
                 }
-            }
-            // if we have not already selected a piece and there is a piece at the current position, we also enforce turns here.
-        }else if (board.getPiece(mouse_y, mouse_x) != null && board.getTurnCounter() == board.getPiece(mouse_y, mouse_x).getPlayerID()) {
 
-            graphics.strokeRect((mouse_x + 1) * 100 + 52, (mouse_y + 1) * 100 + 2, 98, 98);// highlight the piece tile in blue
-            currentPeice = board.getPiece(mouse_y, mouse_x).getCoords(); // store this info for the next click
-            currentMoveSet = board.getPiece(mouse_y, mouse_x).getMoves(board);
+                // if we have not already selected a piece and there is a piece at the current position, we also enforce turns here.
+            }else if (board.getPiece(mouse_y, mouse_x) != null && board.getTurnCounter() == board.getPiece(mouse_y, mouse_x).getPlayerID()) {
 
-            for (Coordinate coordinate : currentMoveSet) { //for every move in the move set, highlight the spots.
-                // if the spot contains an enemy, highlight it red
-                if (board.getPiece(coordinate.getY(), coordinate.getX()) != null){
-                    if (board.getPiece(coordinate.getY(), coordinate.getX()).getPlayerID() != board.getPiece(currentPeice.getY(), currentPeice.getX()).getPlayerID()){
-                        graphics.setStroke(Color.RED);
+                graphics.strokeRect((mouse_x + 1) * 100 + 52, (mouse_y + 1) * 100 + 2, 98, 98);// highlight the piece tile in blue
+                currentPeice = board.getPiece(mouse_y, mouse_x).getCoords(); // store this info for the next click
+                currentMoveSet = board.getPiece(mouse_y, mouse_x).getMoves(board);
+
+                for (Coordinate coordinate : currentMoveSet) { //for every move in the move set, highlight the spots.
+                    // if the spot contains an enemy, highlight it red
+                    if (board.getPiece(coordinate.getY(), coordinate.getX()) != null){
+                        if (board.getPiece(coordinate.getY(), coordinate.getX()).getPlayerID() != board.getPiece(currentPeice.getY(), currentPeice.getX()).getPlayerID()){
+                            graphics.setStroke(Color.RED);
+                            graphics.strokeRect((coordinate.getX() + 1) * 100 + 52, (coordinate.getY() + 1) * 100 + 2, 96, 96);
+                        }
+                    }
+                    else { // highlight it yellow.
+                        graphics.setStroke(Color.YELLOW); // set to yellow to highlight the moves
                         graphics.strokeRect((coordinate.getX() + 1) * 100 + 52, (coordinate.getY() + 1) * 100 + 2, 96, 96);
                     }
                 }
-                else { // highlight it yellow.
-                    graphics.setStroke(Color.YELLOW); // set to yellow to highlight the moves
-                    graphics.strokeRect((coordinate.getX() + 1) * 100 + 52, (coordinate.getY() + 1) * 100 + 2, 96, 96);
-                }
-            }
-            graphics.setStroke(Color.AQUA); // reset color
-            clicked = true; // we have clicked a piece
-            System.out.println("Piece: " + board.getPiece(currentPeice.getY(), currentPeice.getX()));
-            System.out.println("Move set: " + Arrays.toString(currentMoveSet));
+                graphics.setStroke(Color.AQUA); // reset color
+                clicked = true; // we have clicked a piece
 
+            }
         }
     }
 
@@ -391,12 +408,13 @@ public class Controller {
 
 
         private NewGameWindow() {
+            statusLbl.setText("Setting up new game.");
             display();
         }
 
         private void display() { // builds and displays the window.
             // setting up the buttons
-            closeBtn.setOnAction(e -> primaryStage.close());
+            closeBtn.setOnAction(e -> cancelMethod());
             playBtn.setOnAction(e -> playBtnMethod());
 
             //settings up player options
@@ -442,8 +460,13 @@ public class Controller {
             primaryStage.show(); // displays the window
         }
 
+        private void cancelMethod(){
+            primaryStage.close();
+            statusLbl.setText("No game.");
+        }
+
         private void playBtnMethod() {
-            System.out.println("New game");
+            statusLbl.setText("White's turn.");
             String playerOneType = whiteOptions.getValue();
             String playerTwoType = blackOptions.getValue();
             
@@ -464,6 +487,50 @@ public class Controller {
         }
            
     }
+
+    private class EndOfGameWindow {
+        private Stage primaryStage = new Stage();
+        private Label messageLabel = new Label();
+        private Button okayButton = new Button("Okay");
+        private Image fireworks = new Image(getClass().getResourceAsStream("/Graphics/Images/fireworks.gif"));
+        private ImageView leftWorks = new ImageView(fireworks);
+        private ImageView rightWorks = new ImageView(fireworks);
+
+        public EndOfGameWindow(String message) {
+
+            Scene scene;
+
+            messageLabel.setText(message);
+
+            okayButton.setOnAction(e -> primaryStage.close());
+
+
+            // vbox
+            VBox vertical = new VBox(20);
+            vertical.getChildren().addAll(messageLabel, okayButton);
+            vertical.setPadding(new Insets(5, 5, 5, 5));
+            vertical.setAlignment(Pos.CENTER);
+
+            // main layout
+            HBox layout = new HBox(5);
+            layout.getChildren().addAll(leftWorks, vertical, rightWorks);
+            layout.setAlignment(Pos.CENTER);
+
+            scene = new Scene(layout);
+            scene.getStylesheets().addAll("/Graphics/CSS/StyleSheet.css");
+
+            primaryStage.setScene(scene);
+            primaryStage.initModality(Modality.APPLICATION_MODAL); // sets the window to be modal, meaning the underlying window cannot be used until this one is closed.
+            primaryStage.setWidth(400);
+            primaryStage.setHeight(250);
+            primaryStage.setResizable(false); // this window cannot be resized.\
+            primaryStage.setTitle("End of Game"); // window title
+            primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/Graphics/Images/App.png"))); // window icon
+
+            primaryStage.show(); // displays the window
+        }
+    }
+
 
 
     // ------------------------------ Threading classes -------------------------------------

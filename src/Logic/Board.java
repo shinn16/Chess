@@ -12,6 +12,7 @@ public class Board {
     private MasterPiece[][] board = new MasterPiece[5][5]; // creates a 2d array that is 5X5
     private int turnCounter = 1;
     private Player[] players = new Player[2];
+    private boolean locked = false;
 
     // constructor
     public Board(Player player1, Player player2){
@@ -22,14 +23,14 @@ public class Board {
         MasterPiece[] player1Pieces = player1.getPieces();
         for (MasterPiece piece: player1Pieces){
             Coordinate coords = piece.getCoords();
-            board[coords.getCoords()[1]][coords.getCoords()[0]] = piece;
+            board[coords.getY()][coords.getX()] = piece;
         }
 
         // adding player2 pieces to the board
         MasterPiece[] player2Pieces = player2.getPieces();
         for (MasterPiece piece: player2Pieces) {
             Coordinate coords = piece.getCoords();
-            board[coords.getCoords()[1]][coords.getCoords()[0]] = piece;
+            board[coords.getY()][coords.getX()] = piece;
         }
     }
 
@@ -55,20 +56,44 @@ public class Board {
         return players;
     }
 
+    // returns the state of the board (locked or not)
+    public boolean isLocked() {
+        return locked;
+    }
+
+    // sets the lock property
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
+
     // get the turn
     public int getTurnCounter() {
         return turnCounter;
     }
 
     // go to next turn
-    public boolean nextTurn(){
+    public void nextTurn(){
         if (turnCounter == 1) turnCounter = 0;
         else turnCounter = 1;
-        return gameOver();
     }
 
     // checks for a winner
-    private boolean gameOver(){ // if either player is out of pieces, or the current player cannot make a move, the game is over.
-        return ((players[0].getPieces().length == 0 || players[1].getPieces().length == 0) || !players[turnCounter].hasMove(this));
+    public boolean gameOver(){ // if either player is out of pieces, or the current player cannot make a move, the game is over.
+        boolean player0Pieces = false;
+        boolean player1Pieces = false;
+
+        for (MasterPiece piece: players[0].getPieces()){ // for every piece that player 0 has
+            if (piece != null) player0Pieces = true; // if at least one piece is in the array, then return true.
+        }
+
+        for (MasterPiece piece: players[1].getPieces()){ // for all player1 pieces
+            if (piece != null) player1Pieces = true; // if a piece exists, make player1Pieces true
+        }
+
+        System.out.println("Black has pieces: " + player0Pieces);
+        System.out.println("White has pieces: " + player1Pieces);
+        System.out.println("Current player turn: " + turnCounter);
+        System.out.println("The current player can make a move: " + players[turnCounter].hasMove(this));
+        return (player0Pieces && player1Pieces && players[turnCounter].hasMove(this)); // all of these conditions must be true for the game to end.
     }
 }
