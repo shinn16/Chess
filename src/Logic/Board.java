@@ -2,6 +2,7 @@ package Logic;
 
 import Pieces.Coordinate;
 import Pieces.MasterPiece;
+
 /**
  * Board
  *
@@ -34,6 +35,10 @@ public class Board {
         }
     }
 
+    public void setPiece(int y, int x, MasterPiece piece){
+        board[y][x] = piece;
+    }
+
     // gets the piece at the current location specified.
     public MasterPiece getPiece(int y, int x){
         return board[y][x];
@@ -42,8 +47,11 @@ public class Board {
     // moves piece, used for general movement and attacks.
     public void makeMove(MasterPiece piece, int y, int x){
         board[y][x] = piece; // move the piece to the new position
-        board[piece.getCoords().getCoords()[1]][ piece.getCoords().getCoords()[0]] = null; // set the old position to null
+        board[piece.getCoords().getY()][ piece.getCoords().getX()] = null; // set the old position to null
         piece.setCoords(y, x); // update coords in piece.
+        for (Player player: players){
+            player.updatePieces(this);
+        }
     }
 
     // returns the board.

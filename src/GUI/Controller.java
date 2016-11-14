@@ -136,6 +136,8 @@ public class Controller {
         if (game){ // if there is a game on, we will draw the pieces at their given coordinates.
             MasterPiece[] player0Pieces = board.getPlayers()[0].getPieces();
             MasterPiece[] player1Pieces = board.getPlayers()[1].getPieces();
+            
+            //// TODO: 11/13/16 this is broken somewhere. The pawn will not update to the king. 
 
             for (MasterPiece piece: player1Pieces){ // draw the black pieces
                 try {
@@ -277,8 +279,6 @@ public class Controller {
             }
         }
     }
-
-
 
 
     // ------------------------------ Private internal classes ------------------------------

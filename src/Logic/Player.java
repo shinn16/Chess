@@ -64,6 +64,21 @@ public class Player {
         return count;
     }
 
+    // the sole purpose of this method is to update the pawns to king in the event that the pawn crosses to the other side of the board.
+    void updatePieces(Board board){
+        for (MasterPiece piece: pieces){
+            if (piece != null){
+                if (piece.toString().contains("Pawn")){
+                    if (((Pawn) piece).kingMe()){
+                        piece = new King(piece.getCoords().getX(), piece.getCoords().getY(), piece.getPlayerID(), piece.getArrayIndex());
+                        this.getPieces()[piece.getArrayIndex()] = piece;
+                        board.setPiece(piece.getCoords().getY(), piece.getCoords().getX(), piece);
+                    }
+                }
+            }
+        }
+    }
+
     // checks if any piece has an attack.
     public boolean hasAttack(Board board){
         boolean attack = false;
@@ -71,7 +86,6 @@ public class Player {
         // for every piece that the player has, we are checking for attacks 
         // // TODO: 11/12/16  This is broken
         for (MasterPiece piece: pieces){
-
                 Coordinate[] moveSet = piece.getMoves(board);
                 for (Coordinate move: moveSet){
                     try {
