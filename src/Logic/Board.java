@@ -64,6 +64,11 @@ public class Board {
         return this.board;
     }
 
+    // for use with the clone method only.
+    private void setBoard(MasterPiece[][] board){
+        this.board = board;
+    }
+
     // returns the players.
     public Player[] getPlayers() {
         return players;
@@ -91,7 +96,11 @@ public class Board {
 
     }
 
-    // reverts to the previous instance of the board.
+    //clone method
+    @Override
+    public Board clone(){
+        return new Board(this.players[0], this.players[1]); // new board with current players
+    }
 
     // checks for a winner
     public boolean gameOver(){ // if either player is out of pieces, or the current player cannot make a move, the game is over.

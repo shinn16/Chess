@@ -15,6 +15,6 @@ public class AI {
 
     // this method should play for the AI
     public void play(){
-
+        System.out.println("AI called");
     }
 }

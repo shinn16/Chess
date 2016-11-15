@@ -53,6 +53,8 @@ public class Controller {
     ImageView boardStateView = new ImageView();
     @FXML
     Label stateLbl = new Label();
+    @FXML
+    Canvas canvas = new Canvas();
 
     // Board Shit and such
     private Board board; // the board for the game.
@@ -78,7 +80,6 @@ public class Controller {
 
     // other variables
     private GraphicsContext graphics;
-    private Canvas canvas = null;
     private boolean clicked = false;
     private boolean game = false;
     private Coordinate[] currentMoveSet = null;
@@ -90,18 +91,13 @@ public class Controller {
    public void initialize() {
        // update the status label
        statusLbl.setText("No game.");
-       //create a canvas to draw on
-       canvas = new Canvas(800, 700);
 
        // get the ability to draw on it
        graphics = canvas.getGraphicsContext2D();
 
-       // add the canvas to the gamePane
-       gamePane.getChildren().addAll(canvas);
-
        // painting on the table top and the empty board.
        Image table = new Image(getClass().getResourceAsStream("/Graphics/Images/Tables/woodenTableTop.png"));
-       graphics.drawImage(table, 0, 50); // draws from the top part of the canvas.
+       graphics.drawImage(table, 0, 0); // draws from the top part of the canvas.
        freshBoard();
     }
 
@@ -123,7 +119,7 @@ public class Controller {
     // undo the last move.
     public void undo() {
         try {
-            board = stack.pop();
+            board = stack.pop(); // sets the board back to the old board state
         }catch (Exception e) {// ignore
         }
         freshBoard();
@@ -134,14 +130,14 @@ public class Controller {
         // draw the new board for the new game.
         graphics.setStroke(Color.BLACK); // settings up to draw a black border for the board.
         graphics.setLineWidth(5); // sets the weight of the line for the border
-        graphics.strokeRect(150, 100, 500, 500); // draws rectangle
+        graphics.strokeRect(150, 50, 500, 500); // draws rectangle
         // draws the board.
         for (int y = 0; y < 5; y ++){ // for the y
             for (int x = 0; x < 5; x ++){ // for the x
                 if ((x+y)%2 == 0){ // tells us which images to use for this spot on the board.
-                    graphics.drawImage(blackSpot, (x * 100) + 150, (y * 100) +100); // draws a 100X100 black spot centered
+                    graphics.drawImage(blackSpot, (x * 100) + 150, (y * 100) +50); // draws a 100X100 black spot centered
                 }else {
-                    graphics.drawImage(whiteSpot, (x * 100) + 150, (y * 100) + 100); // draws a 100X100 white spot centered
+                    graphics.drawImage(whiteSpot, (x * 100) + 150, (y * 100) + 50); // draws a 100X100 white spot centered
                 }
             }
         }
@@ -158,43 +154,43 @@ public class Controller {
             
             for (MasterPiece piece: player1Pieces){ // draw the black pieces
                 try {
-                    if (piece.toString().contains("King")) graphics.drawImage(blackKing, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100);
-                    else if (piece.toString().contains("Queen")) graphics.drawImage(blackQueen, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100);
-                    else if (piece.toString().contains("Rook")) graphics.drawImage(blackRook, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100);
-                    else if (piece.toString().contains("Knight")) graphics.drawImage(blackKnight, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100);
-                    else if (piece.toString().contains("Bishop")) graphics.drawImage(blackBishop, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100);
-                    else if (piece.toString().contains("Pawn")) graphics.drawImage(blackPawn, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100);
+                    if (piece.toString().contains("King")) graphics.drawImage(blackKing, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100 -50);
+                    else if (piece.toString().contains("Queen")) graphics.drawImage(blackQueen, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100 -50);
+                    else if (piece.toString().contains("Rook")) graphics.drawImage(blackRook, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100 - 50);
+                    else if (piece.toString().contains("Knight")) graphics.drawImage(blackKnight, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100 -50);
+                    else if (piece.toString().contains("Bishop")) graphics.drawImage(blackBishop, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100 - 50);
+                    else if (piece.toString().contains("Pawn")) graphics.drawImage(blackPawn, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100 - 50);
                 }catch (NullPointerException e) { // ignore
                 }
             }
             for (MasterPiece piece: player0Pieces){ // draw the white pieces
                 try{
-                    if (piece.toString().contains("King"))graphics.drawImage(whiteKing, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100);
-                    else if (piece.toString().contains("Queen")) graphics.drawImage(whiteQueen, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100);
-                    else if (piece.toString().contains("Rook")) graphics.drawImage(whiteRook, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100);
-                    else if (piece.toString().contains("Knight")) graphics.drawImage(whiteKnight, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100);
-                    else if (piece.toString().contains("Bishop")) graphics.drawImage(whiteBishop, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100);
-                    else if (piece.toString().contains("Pawn")) graphics.drawImage(whitePawn, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100);
+                    if (piece.toString().contains("King"))graphics.drawImage(whiteKing, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100 - 50);
+                    else if (piece.toString().contains("Queen")) graphics.drawImage(whiteQueen, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100 - 50);
+                    else if (piece.toString().contains("Rook")) graphics.drawImage(whiteRook, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100 - 50);
+                    else if (piece.toString().contains("Knight")) graphics.drawImage(whiteKnight, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100 - 50);
+                    else if (piece.toString().contains("Bishop")) graphics.drawImage(whiteBishop, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100 - 50);
+                    else if (piece.toString().contains("Pawn")) graphics.drawImage(whitePawn, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100 - 50);
                 }catch (NullPointerException e) { // ignore
                 }
 
             }
 
         }else { // fresh set of pieces
-            graphics.drawImage(blackKing, 150, 100);
-            graphics.drawImage(blackQueen, 250, 100);
-            graphics.drawImage(blackBishop, 350, 100);
-            graphics.drawImage(blackKnight, 450, 100);
-            graphics.drawImage(blackRook, 550, 100);
-            for (int i = 1; i < 6; i++) graphics.drawImage(blackPawn, i * 100 + 50, 200);
+            graphics.drawImage(blackKing, 150, 50);
+            graphics.drawImage(blackQueen, 250, 50);
+            graphics.drawImage(blackBishop, 350, 50);
+            graphics.drawImage(blackKnight, 450, 50);
+            graphics.drawImage(blackRook, 550, 50);
+            for (int i = 1; i < 6; i++) graphics.drawImage(blackPawn, i * 100 + 50, 150);
 
             // white side
-            graphics.drawImage(whiteRook, 150, 500);
-            graphics.drawImage(whiteKnight, 250, 500);
-            graphics.drawImage(whiteBishop, 350, 500);
-            graphics.drawImage(whiteQueen, 450, 500);
-            graphics.drawImage(whiteKing, 550, 500);
-            for (int i = 1; i < 6; i++) graphics.drawImage(whitePawn, i * 100 + 50, 400);
+            graphics.drawImage(whiteRook, 150, 450);
+            graphics.drawImage(whiteKnight, 250, 450);
+            graphics.drawImage(whiteBishop, 350, 450);
+            graphics.drawImage(whiteQueen, 450, 450);
+            graphics.drawImage(whiteKing, 550, 450);
+            for (int i = 1; i < 6; i++) graphics.drawImage(whitePawn, i * 100 + 50, 350);
 
             // reset the stroke color to be used for highlighting.
             graphics.setStroke(Color.AQUA);
@@ -208,7 +204,7 @@ public class Controller {
 
         // cropping state
         PixelReader reader =state.getPixelReader();
-        WritableImage currentState = new WritableImage(reader, 150, 100, 500, 500);
+        WritableImage currentState = new WritableImage(reader, 150, 50, 500, 500);
 
         // shrinking image and displaying it
         boardStateView.setImage(currentState);
@@ -230,7 +226,7 @@ public class Controller {
 
         // this will give us the index of the board position.
         mouse_x = (mouse_x - 50) / 100 - 1;
-        mouse_y = (mouse_y - 30) / 100 - 1;
+        mouse_y = (mouse_y + 20) / 100 - 1;
 
         // now we try to get a piece at these coordinates.
         // ensures we are on the board, otherwise resets all graphics in current state.
@@ -260,6 +256,7 @@ public class Controller {
                                 stack.push(board); // save the state of the board.
                                 board.makeMove(board.getPiece(currentPiece.getY(), currentPiece.getX()), mouse_y, mouse_x,currentPiece); // move the piece
                                 updateLastMoveImage();
+                                //// TODO: 11/15/16 stack.push(board.clone());
                                 freshBoard(); // update the board.
                                 drawPieces();
                                 clicked = false; // reset click
@@ -280,12 +277,15 @@ public class Controller {
                                 }
                                 board.nextTurn(); // advances to the next turn.
 
-                                // // TODO: 11/15/16 this is here to make it easy to find the AI turn code
-                                // This should handle the AI turn
+                                // // TODO: 11/15/16 this is here to make it easy to find the AI turn code, its broken
+                                /* This should handle the AI turn
                                 if (board.getCurrentPlayer().getType().equals("AI")){ // if this player is an AI, play it
-                                    board.setLocked(true); // lock the board so the user can not touch it
-                                    new AIThread(board.getCurrentPlayer()).run(); // run the AI
+                                    if (!board.isLocked()) { // if the game is not over
+                                        board.setLocked(true); // lock the board so the user can not touch it
+                                        new AIThread(board.getCurrentPlayer()).run(); // run the AI
+                                    }
                                 }
+                                */
                             } else { // else, clear the stuff.
                                 clicked = false;
                                 freshBoard();
@@ -297,7 +297,7 @@ public class Controller {
                 // if we have not already selected a piece and there is a piece at the current position, we also enforce turns here.
             }else if (board.getPiece(mouse_y, mouse_x) != null && board.getTurnCounter() == board.getPiece(mouse_y, mouse_x).getPlayerID()) { // if we have picked a piece of the current player.
 
-                    graphics.strokeRect((mouse_x + 1) * 100 + 52, (mouse_y + 1) * 100 + 2, 98, 98);// highlight the piece tile in blue
+                    graphics.strokeRect((mouse_x + 1) * 100 + 52, (mouse_y + 1) * 100 - 48, 98, 98);// highlight the piece tile in blue
 
                     if (board.getCurrentPlayer().hasAttack(board)) { // if the current player has an attack
                         if (board.getPiece(mouse_y, mouse_x).hasAttack(board)) { // if the selected piece has an attack
@@ -305,7 +305,7 @@ public class Controller {
                             currentMoveSet = board.getPiece(mouse_y, mouse_x).getMoves(board); // store the moveset for the next run
                             for (Coordinate coordinate : currentMoveSet) { //for every move in the move set, highlight the spots.
                                 graphics.setStroke(Color.RED);
-                                graphics.strokeRect((coordinate.getX() + 1) * 100 + 52, (coordinate.getY() + 1) * 100 + 2, 96, 96);
+                                graphics.strokeRect((coordinate.getX() + 1) * 100 + 52, (coordinate.getY() + 1) * 100 -48, 96, 96);
                             }
                         }
                     } else { // if there are no attacks to be made, so any piece can move
@@ -314,7 +314,7 @@ public class Controller {
                         for (Coordinate coordinate : currentMoveSet) { //for every move in the move set, highlight the spots.
                             // highlight it yellow.
                             graphics.setStroke(Color.YELLOW); // set to yellow to highlight the moves
-                            graphics.strokeRect((coordinate.getX() + 1) * 100 + 52, (coordinate.getY() + 1) * 100 + 2, 96, 96);
+                            graphics.strokeRect((coordinate.getX() + 1) * 100 + 52, (coordinate.getY() + 1) * 100 - 48, 96, 96);
                         }
                     }
                     graphics.setStroke(Color.AQUA); // reset color
