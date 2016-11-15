@@ -42,7 +42,7 @@ public class Queen extends MasterPiece {
                     } else break;
                 }
             }
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) { // ignore
         }
 
         try { //check up and right
@@ -58,7 +58,7 @@ public class Queen extends MasterPiece {
                     } else break;
                 }
             }
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) { // ignore
         }
 
         try { //check down and right
@@ -74,7 +74,7 @@ public class Queen extends MasterPiece {
                     } else break;
                 }
             }
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) { // ignore
         }
 
         try { //check down and left
@@ -90,7 +90,7 @@ public class Queen extends MasterPiece {
                     } else break;
                 }
             }
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) { // ignore
         }
 
         try {
@@ -161,7 +161,6 @@ public class Queen extends MasterPiece {
         else finalMoves = attacks;
         return finalMoves;
     }
-
 }
 
 

@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -15,14 +16,18 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Translate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.awt.image.BufferedImage;
 import java.util.Stack;
 
 /***
@@ -42,6 +47,10 @@ public class Controller {
     Pane gamePane = new Pane();
     @FXML
     Button undoButton = new Button();
+    @FXML
+    ImageView boardStateView = new ImageView();
+    @FXML
+    Label stateLbl = new Label();
 
     // Board Shit and such
     private Board board; // the board for the game.
@@ -191,7 +200,17 @@ public class Controller {
     }
     
     private void updateLastMoveImage(){
-        // // TODO: 11/14/16 Mini board of the last move, the dumb shit 
+        //takes a snap shot to be used as last state image
+        WritableImage state = new WritableImage(700, 700);
+        state = canvas.snapshot(new SnapshotParameters(), state);
+
+        // cropping state
+        PixelReader reader =state.getPixelReader();
+        WritableImage currentState = new WritableImage(reader, 150, 100, 500, 500);
+
+        // shrinking image and displaying it
+        boardStateView.setImage(currentState);
+        boardStateView.autosize();
     }
 
     // gets the current mouse location
@@ -238,6 +257,7 @@ public class Controller {
                                 }
                                 stack.push(board); // save the state of the board.
                                 board.makeMove(board.getPiece(currentPiece.getY(), currentPiece.getX()), mouse_y, mouse_x,currentPiece); // move the piece
+                                updateLastMoveImage();
                                 freshBoard(); // update the board.
                                 drawPieces();
                                 clicked = false; // reset click
@@ -480,7 +500,7 @@ public class Controller {
         }
 
         private void playBtnMethod() {
-            statusLbl.setText("White's turn.");
+
             String playerOneType = whiteOptions.getValue();
             String playerTwoType = blackOptions.getValue();
             
@@ -488,12 +508,17 @@ public class Controller {
                 new WarningWindow("Looks like there is something wrong with your settings...", "You have to apply settings for both players!");
             }
             else { // if the player has set up the right options for the game
+                statusLbl.setText("White's turn."); // sets the status label to who's turn it is
+                stateLbl.setOpacity(1); // makes this visible
                 Player white = new Player(playerOneType, 0); // set the player types
                 Player black = new Player(playerTwoType, 1);
                 board = new Board(white, black); // set the board up with white going first.
 
-                freshBoard();
+                freshBoard(); // draw board and pieces, then update last board state
                 drawPieces();
+                updateLastMoveImage();
+
+
                 game = true; // we are now playing a game.
                 undoButton.setDisable(false); // enable undo
                 primaryStage.close();

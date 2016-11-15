@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import javafx.scene.canvas.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -10,7 +11,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#getMouseClick" onMouseMoved="#getMouseHover" prefHeight="800.0" prefWidth="800.0" stylesheets="@../Graphics/CSS/StyleSheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#getMouseClick" onMouseMoved="#getMouseHover" prefHeight="800.0" prefWidth="1000.0" stylesheets="@../Graphics/CSS/StyleSheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Controller">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -34,39 +35,55 @@
       </MenuBar>
    </top>
    <bottom>
-      <HBox styleClass="statusBar" BorderPane.alignment="CENTER">
+      <Pane styleClass="statusBar">
          <children>
-            <Label fx:id="statusLbl" text="Status Label">
-               <padding>
-                  <Insets bottom="5.0" top="5.0" />
-               </padding>
-               <HBox.margin>
-                  <Insets left="8.0" />
-               </HBox.margin>
-            </Label>
-            <Region HBox.hgrow="ALWAYS" />
-            <Button fx:id="undoButton" disable="true" mnemonicParsing="false" onAction="#undo" text="Undo">
-               <HBox.margin>
-                  <Insets right="10.0" />
-               </HBox.margin>
-            </Button>
-            <Button mnemonicParsing="false" onAction="#newGame" text="New Game">
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
-               <padding>
+            <HBox BorderPane.alignment="CENTER">
+               <children>
+                  <Label fx:id="statusLbl" text="Status Label">
+                     <padding>
+                        <Insets bottom="5.0" top="5.0" />
+                     </padding>
+                     <HBox.margin>
+                        <Insets left="8.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+               <BorderPane.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding></Button>
+               </BorderPane.margin>
+               <padding>
+                  <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+               </padding>
+            </HBox>
          </children>
-         <BorderPane.margin>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </BorderPane.margin>
-         <padding>
-            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-         </padding>
-      </HBox>
+      </Pane>
    </bottom>
    <center>
       <Pane fx:id="gamePane" prefHeight="700.0" prefWidth="700.0" BorderPane.alignment="CENTER" />
    </center>
+   <right>
+      <Pane prefHeight="200.0" prefWidth="200.0" styleClass="controlPane" BorderPane.alignment="CENTER">
+         <children>
+            <VBox alignment="CENTER" prefHeight="730.0" prefWidth="200.0" spacing="10.0">
+               <children>
+                  <Label text="Control Pane" />
+                  <Region prefHeight="209.0" prefWidth="200.0" />
+                  <Label fx:id="stateLbl" opacity="0.0" text="Last State of Board">
+                     <VBox.margin>
+                        <Insets bottom="-2.0" />
+                     </VBox.margin>
+                  </Label>
+                  <ImageView fx:id="boardStateView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                  <Button fx:id="undoButton" disable="true" mnemonicParsing="false" onAction="#undo" prefHeight="25.0" prefWidth="90.0" text="Undo" />
+                  <Button mnemonicParsing="false" onAction="#newGame" prefHeight="25.0" prefWidth="90.0" text="New Game">
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </Button>
+                  <Region prefHeight="200.0" prefWidth="200.0" />
+               </children>
+            </VBox>
+         </children>
+      </Pane>
+   </right>
 </BorderPane>

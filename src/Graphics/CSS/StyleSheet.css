@@ -1,0 +1,6 @@
+.controlPane{
+    -fx-background-color: darkgray;
+}
+.statusBar{
+    -fx-background-color: lightgray;
+}

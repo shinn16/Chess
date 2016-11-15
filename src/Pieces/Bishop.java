@@ -12,7 +12,10 @@ import java.util.Arrays;
  * @version 11/2/16
  */
 public class Bishop extends MasterPiece{
+    // for AI
     private final int value = 4;
+
+
     public Bishop(int x, int y, int playerID, int arrayIndex){
         super(x, y, playerID, arrayIndex);
     }
