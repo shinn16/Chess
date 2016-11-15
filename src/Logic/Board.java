@@ -96,6 +96,27 @@ public class Board {
 
     }
 
+    public boolean hasAttack(){
+        boolean attack = false;
+
+        // literally looking at every single fucking piece on the board
+        for (MasterPiece[] row: this.getBoard()){
+            for (MasterPiece piece: row){
+                if (piece!= null){
+                    if (piece.getPlayerID() == this.getTurnCounter()){
+                        for (Coordinate move: piece.getMoves(this)){
+                            if (this.getPiece(move.getY(), move.getX()) != null){
+                                attack = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return attack;
+    }
+
     //clone method
     @Override
     public Board clone(){

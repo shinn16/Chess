@@ -48,8 +48,6 @@ public class Controller {
     @FXML
     Pane gamePane = new Pane();
     @FXML
-    Button undoButton = new Button();
-    @FXML
     ImageView boardStateView = new ImageView();
     @FXML
     Label stateLbl = new Label();
@@ -219,7 +217,6 @@ public class Controller {
     }
 
     //gets the current location of the mouse click and does the appropriate actions
-    // // TODO: 11/14/16 fix enforce attack
     public void getMouseClick(MouseEvent event) {
         int mouse_x = (int) event.getSceneX();
         int mouse_y = (int) event.getSceneY();
@@ -230,7 +227,7 @@ public class Controller {
 
         // now we try to get a piece at these coordinates.
         // ensures we are on the board, otherwise resets all graphics in current state.
-        if (board.isLocked()) new WarningWindow("Game Over!","The game is over, start a new game if you want to play.");
+        if (board.isLocked()) new WarningWindow("Game Over!","The game is over or the AI is thinking, either make a new game or be patient.");
         else {
                 if (mouse_x < 0 || mouse_y < 0 || mouse_x > 4 || mouse_y > 4) {
                     if (game){
@@ -253,10 +250,8 @@ public class Controller {
                                     int pieceAttacked = board.getPiece(move.getY(), move.getX()).getArrayIndex(); // gets the index of the piece
                                     board.getPlayers()[board.getTurnCounter()].capturePiece(pieceAttacked); // remove the piece from the opponents list of pieces
                                 }
-                                stack.push(board); // save the state of the board.
                                 board.makeMove(board.getPiece(currentPiece.getY(), currentPiece.getX()), mouse_y, mouse_x,currentPiece); // move the piece
                                 updateLastMoveImage();
-                                //// TODO: 11/15/16 stack.push(board.clone());
                                 freshBoard(); // update the board.
                                 drawPieces();
                                 clicked = false; // reset click
@@ -277,15 +272,6 @@ public class Controller {
                                 }
                                 board.nextTurn(); // advances to the next turn.
 
-                                // // TODO: 11/15/16 this is here to make it easy to find the AI turn code, its broken
-                                /* This should handle the AI turn
-                                if (board.getCurrentPlayer().getType().equals("AI")){ // if this player is an AI, play it
-                                    if (!board.isLocked()) { // if the game is not over
-                                        board.setLocked(true); // lock the board so the user can not touch it
-                                        new AIThread(board.getCurrentPlayer()).run(); // run the AI
-                                    }
-                                }
-                                */
                             } else { // else, clear the stuff.
                                 clicked = false;
                                 freshBoard();
@@ -299,7 +285,7 @@ public class Controller {
 
                     graphics.strokeRect((mouse_x + 1) * 100 + 52, (mouse_y + 1) * 100 - 48, 98, 98);// highlight the piece tile in blue
 
-                    if (board.getCurrentPlayer().hasAttack(board)) { // if the current player has an attack
+                    if (board.hasAttack()) { // if the current player has an attack
                         if (board.getPiece(mouse_y, mouse_x).hasAttack(board)) { // if the selected piece has an attack
                             currentPiece = board.getPiece(mouse_y, mouse_x).getCoords(); // store this piece for the next run
                             currentMoveSet = board.getPiece(mouse_y, mouse_x).getMoves(board); // store the moveset for the next run
@@ -529,7 +515,7 @@ public class Controller {
 
 
                 game = true; // we are now playing a game.
-                undoButton.setDisable(false); // enable undo
+                //undoButton.setDisable(false); // enable undo
                 primaryStage.close();
 
             }
