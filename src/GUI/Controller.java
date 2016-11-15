@@ -5,6 +5,7 @@ import Logic.Board;
 import Logic.Player;
 import Pieces.Coordinate;
 import Pieces.MasterPiece;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -278,6 +279,13 @@ public class Controller {
                                     else statusLbl.setText("Black's turn.");
                                 }
                                 board.nextTurn(); // advances to the next turn.
+
+                                // // TODO: 11/15/16 this is here to make it easy to find the AI turn code
+                                // This should handle the AI turn
+                                if (board.getCurrentPlayer().getType().equals("AI")){ // if this player is an AI, play it
+                                    board.setLocked(true); // lock the board so the user can not touch it
+                                    new AIThread(board.getCurrentPlayer()).run(); // run the AI
+                                }
                             } else { // else, clear the stuff.
                                 clicked = false;
                                 freshBoard();
@@ -586,6 +594,17 @@ public class Controller {
         @Override
         public void run() {
             watson.play();
+            Platform.runLater(new Runnable() { // this will run the needed operations in the FX thread.
+                @Override
+                public void run() {
+                    board.setLocked(false); // after the AI plays, unlock the board so the player can play
+                    // updating the graphic elements
+                    updateLastMoveImage();
+                    freshBoard();
+                    drawPieces();
+                    board.nextTurn(); // increment the turn counter
+                }
+            });
         }
     }
 
