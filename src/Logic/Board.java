@@ -3,8 +3,6 @@ package Logic;
 import Pieces.Coordinate;
 import Pieces.MasterPiece;
 
-import java.util.Stack;
-
 /**
  * Board
  *
@@ -16,7 +14,6 @@ public class Board {
     private int turnCounter = 1;
     private Player[] players = new Player[2];
     private boolean locked = false;
-    private Stack<Board> boards = new Stack<>();
 
     // constructor
     public Board(Player player1, Player player2){
@@ -48,23 +45,18 @@ public class Board {
     }
 
     // moves piece, used for general movement and attacks.
-    public void makeMove(MasterPiece piece, int y, int x){
-        boards.push(this);
+    public void makeMove(MasterPiece piece, int y, int x, Coordinate currentPiece) {
         board[y][x] = piece; // move the piece to the new position
-        board[piece.getCoords().getY()][ piece.getCoords().getX()] = null; // set the old position to null
+        board[piece.getCoords().getY()][piece.getCoords().getX()] = null; // set the old position to null
         piece.setCoords(y, x); // update coords in piece.
-        for (Player player: players){
+        for (Player player : players) {
             player.updatePieces(this);
         }
     }
 
-    // undo last move
-
-    // returns whether or not an attack can be made this turn.
-    private boolean enforceAttack(){
-        boolean attack = false;
-        //// TODO: 11/14/16 enforce the attacks
-        return attack;
+    // returns the players who is currently at turn.
+    public Player getCurrentPlayer(){
+        return players[turnCounter];
     }
 
     // returns the board.

@@ -2,6 +2,8 @@ package Logic;
 
 import Pieces.*;
 
+import java.util.Arrays;
+
 /**
  * Player
  *
@@ -79,26 +81,36 @@ public class Player {
         }
     }
 
-    // checks if any piece has an attack.
-    public boolean hasAttack(Board board){
-        boolean attack = false;
-
+    //  // TODO: 11/15/16 I don't think we need this method, if a piece has an attack, its move set only returns attacks.
+    public MasterPiece[] getAttacks(Board board){
+        MasterPiece[] attackPieces = new MasterPiece[0];
         // for every piece that the player has, we are checking for attacks 
-        for (MasterPiece piece: pieces){
-                Coordinate[] moveSet = piece.getMoves(board);
-                for (Coordinate move: moveSet){
-                    try {
-                        if (board.getPiece(move.getY(), move.getX()) != null){
-                            attack =true;
-                            break; // we found an attack, so an attack must be made.
-                        }
-                    }catch (NullPointerException e) {//ignore
-                    }
-                    if (attack)break; // if we have an attack, there is no need to keep searching for others.
+        for (MasterPiece piece: pieces) {
+            if (piece != null) {
+                if (piece.hasAttack(board)) {
+                    attackPieces = Arrays.copyOf(attackPieces, attackPieces.length + 1);
+                    attackPieces[attackPieces.length - 1] = piece; // adds the piece to an attack array.
                 }
-
+            }
         }
 
+        return attackPieces;
+    }
+    
+    // checks to see whether or not a player has an attack that can be made.
+    public boolean hasAttack(Board board){
+        boolean attack = false;
+        
+        for (MasterPiece piece: pieces){ // for every piece on the board that the player has
+            if (piece != null){ 
+                if (piece.hasAttack(board)){
+                    attack = true; // if the piece has an attack, then an attack exists.
+                    break; // there is no need to keep looking, we already know that at least one attack exists.
+                }
+            }
+        }
+            
+        
         return attack;
     }
 

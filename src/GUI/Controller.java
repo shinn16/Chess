@@ -8,7 +8,6 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -16,7 +15,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -25,9 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.sql.Array;
-import java.sql.SQLSyntaxErrorException;
-import java.util.Arrays;
+import java.util.Stack;
 
 /***
  * Controller Class
@@ -75,7 +71,9 @@ public class Controller {
     private boolean clicked = false;
     private boolean game = false;
     private Coordinate[] currentMoveSet = null;
-    private Coordinate currentPeice = null;
+    private Coordinate currentPiece = null;
+    private Stack<Board> stack = new Stack<>();
+
 
     // this will initialize the change listeners and such
    public void initialize() {
@@ -113,7 +111,12 @@ public class Controller {
 
     // undo the last move.
     public void undo() {
-        //// TODO: 11/13/16 either finish or remove this method.
+        try {
+            board = stack.pop();
+        }catch (Exception e) {// ignore
+        }
+        freshBoard();
+        drawPieces();
     }
 
     private void freshBoard(){
@@ -219,7 +222,7 @@ public class Controller {
                     }
                     clicked = false;
                     currentMoveSet = null;
-                    currentPeice = null;
+                    currentPiece = null;
 
                 }else if (clicked) { // if we have already selected a piece
                     if (currentMoveSet.length == 0) { // if we have no moves, clear the board of move options.
@@ -233,7 +236,8 @@ public class Controller {
                                     int pieceAttacked = board.getPiece(move.getY(), move.getX()).getArrayIndex(); // gets the index of the piece
                                     board.getPlayers()[board.getTurnCounter()].capturePiece(pieceAttacked); // remove the piece from the opponents list of pieces
                                 }
-                                board.makeMove(board.getPiece(currentPeice.getY(), currentPeice.getX()), mouse_y, mouse_x); // move the piece
+                                stack.push(board); // save the state of the board.
+                                board.makeMove(board.getPiece(currentPiece.getY(), currentPiece.getX()), mouse_y, mouse_x,currentPiece); // move the piece
                                 freshBoard(); // update the board.
                                 drawPieces();
                                 clicked = false; // reset click
@@ -244,7 +248,7 @@ public class Controller {
                                     int blackPlayerPieces = board.getPlayers()[0].getPieceCount();
                                     if (whitePlayerPieces < blackPlayerPieces) winner = "Black";
                                     else if (whitePlayerPieces > blackPlayerPieces) winner = "White";
-                                    else winner = "None";
+                                    else winner = "No one";
                                     new EndOfGameWindow(winner + " wins!");
                                     statusLbl.setText("Game over.");
                                     board.setLocked(true);
@@ -262,31 +266,33 @@ public class Controller {
                 }
 
                 // if we have not already selected a piece and there is a piece at the current position, we also enforce turns here.
-            }else if (board.getPiece(mouse_y, mouse_x) != null && board.getTurnCounter() == board.getPiece(mouse_y, mouse_x).getPlayerID()) {
+            }else if (board.getPiece(mouse_y, mouse_x) != null && board.getTurnCounter() == board.getPiece(mouse_y, mouse_x).getPlayerID()) { // if we have picked a piece of the current player.
 
-                graphics.strokeRect((mouse_x + 1) * 100 + 52, (mouse_y + 1) * 100 + 2, 98, 98);// highlight the piece tile in blue
-                currentPeice = board.getPiece(mouse_y, mouse_x).getCoords(); // store this info for the next click
-                currentMoveSet = board.getPiece(mouse_y, mouse_x).getMoves(board);
+                    graphics.strokeRect((mouse_x + 1) * 100 + 52, (mouse_y + 1) * 100 + 2, 98, 98);// highlight the piece tile in blue
 
-                for (Coordinate coordinate : currentMoveSet) { //for every move in the move set, highlight the spots.
-                    // if the spot contains an enemy, highlight it red
-                    if (board.getPiece(coordinate.getY(), coordinate.getX()) != null){
-                        if (board.getPiece(coordinate.getY(), coordinate.getX()).getPlayerID() != board.getPiece(currentPeice.getY(), currentPeice.getX()).getPlayerID()){
-                            graphics.setStroke(Color.RED);
+                    if (board.getCurrentPlayer().hasAttack(board)) { // if the current player has an attack
+                        if (board.getPiece(mouse_y, mouse_x).hasAttack(board)) { // if the selected piece has an attack
+                            currentPiece = board.getPiece(mouse_y, mouse_x).getCoords(); // store this piece for the next run
+                            currentMoveSet = board.getPiece(mouse_y, mouse_x).getMoves(board); // store the moveset for the next run
+                            for (Coordinate coordinate : currentMoveSet) { //for every move in the move set, highlight the spots.
+                                graphics.setStroke(Color.RED);
+                                graphics.strokeRect((coordinate.getX() + 1) * 100 + 52, (coordinate.getY() + 1) * 100 + 2, 96, 96);
+                            }
+                        }
+                    } else { // if there are no attacks to be made, so any piece can move
+                        currentPiece = board.getPiece(mouse_y, mouse_x).getCoords(); // store this piece for the next run
+                        currentMoveSet = board.getPiece(mouse_y, mouse_x).getMoves(board); // store the moveset for the next run
+                        for (Coordinate coordinate : currentMoveSet) { //for every move in the move set, highlight the spots.
+                            // highlight it yellow.
+                            graphics.setStroke(Color.YELLOW); // set to yellow to highlight the moves
                             graphics.strokeRect((coordinate.getX() + 1) * 100 + 52, (coordinate.getY() + 1) * 100 + 2, 96, 96);
                         }
                     }
-                    else { // highlight it yellow.
-                        graphics.setStroke(Color.YELLOW); // set to yellow to highlight the moves
-                        graphics.strokeRect((coordinate.getX() + 1) * 100 + 52, (coordinate.getY() + 1) * 100 + 2, 96, 96);
-                    }
+                    graphics.setStroke(Color.AQUA); // reset color
+                    clicked = true; // we have clicked a piece
                 }
-                graphics.setStroke(Color.AQUA); // reset color
-                clicked = true; // we have clicked a piece
-
             }
         }
-    }
 
 
     // ------------------------------ Private internal classes ------------------------------
