@@ -1,5 +1,6 @@
 package GUI;
 
+import Logic.AI;
 import Logic.Board;
 import Logic.Player;
 import Pieces.Coordinate;
@@ -221,7 +222,7 @@ public class Controller {
     }
 
     //gets the current location of the mouse click and does the appropriate actions
-    // // TODO: 11/14/16 enforce the attack here. 
+    // // TODO: 11/14/16 fix enforce attack
     public void getMouseClick(MouseEvent event) {
         int mouse_x = (int) event.getSceneX();
         int mouse_y = (int) event.getSceneY();
@@ -572,5 +573,20 @@ public class Controller {
     }
 
     // ------------------------------ Threading classes -------------------------------------
+
+    private class AIThread implements Runnable{
+        private AI watson;
+
+        private AIThread(Player player){
+            this.watson = new AI(player);
+            Thread Watson = Thread.currentThread();
+            Watson.setName("AI Thread"); // Names this thead
+        }
+
+        @Override
+        public void run() {
+            watson.play();
+        }
+    }
 
 }

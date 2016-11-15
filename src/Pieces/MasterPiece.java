@@ -41,8 +41,7 @@ public class MasterPiece{
         boolean attack = false; // assume there is not an attack to start with
         for (Coordinate move: getMoves(board)){ // for the moves the piece has
             if (getMoves(board).length > 0) { // if  the piece has a move in the move set
-                MasterPiece test = board.getPiece(move.getY(), move.getX());
-                if (test != null) attack = true; // if a piece is in the move set, it must belong to an enemy.
+                if (board.getPiece(move.getY(), move.getX()) != null) attack = true; // if a piece is in the move set, it must belong to an enemy.
                 break; // no need to check any further
             }
         }
