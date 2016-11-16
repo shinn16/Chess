@@ -3,6 +3,7 @@ package GUI;
 import Logic.AI;
 import Logic.Board;
 import Logic.Player;
+import Logic.SpecialCoord;
 import Pieces.Coordinate;
 import Pieces.MasterPiece;
 import javafx.application.Platform;
@@ -319,7 +320,7 @@ public class Controller {
                                     int pieceAttacked = board.getPiece(move.getY(), move.getX()).getArrayIndex(); // gets the index of the piece
                                     board.getPlayers()[board.getTurnCounter()].capturePiece(pieceAttacked); // remove the piece from the opponents list of pieces
                                 }
-                                board.makeMove(board.getPiece(currentPiece.getY(), currentPiece.getX()), mouse_y, mouse_x,currentPiece); // move the piece
+                                board.makeMove(board.getPiece(currentPiece.getY(), currentPiece.getX()), mouse_y, mouse_x); // move the piece
                                 updateLastMoveImage();
                                 freshBoard(); // update the board.
                                 drawPieces();
@@ -805,16 +806,16 @@ public class Controller {
 
         @Override
         public void run() {
-            watson.play(board);
+            SpecialCoord specialCoord = watson.play(board);
             Platform.runLater(new Runnable() { // this will run the needed operations in the FX thread.
                 @Override
                 public void run() {
                     board.setLocked(false); // after the AI plays, unlock the board so the player can play
                     // updating the graphic elements
+                    board.makeMove(specialCoord.getPiece(), specialCoord.getY(), specialCoord.getX());
                     updateLastMoveImage();
                     freshBoard();
                     drawPieces();
-                    board.nextTurn(); // increment the turn counter
                     if (board.getCurrentPlayer().getPlayerNumber() == 0) statusLbl.setText("Black's Turn");
                     else statusLbl.setText("White's turn.");
                 }

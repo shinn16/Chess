@@ -77,6 +77,10 @@ public class Player {
     void updatePieces(Board board) {
         for (MasterPiece piece : pieces) {
             if (piece != null) {
+                if (board.getPiece(piece.getCoords().getY(), piece.getCoords().getX()) == null){
+                    pieces[piece.getArrayIndex()] = null;
+                }
+
                 if (piece.toString().contains("Pawn")) {
                     if (((Pawn) piece).kingMe()) {
                         piece = new King(piece.getCoords().getX(), piece.getCoords().getY(), piece.getPlayerID(), piece.getArrayIndex());
@@ -88,7 +92,6 @@ public class Player {
         }
     }
 
-    //  // TODO: 11/15/16 I don't think we need this method, if a piece has an attack, its move set only returns attacks.
     public MasterPiece[] getAttacks(Board board) {
         MasterPiece[] attackPieces = new MasterPiece[0];
         // for every piece that the player has, we are checking for attacks 

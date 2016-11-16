@@ -51,7 +51,7 @@ public class Board {
     }
 
     // moves piece, used for general movement and attacks.
-    public void makeMove(MasterPiece piece, int y, int x, Coordinate currentPiece) {
+    public void makeMove(MasterPiece piece, int y, int x) {
         board[y][x] = piece; // move the piece to the new position
         board[piece.getCoords().getY()][piece.getCoords().getX()] = null; // set the old position to null
         piece.setCoords(y, x); // update coords in piece.

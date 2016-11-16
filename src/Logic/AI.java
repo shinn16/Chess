@@ -12,81 +12,46 @@ import java.util.Arrays;
  */
 public class AI {
     //// TODO: 11/14/16 Make this class
-    Player player;
-    Board board;
-    public AI(Player player, Board board){
+    private Player player;
+    private Board board;
+    private Coordinate[] attacks = new Coordinate[0];
+    private MasterPiece[] bestAttacks = new MasterPiece[0];
+
+
+    public AI(Player player, Board board) {
         this.board = board;
         this.player = player;
+        int lowestVal = 6;
+        for (MasterPiece piece : player.getAttacks(board)) {
+            for (Coordinate attack : piece.getMoves(board)) {
+                if (board.getPiece(attack.getY(), attack.getX()).getValue() < lowestVal) { // check the piece value against our lowest, if lower, its the new lowest
+                    lowestVal = board.getPiece(attack.getY(), attack.getX()).getValue();
+                    bestAttacks = new MasterPiece[0]; // if we have a new lower value, dump the array.
+                    attacks = new Coordinate[0];
+                    bestAttacks = Arrays.copyOf(bestAttacks, 1); // put the new piece at the front.
+                    bestAttacks[0] = piece;
+                    attacks = Arrays.copyOf(attacks, 1);
+                    attacks[0] = attack;
+                } else if (board.getPiece(attack.getY(), attack.getX()).getValue() == lowestVal) { // if the value is equal
+                    bestAttacks = Arrays.copyOf(bestAttacks, bestAttacks.length + 1); // add it to the array
+                    bestAttacks[bestAttacks.length - 1] = piece;
+                    attacks = Arrays.copyOf(attacks, attacks.length + 1);
+                    attacks[attacks.length - 1] = attack;
+
+                }
+                // otherwise we ignore the piece.
+            }
+        }
+
     }
 
     // this method should play for the AI
-    public void play(Board board){
-        MasterPiece[][] pieces;
-        Coordinate[]attacks = new Coordinate[0];
-        Coordinate[]Positions = new Coordinate[0];
-        int counter = 0;
-        pieces = board.getBoard();
-        //get the attacks
-        for (int row = 0; row < pieces.length; row++)
-        {
-            for (int col = 0; col < pieces.length; col++)
-            {
-                if (pieces[row][col] != null && pieces[row][col].hasAttack(board))
-                {
-                    Coordinate[] spots;
-                    spots = pieces[row][col].getMoves(board);
-                    for(Coordinate moves: spots)
-                    {
-                        if(moves != null) {
-                            attacks[counter] = moves;
-                            attacks = Arrays.copyOf(attacks, attacks.length+1);
-                            counter++;
-                        }
-                    }
-                }
-            }
+    public SpecialCoord play(Board board) {
+
+        if (bestAttacks.length > 0) { // we have an attack! So no real thinking is needed
+            return new SpecialCoord(bestAttacks[0], attacks[0].getX(), attacks[0].getY());
         }
-
-        //if there are attacks to be made
-        if(attacks.length != 0)
-        {
-            for(int i = 0; i < attacks.length; i++)
-            {
-                MasterPiece myPiece;
-                myPiece = board.getPiece(attacks[i].getY(), attacks[i].getX());
-                if (myPiece.getValue() == 0)
-                {
-
-                }
-            }
-        }
-        else{
-            for (int row = 0; row < pieces.length; row++)
-            {
-                for (int col = 0; col < pieces.length; col++)
-                {
-                    if (pieces[row][col] != null && pieces[row][col].hasAttack(board))
-                    {
-                        Coordinate[] spots = new Coordinate[5];
-                        spots = pieces[row][col].getMoves(board);
-                        for(Coordinate moves: spots)
-                        {
-                            if(moves != null) {
-                                Positions[counter] = moves;
-                                Positions = Arrays.copyOf(Positions, Positions.length+1);
-                                counter++;
-                            }
-                        }
-                    }
-                }
-            }
-
-        }
-
-        //
-
-        //
-        System.out.println("AI called");
+        else return null;
 
     }
 }
