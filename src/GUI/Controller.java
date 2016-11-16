@@ -210,31 +210,34 @@ public class Controller {
         // draw the pieces on the board
         // black side
         if (game){ // if there is a game on, we will draw the pieces at their given coordinates.
-            MasterPiece[] player0Pieces = board.getPlayers()[0].getPieces();
-            MasterPiece[] player1Pieces = board.getPlayers()[1].getPieces();
-            
-            for (MasterPiece piece: player1Pieces){ // draw the black pieces
-                try {
-                    if (piece.toString().contains("King")) graphics.drawImage(blackKing, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100 -50);
-                    else if (piece.toString().contains("Queen")) graphics.drawImage(blackQueen, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100 -50);
-                    else if (piece.toString().contains("Rook")) graphics.drawImage(blackRook, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100 - 50);
-                    else if (piece.toString().contains("Knight")) graphics.drawImage(blackKnight, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100 -50);
-                    else if (piece.toString().contains("Bishop")) graphics.drawImage(blackBishop, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100 - 50);
-                    else if (piece.toString().contains("Pawn")) graphics.drawImage(blackPawn, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100 - 50);
-                }catch (NullPointerException e) { // ignore
+            for (Player player: board.getPlayers()){
+                for (MasterPiece[] row: board.getBoard()){
+                    for (MasterPiece piece: row){
+                        if (piece != null){
+                            if (piece.getPlayerID() == 0){
+                                try {
+                                    if (piece.toString().contains("King")) graphics.drawImage(blackKing, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100 -50);
+                                    else if (piece.toString().contains("Queen")) graphics.drawImage(blackQueen, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100 -50);
+                                    else if (piece.toString().contains("Rook")) graphics.drawImage(blackRook, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100 - 50);
+                                    else if (piece.toString().contains("Knight")) graphics.drawImage(blackKnight, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100 -50);
+                                    else if (piece.toString().contains("Bishop")) graphics.drawImage(blackBishop, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100 - 50);
+                                    else if (piece.toString().contains("Pawn")) graphics.drawImage(blackPawn, (piece.getCoords().getX() + 1) * 100 + 50, (piece.getCoords().getY() + 1) * 100 - 50);
+                                }catch (NullPointerException e) { // ignore
+                                }
+                            }else {
+                                try{
+                                    if (piece.toString().contains("King"))graphics.drawImage(whiteKing, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100 - 50);
+                                    else if (piece.toString().contains("Queen")) graphics.drawImage(whiteQueen, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100 - 50);
+                                    else if (piece.toString().contains("Rook")) graphics.drawImage(whiteRook, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100 - 50);
+                                    else if (piece.toString().contains("Knight")) graphics.drawImage(whiteKnight, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100 - 50);
+                                    else if (piece.toString().contains("Bishop")) graphics.drawImage(whiteBishop, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100 - 50);
+                                    else if (piece.toString().contains("Pawn")) graphics.drawImage(whitePawn, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100 - 50);
+                                }catch (NullPointerException e) { // ignore
+                                }
+                            }
+                        }
+                    }
                 }
-            }
-            for (MasterPiece piece: player0Pieces){ // draw the white pieces
-                try{
-                    if (piece.toString().contains("King"))graphics.drawImage(whiteKing, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100 - 50);
-                    else if (piece.toString().contains("Queen")) graphics.drawImage(whiteQueen, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100 - 50);
-                    else if (piece.toString().contains("Rook")) graphics.drawImage(whiteRook, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100 - 50);
-                    else if (piece.toString().contains("Knight")) graphics.drawImage(whiteKnight, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100 - 50);
-                    else if (piece.toString().contains("Bishop")) graphics.drawImage(whiteBishop, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100 - 50);
-                    else if (piece.toString().contains("Pawn")) graphics.drawImage(whitePawn, (piece.getCoords().getX() + 1)*100 + 50, (piece.getCoords().getY() + 1)*100 - 50);
-                }catch (NullPointerException e) { // ignore
-                }
-
             }
 
         }else { // fresh set of pieces
@@ -812,7 +815,7 @@ public class Controller {
                 public void run() {
                     board.setLocked(false); // after the AI plays, unlock the board so the player can play
                     // updating the graphic elements
-                    board.makeMove(specialCoord.getPiece(), specialCoord.getY(), specialCoord.getX());
+                    board.makeMove(board.getPiece(specialCoord.getPiece().getCoords().getY(), specialCoord.getPiece().getCoords().getX()), specialCoord.getY(), specialCoord.getX());
                     updateLastMoveImage();
                     freshBoard();
                     drawPieces();
