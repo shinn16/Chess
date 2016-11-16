@@ -119,23 +119,25 @@ public class Controller {
     // undo the last move.
     public void undo() {
         // this stuff is heavily try catched so the popping of one does not interfere with the other.
+
         try {
+            board = boardStack.pop(); // gets the last state of the board
+        }catch (Exception e) { // ignore
+        }
+
+        if (firstPop){
             try {
-                boardStack.pop(); // I have to pop back two states for the board
-            }catch (Exception e) { // ignore
-            }
-            if (firstPop){
                 imageStack.pop(); // for some reason I have to do this.
+            }catch (Exception e){ // ignore
             }
-            try {
-                board = boardStack.pop(); // gets the last state of the board
-            }catch (Exception e) { // ignore
-            }
+        }
+
+        try {
             boardStateView.setImage(imageStack.pop()); // sets the old state image
             boardStateView.autosize();
-            firstPop = false;
-        }catch (Exception e) {// ignore
+        }catch (Exception e){ // ignore
         }
+        firstPop = false;
         freshBoard();
         drawPieces();
         board.nextTurn();
@@ -278,7 +280,6 @@ public class Controller {
                                     int pieceAttacked = board.getPiece(move.getY(), move.getX()).getArrayIndex(); // gets the index of the piece
                                     board.getPlayers()[board.getTurnCounter()].capturePiece(pieceAttacked); // remove the piece from the opponents list of pieces
                                 }
-                                boardStack.push(board.copyOf());
                                 board.makeMove(board.getPiece(currentPiece.getY(), currentPiece.getX()), mouse_y, mouse_x,currentPiece); // move the piece
                                 updateLastMoveImage();
                                 freshBoard(); // update the board.
@@ -296,10 +297,18 @@ public class Controller {
                                     statusLbl.setText("Game over.");
                                     board.setLocked(true);
                                 } else {
-                                    if (board.getTurnCounter() == 0) statusLbl.setText("White's turn");
+                                    if (board.getCurrentPlayer().getPlayerNumber() == 0) statusLbl.setText("White's Turn");
                                     else statusLbl.setText("Black's turn.");
                                 }
                                 board.nextTurn(); // advances to the next turn.
+
+                                // now we check to see if the next turn is an AI, if so, let it run
+                                // // TODO: 11/16/16 AI managed here
+                                if (board.getCurrentPlayer().getType().equals("AI")){
+                                    board.setLocked(true); // lock the board so the user can't touch it.
+                                    new AIThread(board.getCurrentPlayer(), board).run();
+                                }
+                                    
 
                             } else { // else, clear the stuff.
                                 clicked = false;
@@ -535,8 +544,8 @@ public class Controller {
             else { // if the player has set up the right options for the game
                 statusLbl.setText("White's turn."); // sets the status label to who's turn it is
                 stateLbl.setOpacity(1); // makes this visible
-                Player white = new Player(playerOneType, 0); // set the player types
-                Player black = new Player(playerTwoType, 1);
+                Player white = new Player(playerTwoType, 0); // set the player types
+                Player black = new Player(playerOneType, 1);
                 board = new Board(white, black); // set the board up with white going first.
 
                 game = true; // we are now playing a game.
@@ -544,8 +553,17 @@ public class Controller {
                 freshBoard(); // draw board and pieces, then update last board state
                 drawPieces();
                 updateLastMoveImage();
+                if (playerOneType.equals("AI") || playerTwoType.equals("AI")) undoButton.setDisable(false); // enable undo only if the user is playing the AI
 
-                undoButton.setDisable(false); // enable undo
+                // dump the stacks from last run
+                boardStack = new Stack<>();
+                imageStack = new Stack<>();
+                
+                // // TODO: 11/16/16 AI also mananged here 
+                if (board.getCurrentPlayer().getType().equals("AI")){
+                    board.setLocked(true); // locks the board so the user can't touch it.
+                    new AIThread(board.getCurrentPlayer(), board).run(); //if the first player is AI, go ahead and let it move.
+                }
                 primaryStage.close();
 
             }
@@ -703,6 +721,8 @@ public class Controller {
                     freshBoard();
                     drawPieces();
                     board.nextTurn(); // increment the turn counter
+                    if (board.getCurrentPlayer().getPlayerNumber() == 0) statusLbl.setText("Black's Turn");
+                    else statusLbl.setText("White's turn.");
                 }
             });
         }

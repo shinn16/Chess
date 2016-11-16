@@ -44,6 +44,10 @@ public class Player {
         }
     }
 
+    public int getPlayerNumber() {
+        return playerNumber;
+    }
+
     public String getType() {
         return type;
     }
