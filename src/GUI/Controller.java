@@ -27,7 +27,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
 import java.util.Stack;
 
 /***
@@ -48,6 +47,8 @@ public class Controller {
     @FXML
     Button undoButton  = new Button();
     @FXML
+    Button redoButton = new Button();
+    @FXML
     ImageView boardStateView = new ImageView();
     @FXML
     Label stateLbl = new Label();
@@ -64,8 +65,10 @@ public class Controller {
     private boolean game = false;
     private Coordinate[] currentMoveSet = null;
     private Coordinate currentPiece = null;
-    private Stack<Board> boardStack = new Stack<>();
-    private Stack<Image> imageStack = new Stack<>();
+    private Stack<Board> undoBoard = new Stack<>();
+    private Stack<Image> undoImage = new Stack<>();
+    private Stack<Board> redoBoard = new Stack<>();
+    private Stack<Image> redoImage = new Stack<>();
     private String boardTheme = "RedBrown";
     private String tableImage = "wooden";
 
@@ -119,30 +122,49 @@ public class Controller {
     // undo the last move.
     public void undo() {
         // this stuff is heavily try catched so the popping of one does not interfere with the other.
-
-        try {
-            board = boardStack.pop(); // gets the last state of the board
-        }catch (Exception e) { // ignore
-        }
-
-        if (firstPop){
             try {
-                imageStack.pop(); // for some reason I have to do this.
-            }catch (Exception e){ // ignore
+                redoBoard.push(board.copyOf());
+                board = undoBoard.pop(); // gets the last state of the board
+            } catch (Exception e) { // ignore
             }
-        }
 
-        try {
-            boardStateView.setImage(imageStack.pop()); // sets the old state image
-            boardStateView.autosize();
-        }catch (Exception e){ // ignore
-        }
-        firstPop = false;
-        freshBoard();
-        drawPieces();
-        board.nextTurn();
+            try {
+                if (firstPop) undoImage.pop();
+                redoImage.push(boardStateView.getImage());
+                boardStateView.setImage(undoImage.pop()); // sets the old state image
+                boardStateView.autosize();
+            } catch (Exception e) { // ignore
+            }
+            firstPop = false;
+            freshBoard();
+            drawPieces();
+            board.nextTurn();
+
     }
 
+    // redo the last move
+    public void redo(){
+            try {
+                undoBoard.push(board.copyOf());
+                board = redoBoard.pop(); // gets the last state of the board
+            } catch (Exception e) { // ignore
+            }
+
+            try {
+                if (firstPop) redoImage.pop();
+                undoImage.push(boardStateView.getImage());
+                boardStateView.setImage(redoImage.pop()); // sets the old state image
+                boardStateView.autosize();
+            } catch (Exception e) { // ignore
+            }
+            firstPop = false;
+            freshBoard();
+            drawPieces();
+            board.nextTurn();
+
+    }
+
+    // draws the background table
     private void drawTable(){
         graphics.drawImage(new Image(getClass().getResourceAsStream("/Graphics/Images/Tables/"+tableImage+"TableTop.png")), 0, 0);
     }
@@ -233,8 +255,10 @@ public class Controller {
         if (game) {
             boardStateView.setImage(currentState);
             boardStateView.autosize();
-            imageStack.push(currentState);
+            undoImage.push(currentState);
             firstPop = true;
+        }else { // push it on the stack anyway
+            undoImage.push(currentState);
         }
     }
 
@@ -263,7 +287,7 @@ public class Controller {
                         freshBoard();
                         drawPieces();
                     }
-                    if (clicked) boardStack.pop();
+                    if (clicked) undoBoard.pop();
                     clicked = false;
                     currentMoveSet = null;
                     currentPiece = null;
@@ -342,7 +366,7 @@ public class Controller {
                         }
                     }
                     graphics.setStroke(Color.AQUA); // reset color
-                    boardStack.push(board.copyOf());
+                    undoBoard.push(board.copyOf());
                     clicked = true; // we have clicked a piece
                 }
             }
@@ -549,17 +573,21 @@ public class Controller {
                 board = new Board(white, black); // set the board up with white going first.
 
                 game = true; // we are now playing a game.
-
                 freshBoard(); // draw board and pieces, then update last board state
                 drawPieces();
                 updateLastMoveImage();
-                if (playerOneType.equals("AI") || playerTwoType.equals("AI")) undoButton.setDisable(false); // enable undo only if the user is playing the AI
+
+                if (playerOneType.equals("AI") || playerTwoType.equals("AI") || playerOneType.equals("Human")) {
+                    undoButton.setDisable(false); // enable undo only if the user is playing the AI
+                    redoButton.setDisable(false);
+                }
 
                 // dump the stacks from last run
-                boardStack = new Stack<>();
-                imageStack = new Stack<>();
-                
-                // // TODO: 11/16/16 AI also mananged here 
+                undoBoard = new Stack<>();
+                undoImage = new Stack<>();
+                redoBoard = new Stack<>();
+                redoImage = new Stack<>();
+                // // TODO: 11/16/16 AI also mananged here
                 if (board.getCurrentPlayer().getType().equals("AI")){
                     board.setLocked(true); // locks the board so the user can't touch it.
                     new AIThread(board.getCurrentPlayer(), board).run(); //if the first player is AI, go ahead and let it move.
@@ -696,6 +724,14 @@ public class Controller {
             if (game) drawPieces();
             updateLastMoveImage();
         }
+    }
+
+    private class DirectionsWindow{
+        private DirectionsWindow(){
+            display();
+        }
+
+        private void display(){}
     }
 
     // ------------------------------ Threading classes -------------------------------------
