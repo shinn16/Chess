@@ -25,7 +25,7 @@
           <Menu mnemonicParsing="false" text="Help">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#about" text="About" />
-                  <MenuItem mnemonicParsing="false" text="Learn to Play" />
+                  <MenuItem mnemonicParsing="false" onAction="#info" text="Learn to Play" />
             </items>
           </Menu>
         </menus>

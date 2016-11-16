@@ -16,6 +16,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
@@ -25,6 +26,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.util.Stack;
@@ -107,6 +110,9 @@ public class Controller {
     public void settings() {
         new SettingsWindow();
     }
+
+    // shows the instructions on how to play
+    public void info(){new DirectionsWindow();}
 
     // opens the about dialogue
     public void about() {
@@ -727,12 +733,57 @@ public class Controller {
     }
 
     private class DirectionsWindow{
+        private Stage primaryStage = new Stage();
+        private Button closeButton = new Button("Close");
+        private VBox layout = new VBox(10);
+        private Label howTOPlay = new Label("How to Play");
+        private Text text = new Text();
+
+
         private DirectionsWindow(){
             display();
+            text.setText("This game is pretty much chess, but turned inside out... the rules are as follows:\n" +
+                    "1. The board size is now 5 x 5.\n" +
+                    "2. Each player will have five pawns, a rook, a knight, a bishop, a queen and a king.\n" +
+                    "\t Piece movements are the same as the are in normal chess except the pawn can only advance one square at a time.\n" +
+                    "3. Each chess piece follows the same movement/pattern as regular chess.\n" +
+                    "4. Capturing is compulsory. When more than one capture is available, the player may choose.\n" +
+                    "5. The king has no royal power and accordingly:\n" +
+                    "\tIt may be captured like any other piece.\n" +
+                    "\tThere is no check or checkmate.\n" +
+                    "\tThere is no castling.\n" +
+                    "6. A pawn will be promoted to a King when it reached the other side of the board.\n" +
+                    "7. A player wins by losing all his pieces\n" +
+                    "8. If a player cannot make a move, the winner is the player with the least number of piece (regardless of the piece).\n" +
+                    "9. The game is also a stalemate when a win is impossible\n" +
+                    "\tA player cannot make a move and there is the same number of piece for both players.\n" +
+                    "10. The side to make the first move is determined prior to the start of a game.\n\n" +
+                    "Board Rules:\n" +
+                    "Undo and Redo buttons can only be used if you play against the AI. If someone outsmarts you in one on one,\n" +
+                    " you don't deserve a redo :P.\n\n" +
+                    "Final Thoughts: Enjoy the game! :)");
+            text.setFont(Font.font("Arial"));
         }
 
-        private void display(){}
-    } // // TODO: 11/16/16 finish 
+        private void display(){
+            // setting up close button function
+            closeButton.setOnAction(e -> primaryStage.close());
+
+            // building the layout
+            layout.getChildren().addAll(howTOPlay, text, closeButton);
+            layout.setAlignment(Pos.CENTER);
+
+            //setting up the window
+            Scene scene = new Scene(layout);
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("Learn to Play!");
+            primaryStage.getIcons().addAll(new Image(getClass().getResourceAsStream("/Graphics/Images/App.png")));
+            primaryStage.setResizable(false);
+            primaryStage.setWidth(800);
+            primaryStage.setHeight(500);
+            primaryStage.show();
+        }
+    } // // TODO: 11/16/16 finish
 
     // ------------------------------ Threading classes -------------------------------------
 
