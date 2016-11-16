@@ -23,20 +23,26 @@ public class Board {
         // adding player1 pieces to the board
         MasterPiece[] player1Pieces = player1.getPieces();
         for (MasterPiece piece: player1Pieces){
-            Coordinate coords = piece.getCoords();
-            board[coords.getY()][coords.getX()] = piece;
+            if (piece != null){
+                board[piece.getCoords().getY()][piece.getCoords().getX()] = piece;
+            }
         }
 
         // adding player2 pieces to the board
         MasterPiece[] player2Pieces = player2.getPieces();
-        for (MasterPiece piece: player2Pieces) {
-            Coordinate coords = piece.getCoords();
-            board[coords.getY()][coords.getX()] = piece;
+        for (MasterPiece piece: player2Pieces){
+            if (piece != null){
+                board[piece.getCoords().getY()][piece.getCoords().getX()] = piece;
+            }
         }
     }
 
     public void setPiece(int y, int x, MasterPiece piece){
         board[y][x] = piece;
+    }
+
+    private void setBoard(MasterPiece[][] board) {
+        this.board = board;
     }
 
     // gets the piece at the current location specified.
@@ -112,24 +118,18 @@ public class Board {
     }
 
     //clone method
-    @Override
-    public Board clone(){
-        return new Board(this.players[0].clone(), this.players[1].clone()); // new board with current players
+    public Board copyOf(){
+        return new Board(players[0].copyOf(), players[1].copyOf());
     }
+
 
     // checks for a winner
     public boolean gameOver(){ // if either player is out of pieces, or the current player cannot make a move, the game is over.
         boolean player0Pieces = false;
         boolean player1Pieces = false;
 
-        for (MasterPiece piece: players[0].getPieces()){ // for every piece that player 0 has
-            if (piece != null) player0Pieces = true; // if at least one piece is in the array, then return true.
-        }
-
-        for (MasterPiece piece: players[1].getPieces()){ // for all player1 pieces
-            if (piece != null) player1Pieces = true; // if a piece exists, make player1Pieces true
-        }
-
+        if (players[0].getPieceCount() > 0) player0Pieces = true;
+        if (players[1].getPieceCount() > 0) player1Pieces = true;
         return (player0Pieces && player1Pieces && players[turnCounter].hasMove(this)); // all of these conditions must be true for the game to end.
     }
 }

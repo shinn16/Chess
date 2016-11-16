@@ -3,10 +3,8 @@ package GUI;
 import Logic.AI;
 import Logic.Board;
 import Logic.Player;
-import Logic.ThompsonStack;
 import Pieces.Coordinate;
 import Pieces.MasterPiece;
-import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -66,9 +64,9 @@ public class Controller {
     private boolean game = false;
     private Coordinate[] currentMoveSet = null;
     private Coordinate currentPiece = null;
-    private ThompsonStack<Board> boardStack = new ThompsonStack<>();
-    private ThompsonStack<Image> imageStack = new ThompsonStack<>();
-    private String boardTheme = "default";
+    private Stack<Board> boardStack = new Stack<>();
+    private Stack<Image> imageStack = new Stack<>();
+    private String boardTheme = "RedBrown";
     private String tableImage = "wooden";
 
     // pieces
@@ -119,15 +117,28 @@ public class Controller {
     }
 
     // undo the last move.
-    public void undo() { // // TODO: 11/15/16 kinda works, the past images appear but I don't touch the board yet
+    public void undo() {
+        // this stuff is heavily try catched so the popping of one does not interfere with the other.
         try {
-            if (firstPop) imageStack.pop();
+            try {
+                boardStack.pop(); // I have to pop back two states for the board
+            }catch (Exception e) { // ignore
+            }
+            if (firstPop){
+                imageStack.pop(); // for some reason I have to do this.
+            }
+            try {
+                board = boardStack.pop(); // gets the last state of the board
+            }catch (Exception e) { // ignore
+            }
             boardStateView.setImage(imageStack.pop()); // sets the old state image
             boardStateView.autosize();
+            firstPop = false;
         }catch (Exception e) {// ignore
         }
         freshBoard();
         drawPieces();
+        board.nextTurn();
     }
 
     private void drawTable(){
@@ -250,6 +261,7 @@ public class Controller {
                         freshBoard();
                         drawPieces();
                     }
+                    if (clicked) boardStack.pop();
                     clicked = false;
                     currentMoveSet = null;
                     currentPiece = null;
@@ -266,7 +278,7 @@ public class Controller {
                                     int pieceAttacked = board.getPiece(move.getY(), move.getX()).getArrayIndex(); // gets the index of the piece
                                     board.getPlayers()[board.getTurnCounter()].capturePiece(pieceAttacked); // remove the piece from the opponents list of pieces
                                 }
-                                boardStack.push(board.clone());
+                                boardStack.push(board.copyOf());
                                 board.makeMove(board.getPiece(currentPiece.getY(), currentPiece.getX()), mouse_y, mouse_x,currentPiece); // move the piece
                                 updateLastMoveImage();
                                 freshBoard(); // update the board.
@@ -321,6 +333,7 @@ public class Controller {
                         }
                     }
                     graphics.setStroke(Color.AQUA); // reset color
+                    boardStack.push(board.copyOf());
                     clicked = true; // we have clicked a piece
                 }
             }

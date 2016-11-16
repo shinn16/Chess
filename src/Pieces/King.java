@@ -22,6 +22,12 @@ public class King extends MasterPiece {
         return value;
     }
 
+
+    @Override
+    public MasterPiece copyOf(){
+        return new King(getCoords().getX(), getCoords().getY(), getPlayerID(), getArrayIndex());
+    }
+
     @Override
     public Coordinate[] getMoves(Board board) {
         Coordinate[] finalMoves;

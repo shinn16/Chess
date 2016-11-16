@@ -24,6 +24,11 @@ public class Queen extends MasterPiece {
     }
 
     @Override
+    public MasterPiece copyOf(){
+        return new Queen(getCoords().getX(), getCoords().getY(), getPlayerID(), getArrayIndex());
+    }
+
+    @Override
     public Coordinate[] getMoves(Board board) {
         Coordinate[] finalMoves;
         Coordinate[] attacks = new Coordinate[0];

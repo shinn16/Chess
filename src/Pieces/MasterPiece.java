@@ -48,9 +48,8 @@ public class MasterPiece{
         return attack;
     }
 
-    @Override
-    public MasterPiece clone(){
-        return new MasterPiece(this.getCoords().getX(), this.getCoords().getY(), this.getPlayerID(), this.getArrayIndex());
+    public MasterPiece copyOf(){
+        return new MasterPiece(getCoords().getX(), getCoords().getY(), getPlayerID(), getArrayIndex());
     }
 
     @Override

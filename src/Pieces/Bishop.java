@@ -25,6 +25,11 @@ public class Bishop extends MasterPiece{
     }
 
     @Override
+    public MasterPiece copyOf(){
+        return new Bishop(getCoords().getX(), getCoords().getY(), getPlayerID(), getArrayIndex());
+    }
+
+    @Override
     public Coordinate[] getMoves(Board board){
         Coordinate[] finalMoves;
         Coordinate[] attacks = new Coordinate[0];

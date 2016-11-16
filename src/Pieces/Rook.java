@@ -23,6 +23,11 @@ public class Rook extends MasterPiece {
         return value;
     }
 
+    @Override
+    public MasterPiece copyOf(){
+        return new Rook(getCoords().getX(), getCoords().getY(), getPlayerID(), getArrayIndex());
+    }
+
     public Coordinate[] getMoves(Board board){
         Coordinate[] finalMoves;
         Coordinate[] attacks = new Coordinate[0];

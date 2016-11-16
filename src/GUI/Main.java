@@ -12,7 +12,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("GUI.fxml"));
-        primaryStage.setTitle("Chess Game");
+        primaryStage.setTitle("Wahjudi’s Highly Advanced Chess");
         primaryStage.setScene(new Scene(root, 1100, 659)); // sets the size of the window at open
 
         primaryStage.setResizable(false);

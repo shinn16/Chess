@@ -21,6 +21,15 @@ public class Pawn extends MasterPiece {
         else  oppositeY = 4;
     }
 
+    public int getValue() {
+        return value;
+    }
+
+    @Override
+    public MasterPiece copyOf(){
+        return new Pawn(getCoords().getX(), getCoords().getY(), getPlayerID(), getArrayIndex());
+    }
+
     @Override
     public Coordinate[] getMoves(Board board){
         Coordinate[] finalMoves;
@@ -108,7 +117,4 @@ public class Pawn extends MasterPiece {
         return kingMe;
     }
 
-    public int getValue() {
-        return value;
-    }
 }

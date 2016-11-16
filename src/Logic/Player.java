@@ -48,6 +48,10 @@ public class Player {
         return type;
     }
 
+    public void setPieces(MasterPiece[] pieces) {
+        this.pieces = pieces;
+    }
+
     public MasterPiece[] getPieces() {
         return pieces;
     }
@@ -108,8 +112,14 @@ public class Player {
         return move;
     }
 
-    @Override
-    protected Player clone(){
-        return new Player(this.getType(), this.playerNumber);
+    // clones the player
+    public Player copyOf(){
+        Player clone = new Player(this.getType(), this.playerNumber);
+        MasterPiece[] piecesClone = new MasterPiece[10];
+        for (MasterPiece piece: this.getPieces()){
+            if (piece != null) piecesClone[piece.getArrayIndex()] = piece.copyOf();
+        }
+        clone.setPieces(piecesClone);
+        return clone;
     }
 }

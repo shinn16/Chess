@@ -22,13 +22,11 @@ public class Knight extends MasterPiece {
         return value;
     }
 
-    /*public boolean hasAttack(){
-        if (board.getBoard()[coords.getCoords()[0]+1][coords.getCoords()[1]+3] != null && playerID != board.getBoard()[coords.getCoords()[0]+1][coords.getCoords()[1]+3].getPlayerID()){
-            return true;
-        }
-        else return false;
+
+    @Override
+    public MasterPiece copyOf(){
+        return new Knight(getCoords().getX(), getCoords().getY(), getPlayerID(), getArrayIndex());
     }
-    */
 
     @Override
     public Coordinate[] getMoves(Board board) {
