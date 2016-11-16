@@ -99,11 +99,10 @@ public class Board {
             for (MasterPiece piece: row){
                 if (piece!= null){
                     if (piece.getPlayerID() == this.getTurnCounter()){
-                        for (Coordinate move: piece.getMoves(this)){
-                            if (this.getPiece(move.getY(), move.getX()) != null){
-                                attack = true;
-                                break;
-                            }
+                        if (piece.hasAttack(this)){
+                            attack = true;
+                            break;
+
                         }
                     }
                 }

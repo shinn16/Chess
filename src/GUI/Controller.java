@@ -60,6 +60,7 @@ public class Controller {
     private Board board; // the board for the game.
 
     // other variables
+    private boolean firstPop = true;
     private GraphicsContext graphics;
     private boolean clicked = false;
     private boolean game = false;
@@ -118,10 +119,11 @@ public class Controller {
     }
 
     // undo the last move.
-    public void undo() {
+    public void undo() { // // TODO: 11/15/16 kinda works, the past images appear but I don't touch the board yet
         try {
-            board = boardStack.pop(); // sets the board back to the old board state
-            boardStateView.setImage(imageStack.pop());
+            if (firstPop) imageStack.pop();
+            boardStateView.setImage(imageStack.pop()); // sets the old state image
+            boardStateView.autosize();
         }catch (Exception e) {// ignore
         }
         freshBoard();
@@ -219,6 +221,7 @@ public class Controller {
             boardStateView.setImage(currentState);
             boardStateView.autosize();
             imageStack.push(currentState);
+            firstPop = true;
         }
     }
 
@@ -263,6 +266,7 @@ public class Controller {
                                     int pieceAttacked = board.getPiece(move.getY(), move.getX()).getArrayIndex(); // gets the index of the piece
                                     board.getPlayers()[board.getTurnCounter()].capturePiece(pieceAttacked); // remove the piece from the opponents list of pieces
                                 }
+                                boardStack.push(board.clone());
                                 board.makeMove(board.getPiece(currentPiece.getY(), currentPiece.getX()), mouse_y, mouse_x,currentPiece); // move the piece
                                 updateLastMoveImage();
                                 freshBoard(); // update the board.
@@ -658,8 +662,8 @@ public class Controller {
             else boardTheme = "default";
             drawTable();
             freshBoard();
-            updateLastMoveImage();
             if (game) drawPieces();
+            updateLastMoveImage();
         }
     }
 
@@ -668,8 +672,8 @@ public class Controller {
     private class AIThread implements Runnable{
         private AI watson;
 
-        private AIThread(Player player){
-            this.watson = new AI(player);
+        private AIThread(Player player, Board board){
+            this.watson = new AI(player, board);
             Thread Watson = Thread.currentThread();
             Watson.setName("AI Thread"); // Names this thead
         }

@@ -9,7 +9,9 @@ package Logic;
 public class AI {
     //// TODO: 11/14/16 Make this class
     Player player;
-    public AI(Player player){
+    Board board;
+    public AI(Player player, Board board){
+        this.board = board;
         this.player = player;
     }
 
