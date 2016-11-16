@@ -21,6 +21,7 @@ public class Pawn extends MasterPiece {
         else  oppositeY = 4;
     }
 
+    @Override
     public int getValue() {
         return value;
     }

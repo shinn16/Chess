@@ -16,7 +16,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
@@ -74,6 +73,7 @@ public class Controller {
     private Stack<Image> redoImage = new Stack<>();
     private String boardTheme = "RedBrown";
     private String tableImage = "wooden";
+    private boolean AI = false;
 
     // pieces
     private Image whitePawn = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whitePawn.png"));
@@ -128,6 +128,7 @@ public class Controller {
     // undo the last move.
     public void undo() {
         // this stuff is heavily try catched so the popping of one does not interfere with the other.
+        if (!undoBoard.empty() && AI) { // if we are playing against an AI and the stack is not empty
             try {
                 redoBoard.push(board.copyOf());
                 board = undoBoard.pop(); // gets the last state of the board
@@ -145,11 +146,17 @@ public class Controller {
             freshBoard();
             drawPieces();
             board.nextTurn();
-
+            redoButton.setDisable(false);
+            if (undoBoard.empty()) undoButton.setDisable(true); // if we have emptied the stack, disable undo
+        }else{ // we disable the buttons
+            undoButton.setDisable(true);
+            redoButton.setDisable(true);
+        }
     }
 
     // redo the last move
     public void redo(){
+        if (!redoBoard.empty() && AI) {
             try {
                 undoBoard.push(board.copyOf());
                 board = redoBoard.pop(); // gets the last state of the board
@@ -167,7 +174,9 @@ public class Controller {
             freshBoard();
             drawPieces();
             board.nextTurn();
-
+            undoButton.setDisable(false);
+            if (redoBoard.empty()) redoButton.setDisable(true);
+        }else redoButton.setDisable(true);
     }
 
     // draws the background table
@@ -330,6 +339,7 @@ public class Controller {
                                     if (board.getCurrentPlayer().getPlayerNumber() == 0) statusLbl.setText("White's Turn");
                                     else statusLbl.setText("Black's turn.");
                                 }
+                                if (AI) undoButton.setDisable(false);
                                 board.nextTurn(); // advances to the next turn.
 
                                 // now we check to see if the next turn is an AI, if so, let it run
@@ -583,10 +593,7 @@ public class Controller {
                 drawPieces();
                 updateLastMoveImage();
 
-                if (playerOneType.equals("AI") || playerTwoType.equals("AI") || playerOneType.equals("Human")) {
-                    undoButton.setDisable(false); // enable undo only if the user is playing the AI
-                    redoButton.setDisable(false);
-                }
+                if (playerOneType.equals("AI") || playerTwoType.equals("AI") || playerOneType.equals("Human")) AI = true;
 
                 // dump the stacks from last run
                 undoBoard = new Stack<>();
@@ -783,7 +790,7 @@ public class Controller {
             primaryStage.setHeight(500);
             primaryStage.show();
         }
-    } // // TODO: 11/16/16 finish
+    }
 
     // ------------------------------ Threading classes -------------------------------------
 

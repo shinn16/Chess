@@ -18,10 +18,10 @@ public class King extends MasterPiece {
         super(x, y, playerID, arrayIndex);
     }
 
+    @Override
     public int getValue() {
         return value;
     }
-
 
     @Override
     public MasterPiece copyOf(){

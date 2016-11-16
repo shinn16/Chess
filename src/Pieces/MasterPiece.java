@@ -13,6 +13,7 @@ public class MasterPiece{
     private int playerID;
     private Coordinate coords;
     private int arrayIndex;
+    private int value = -1;
     public MasterPiece(int x, int y, int playerID, int arrayIndex){
         this.coords = new Coordinate(x,y);
         this.playerID = playerID;
@@ -50,6 +51,10 @@ public class MasterPiece{
 
     public MasterPiece copyOf(){
         return new MasterPiece(getCoords().getX(), getCoords().getY(), getPlayerID(), getArrayIndex());
+    }
+
+    public int getValue() {
+        return value;
     }
 
     @Override
