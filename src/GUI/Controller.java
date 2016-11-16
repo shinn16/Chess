@@ -805,7 +805,7 @@ public class Controller {
 
         @Override
         public void run() {
-            watson.play();
+            watson.play(board);
             Platform.runLater(new Runnable() { // this will run the needed operations in the FX thread.
                 @Override
                 public void run() {
