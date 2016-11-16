@@ -49,6 +49,11 @@ public class MasterPiece{
     }
 
     @Override
+    public MasterPiece clone(){
+        return new MasterPiece(this.getCoords().getX(), this.getCoords().getY(), this.getPlayerID(), this.getArrayIndex());
+    }
+
+    @Override
     public String toString(){
         return getClass().toString();
     }

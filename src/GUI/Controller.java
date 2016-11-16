@@ -3,8 +3,10 @@ package GUI;
 import Logic.AI;
 import Logic.Board;
 import Logic.Player;
+import Logic.ThompsonStack;
 import Pieces.Coordinate;
 import Pieces.MasterPiece;
+import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -25,11 +27,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.transform.Translate;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.awt.image.BufferedImage;
 import java.util.Stack;
 
 /***
@@ -48,6 +48,8 @@ public class Controller {
     @FXML
     Pane gamePane = new Pane();
     @FXML
+    Button undoButton  = new Button();
+    @FXML
     ImageView boardStateView = new ImageView();
     @FXML
     Label stateLbl = new Label();
@@ -57,9 +59,16 @@ public class Controller {
     // Board Shit and such
     private Board board; // the board for the game.
 
-    // board drawing components
-    private Image blackSpot = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackSpot.png"));
-    private Image whiteSpot = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteSpot.png"));
+    // other variables
+    private GraphicsContext graphics;
+    private boolean clicked = false;
+    private boolean game = false;
+    private Coordinate[] currentMoveSet = null;
+    private Coordinate currentPiece = null;
+    private ThompsonStack<Board> boardStack = new ThompsonStack<>();
+    private ThompsonStack<Image> imageStack = new ThompsonStack<>();
+    private String boardTheme = "default";
+    private String tableImage = "wooden";
 
     // pieces
     private Image whitePawn = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whitePawn.png"));
@@ -76,13 +85,6 @@ public class Controller {
     private Image blackQueen = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackQueen.png"));
     private Image blackKing = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackKing.png"));
 
-    // other variables
-    private GraphicsContext graphics;
-    private boolean clicked = false;
-    private boolean game = false;
-    private Coordinate[] currentMoveSet = null;
-    private Coordinate currentPiece = null;
-    private Stack<Board> stack = new Stack<>();
 
 
     // this will initialize the change listeners and such
@@ -101,6 +103,7 @@ public class Controller {
 
     // settings dialogue
     public void settings() {
+        new SettingsWindow();
     }
 
     // opens the about dialogue
@@ -117,13 +120,19 @@ public class Controller {
     // undo the last move.
     public void undo() {
         try {
-            board = stack.pop(); // sets the board back to the old board state
+            board = boardStack.pop(); // sets the board back to the old board state
+            boardStateView.setImage(imageStack.pop());
         }catch (Exception e) {// ignore
         }
         freshBoard();
         drawPieces();
     }
 
+    private void drawTable(){
+        graphics.drawImage(new Image(getClass().getResourceAsStream("/Graphics/Images/Tables/"+tableImage+"TableTop.png")), 0, 0);
+    }
+
+    // redraws board
     private void freshBoard(){
         // draw the new board for the new game.
         graphics.setStroke(Color.BLACK); // settings up to draw a black border for the board.
@@ -133,9 +142,9 @@ public class Controller {
         for (int y = 0; y < 5; y ++){ // for the y
             for (int x = 0; x < 5; x ++){ // for the x
                 if ((x+y)%2 == 0){ // tells us which images to use for this spot on the board.
-                    graphics.drawImage(blackSpot, (x * 100) + 150, (y * 100) +50); // draws a 100X100 black spot centered
+                    graphics.drawImage(new Image(getClass().getResourceAsStream("/Graphics/Images/"+boardTheme+"/blackSpot.png")), (x * 100) + 150, (y * 100) +50); // draws a 100X100 black spot centered
                 }else {
-                    graphics.drawImage(whiteSpot, (x * 100) + 150, (y * 100) + 50); // draws a 100X100 white spot centered
+                    graphics.drawImage(new Image(getClass().getResourceAsStream("/Graphics/Images/"+boardTheme+"/whiteSpot.png")), (x * 100) + 150, (y * 100) + 50); // draws a 100X100 white spot centered
                 }
             }
         }
@@ -143,6 +152,7 @@ public class Controller {
         graphics.setLineWidth(2); // new line width.
     }
 
+    // redraws pieces
     private void drawPieces(){
         // draw the pieces on the board
         // black side
@@ -204,9 +214,12 @@ public class Controller {
         PixelReader reader =state.getPixelReader();
         WritableImage currentState = new WritableImage(reader, 150, 50, 500, 500);
 
-        // shrinking image and displaying it
-        boardStateView.setImage(currentState);
-        boardStateView.autosize();
+        // shrinking image and displaying it, and adding it to the stack for undo
+        if (game) {
+            boardStateView.setImage(currentState);
+            boardStateView.autosize();
+            imageStack.push(currentState);
+        }
     }
 
     // gets the current mouse location
@@ -509,13 +522,13 @@ public class Controller {
                 Player black = new Player(playerTwoType, 1);
                 board = new Board(white, black); // set the board up with white going first.
 
+                game = true; // we are now playing a game.
+
                 freshBoard(); // draw board and pieces, then update last board state
                 drawPieces();
                 updateLastMoveImage();
 
-
-                game = true; // we are now playing a game.
-                //undoButton.setDisable(false); // enable undo
+                undoButton.setDisable(false); // enable undo
                 primaryStage.close();
 
             }
@@ -563,6 +576,90 @@ public class Controller {
             primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/Graphics/Images/App.png"))); // window icon
 
             primaryStage.show(); // displays the window
+        }
+    }
+
+    private class SettingsWindow {
+        private Stage primaryStage = new Stage(); // stages are basically windows
+        private ComboBox<String> tableThemes = new ComboBox<>(); // allows the user to pick the theme of choice
+        private ComboBox<String> boardThemes = new ComboBox<>();
+        private Label tableLabel = new Label("Table Themes");
+        private Label boardLabel = new Label("Board Themes");
+        private Button closeBtn = new Button("Close");
+
+        SettingsWindow(){
+            display();
+        }
+        private void display(){
+            // sets the action for the button (close the window)
+            closeBtn.setOnAction(e -> primaryStage.close());
+            closeBtn.setPadding(new Insets(2, 5, 5 ,5));
+
+            // adding objects to the comboBoxs, setting action of the box.
+            tableThemes.getItems().addAll("wooden", "marble"); // add all elements of the box here :)
+            boardThemes.getItems().addAll("Grey and White", "Red and Brown");
+
+            // setting up tableTheme box
+            tableThemes.setValue(tableImage); // sets the current value to the currently selected theme.
+            tableThemes.setPrefSize(125, 25);
+            tableThemes.setOnAction(event -> tableThemeMethod());
+
+            // setting up boardTheme board
+            if (boardTheme.equals("RedBrown")) boardThemes.setValue("Red and Brown");
+            else boardThemes.setValue("Grey and White");
+            boardThemes.setPrefSize(125, 25);
+            boardThemes.setOnAction(e -> boardThemeMethod());
+
+
+
+
+            // building the layout of the scene
+            VBox layout = new VBox(25); // main layout, will contain the others
+
+            // sub layouts for object placement
+            HBox labels = new HBox(23);
+            labels.getChildren().addAll(tableLabel, boardLabel);
+            labels.setAlignment(Pos.CENTER);
+
+            HBox combos = new HBox(10);
+            combos.getChildren().addAll(tableThemes, boardThemes);
+            combos.setAlignment(Pos.CENTER);
+
+            // building the layout
+            layout.getChildren().addAll(labels, combos, closeBtn);
+            layout.setAlignment(Pos.CENTER);
+            layout.setMargin(labels, new Insets(0,0,0 -20,0));
+
+            // building and displaying the window (primaryStage)
+            Scene scene = new Scene(layout);
+            scene.getStylesheets().addAll("/Graphics/CSS/StyleSheet.css");
+            primaryStage.setScene(scene);
+            primaryStage.initModality(Modality.APPLICATION_MODAL); // sets the window to be modal, meaning the underlying window cannot be used until this one is closed.
+            primaryStage.setWidth(300);
+            primaryStage.setHeight(200);
+            primaryStage.setResizable(false); // this window cannot be resized.\
+            primaryStage.setTitle("Settings"); // window title
+            primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/Graphics/Images/App.png"))); // window icon
+            primaryStage.show(); // displays the window
+
+        }
+
+        private void tableThemeMethod(){ // updates the table value, then redraws board.
+           tableImage = tableThemes.getValue();
+            System.out.println();
+            drawTable();
+            freshBoard();
+            if (game) drawPieces(); // if there is a game on, draw the pieces.
+
+        }
+
+        private void boardThemeMethod(){
+            if (boardThemes.getValue().equals("Red and Brown")) boardTheme = "RedBrown";
+            else boardTheme = "default";
+            drawTable();
+            freshBoard();
+            updateLastMoveImage();
+            if (game) drawPieces();
         }
     }
 

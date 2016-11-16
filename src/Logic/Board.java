@@ -64,11 +64,6 @@ public class Board {
         return this.board;
     }
 
-    // for use with the clone method only.
-    private void setBoard(MasterPiece[][] board){
-        this.board = board;
-    }
-
     // returns the players.
     public Player[] getPlayers() {
         return players;
@@ -120,7 +115,7 @@ public class Board {
     //clone method
     @Override
     public Board clone(){
-        return new Board(this.players[0], this.players[1]); // new board with current players
+        return new Board(this.players[0].clone(), this.players[1].clone()); // new board with current players
     }
 
     // checks for a winner
