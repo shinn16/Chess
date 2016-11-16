@@ -1,4 +1,2 @@
-Enforce attacking when possible
 Make an AI / tread AI
 Use CSS to make pretty (optional)
-The dumbass second board with the last state of the game...
