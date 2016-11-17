@@ -60,21 +60,20 @@ public class Controller {
 
     // Board Shit and such
     private Board board; // the board for the game.
-
-    // other variables
-    private boolean firstPop = true;
-    private GraphicsContext graphics;
+    private boolean firstPop = true; // used with the stacks for undo and redo
+    private GraphicsContext graphics; // for drawing
     private boolean clicked = false;
     private boolean game = false;
-    private Coordinate[] currentMoveSet = null;
-    private Coordinate currentPiece = null;
-    private Stack<Board> undoBoard = new Stack<>();
+    private Coordinate[] currentMoveSet = null; // for making moves
+    private Coordinate currentPiece = null; // for making moves
+    private Stack<Board> undoBoard = new Stack<>(); // undo, redo stacks
     private Stack<Image> undoImage = new Stack<>();
     private Stack<Board> redoBoard = new Stack<>();
     private Stack<Image> redoImage = new Stack<>();
-    private String boardTheme = "RedBrown";
+    private String boardTheme = "RedBrown"; // theme info
     private String tableImage = "wooden";
-    private boolean AI = false;
+    private boolean AI = false; // AI info
+    private boolean firstMove = true; // first move info
 
     // pieces
     private Image whitePawn = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whitePawn.png"));
@@ -147,6 +146,7 @@ public class Controller {
             freshBoard();
             drawPieces();
             redoButton.setDisable(false);
+            System.out.println(undoImage.empty());
             if (undoBoard.empty()) undoButton.setDisable(true); // if we have emptied the stack, disable undo
         }else{ // we disable the buttons
             undoButton.setDisable(true);
@@ -831,6 +831,15 @@ public class Controller {
                     if (specialCoord == null) checkWinner();
                     else {
                         undoBoard.push(board.copyOf()); // push onto the undo stack
+                        // now we highlight the piece at its move for the last state image
+                        graphics.strokeRect((specialCoord.getPiece().getCoords().getX() + 1) * 100 + 52, (specialCoord.getPiece().getCoords().getY() + 1) * 100 - 48, 98, 98);// highlight the piece tile in blue
+                        if (board.getPiece(specialCoord.getY(), specialCoord.getX()) == null){ // if the space we are going to is empty
+                            graphics.setStroke(Color.YELLOW);
+                        }else{ // if the space we are going to is an attack
+                            graphics.setStroke(Color.RED);
+                            graphics.strokeRect((specialCoord.getX() + 1) * 100 + 52, (specialCoord.getY() + 1) * 100 - 48, 98, 98);// highlight the move red
+                        }
+                        graphics.setStroke(Color.AQUA); // reset color for next piece highlighting
                         board.makeMove(board.getPiece(specialCoord.getPiece().getCoords().getY(), specialCoord.getPiece().getCoords().getX()), specialCoord.getY(), specialCoord.getX());
                         updateLastMoveImage();
                         freshBoard();
