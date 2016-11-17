@@ -60,17 +60,9 @@ public class Player {
         return pieces;
     }
 
+    // removes a piece from the player's piece array
     public void capturePiece(int pieceIndex) {
         pieces[pieceIndex] = null;
-    }
-
-    // counts the number of pieces in the array.
-    public int getPieceCount() {
-        int count = 0; // starts at
-        for (MasterPiece piece : pieces) {
-            if (piece != null) count++; // for every piece that isnt null, increase count by one.
-        }
-        return count;
     }
 
     // this method updates the piece array of the player to match that of the board.
@@ -91,7 +83,8 @@ public class Player {
         }
     }
 
-    public MasterPiece[] getAttacks(Board board) {
+    // for use with AI
+    MasterPiece[] getAttacks(Board board) {
         MasterPiece[] attackPieces = new MasterPiece[0];
         // for every piece that the player has, we are checking for attacks 
         for (MasterPiece piece : pieces) {
@@ -104,6 +97,21 @@ public class Player {
         }
 
         return attackPieces;
+    }
+
+    // for use with AI
+    MasterPiece[] getMoves(Board board){
+        MasterPiece[] movePieces = new MasterPiece[0];
+        // for every piece that the player has, we are checking for moves
+        for (MasterPiece piece : pieces) {
+            if (piece != null) {
+                if (piece.getMoves(board).length > 0) { // if the piece has moves
+                    movePieces = Arrays.copyOf(movePieces, movePieces.length + 1);
+                    movePieces[movePieces.length - 1] = piece; // adds the piece to an attack array.
+                }
+            }
+        }
+        return movePieces;
     }
 
     // checks if any piece has a move
@@ -129,6 +137,7 @@ public class Player {
         return clone;
     }
 
+    // used to determine player to use with AI
     public boolean equals(Player player){
         return (playerNumber == player.getPlayerNumber());
     }

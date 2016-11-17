@@ -73,7 +73,7 @@ public class Controller {
     private String boardTheme = "RedBrown"; // theme info
     private String tableImage = "wooden";
     private boolean AI = false; // AI info
-    private boolean firstMove = true; // first move info
+    private boolean firstMove = true;
 
     // pieces
     private Image whitePawn = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whitePawn.png"));
@@ -310,8 +310,15 @@ public class Controller {
         // // TODO: 11/16/16 AI managed here
         if (board.getCurrentPlayer().getType().equals("AI")){
             board.setLocked(true); // lock the board so the user can't touch it.
-            for (Player player: board.getPlayers()){ // this will invert the players so the AI plays with the correct player
-                if (!player.equals(board.getCurrentPlayer()))  new AIThread(player, board).run();
+            if (board.getCurrentPlayer().equals(board.getPlayers()[0])) {
+                for (Player player : board.getPlayers()) { // this will invert the players so the AI plays with the correct player
+                    if (player.equals(board.getCurrentPlayer())) new AIThread(player, board).run();
+                }
+            }
+            else {
+                for (Player player: board.getPlayers()){ // this will invert the players so the AI plays with the correct player
+                    if (!player.equals(board.getCurrentPlayer()))  new AIThread(player, board).run();
+                }
             }
 
         }
