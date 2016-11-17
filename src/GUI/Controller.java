@@ -302,20 +302,20 @@ public class Controller {
         } else {
             if (board.getCurrentPlayer().getPlayerNumber() == 0) statusLbl.setText("White's Turn");
             else statusLbl.setText("Black's turn.");
-        }
-        if (AI) undoButton.setDisable(false);
-        board.nextTurn(); // advances to the next turn.
+            if (AI) undoButton.setDisable(false);
+            board.nextTurn(); // advances to the next turn.
 
-        // now we check to see if the next turn is an AI, if so, let it run
-        // // TODO: 11/16/16 AI managed here
-        if (board.getCurrentPlayer().getType().equals("AI")){
-            board.setLocked(true); // lock the board so the user can't touch it.
+            // now we check to see if the next turn is an AI, if so, let it run
+            // // TODO: 11/16/16 AI managed here
+            if (board.getCurrentPlayer().getType().equals("AI")){
+                board.setLocked(true); // lock the board so the user can't touch it.
                 for (Player player: board.getPlayers()){ // this will invert the players so the AI plays with the correct player
                     if (!player.equals(board.getCurrentPlayer()))  new AIThread(player, board).run();
                 }
             }
 
         }
+    }
 
 
     // gets the current mouse location
