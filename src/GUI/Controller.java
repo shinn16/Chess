@@ -310,12 +310,6 @@ public class Controller {
         // // TODO: 11/16/16 AI managed here
         if (board.getCurrentPlayer().getType().equals("AI")){
             board.setLocked(true); // lock the board so the user can't touch it.
-            if (board.getCurrentPlayer().equals(board.getPlayers()[0])) {
-                for (Player player : board.getPlayers()) { // this will invert the players so the AI plays with the correct player
-                    if (player.equals(board.getCurrentPlayer())) new AIThread(player, board).run();
-                }
-            }
-            else {
                 for (Player player: board.getPlayers()){ // this will invert the players so the AI plays with the correct player
                     if (!player.equals(board.getCurrentPlayer()))  new AIThread(player, board).run();
                 }
@@ -323,8 +317,6 @@ public class Controller {
 
         }
 
-
-    }
 
     // gets the current mouse location
     public void getMouseHover(MouseEvent event) {
@@ -627,7 +619,9 @@ public class Controller {
                 // // TODO: 11/16/16 AI also mananged here
                 if (board.getCurrentPlayer().getType().equals("AI")){
                     board.setLocked(true); // locks the board so the user can't touch it.
-                    new AIThread(board.getCurrentPlayer(), board).run(); //if the first player is AI, go ahead and let it move.
+                    for (Player player: board.getPlayers()){ // this will invert the players so the AI plays with the correct player
+                        if (!player.equals(board.getCurrentPlayer()))  new AIThread(player, board).run();
+                    }
                 }
                 primaryStage.close();
 
