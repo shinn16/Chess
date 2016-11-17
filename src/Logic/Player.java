@@ -73,15 +73,14 @@ public class Player {
         return count;
     }
 
-    // the sole purpose of this method is to update the pawns to king in the event that the pawn crosses to the other side of the board.
+    // this method updates the piece array of the player to match that of the board.
     void updatePieces(Board board) {
         for (MasterPiece piece : pieces) {
-            if (piece != null) {
+            if (piece != null) { // here we try to ensure that the board and the piece array match
                 if (board.getPiece(piece.getCoords().getY(), piece.getCoords().getX()) == null){
                     pieces[piece.getArrayIndex()] = null;
                 }
-
-                if (piece.toString().contains("Pawn")) {
+                if (piece.toString().contains("Pawn")) { // here we update the pawns if we can.
                     if (((Pawn) piece).kingMe()) {
                         piece = new King(piece.getCoords().getX(), piece.getCoords().getY(), piece.getPlayerID(), piece.getArrayIndex());
                         this.getPieces()[piece.getArrayIndex()] = piece;
@@ -128,5 +127,9 @@ public class Player {
         }
         clone.setPieces(piecesClone);
         return clone;
+    }
+
+    public boolean equals(Player player){
+        return (playerNumber == player.getPlayerNumber());
     }
 }

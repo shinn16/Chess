@@ -125,11 +125,20 @@ public class Board {
 
     // checks for a winner
     public boolean gameOver(){ // if either player is out of pieces, or the current player cannot make a move, the game is over.
-        boolean player0Pieces = false;
-        boolean player1Pieces = false;
+        boolean bothPlayersHavePieces = true;
+        int blackCount = 0;
+        int whiteCount = 0;
 
-        if (players[0].getPieceCount() > 0) player0Pieces = true;
-        if (players[1].getPieceCount() > 0) player1Pieces = true;
-        return (player0Pieces && player1Pieces && players[turnCounter].hasMove(this)); // all of these conditions must be true for the game to end.
+        for (MasterPiece[] row: this.getBoard()){ // check every piece on the board and count them up
+            for (MasterPiece piece: row){
+                if (piece != null){
+                    if (piece.getPlayerID() == 0) whiteCount ++;
+                    else blackCount ++;
+                }
+            }
+        }
+        if (whiteCount == 0 || blackCount ==0 ) bothPlayersHavePieces =false; // if one player or the other has no pieces, the game is over.
+
+        return (bothPlayersHavePieces && players[turnCounter].hasMove(this)); // all of these conditions must be true for the game to end.
     }
 }

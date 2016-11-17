@@ -146,7 +146,6 @@ public class Controller {
             firstPop = false;
             freshBoard();
             drawPieces();
-            board.nextTurn();
             redoButton.setDisable(false);
             if (undoBoard.empty()) undoButton.setDisable(true); // if we have emptied the stack, disable undo
         }else{ // we disable the buttons
@@ -174,7 +173,6 @@ public class Controller {
             firstPop = false;
             freshBoard();
             drawPieces();
-            board.nextTurn();
             undoButton.setDisable(false);
             if (redoBoard.empty()) redoButton.setDisable(true);
         }else redoButton.setDisable(true);
@@ -260,7 +258,8 @@ public class Controller {
             graphics.setStroke(Color.AQUA);
         }
     }
-    
+
+    // updates the side pane image
     private void updateLastMoveImage(){
         //takes a snap shot to be used as last state image
         WritableImage state = new WritableImage(700, 700);
@@ -271,14 +270,53 @@ public class Controller {
         WritableImage currentState = new WritableImage(reader, 150, 50, 500, 500);
 
         // shrinking image and displaying it, and adding it to the stack for undo
+        undoImage.push(currentState);
         if (game) {
             boardStateView.setImage(currentState);
             boardStateView.autosize();
-            undoImage.push(currentState);
             firstPop = true;
-        }else { // push it on the stack anyway
-            undoImage.push(currentState);
         }
+    }
+
+    // checks for winners
+    private void checkWinner(){
+        if (!board.gameOver()) {
+            String winner = null;
+            // this portion determines the winner
+            int whitePlayerPieces = 0;
+            int blackPlayerPieces = 0;
+            for (MasterPiece[] row: board.getBoard()){
+                for (MasterPiece piece: row){
+                    if (piece != null){
+                        if (piece.getPlayerID() == 0) whitePlayerPieces ++;
+                        else blackPlayerPieces ++;
+                    }
+                }
+            }
+            if (whitePlayerPieces < blackPlayerPieces) winner = "Black";
+            else if (whitePlayerPieces > blackPlayerPieces) winner = "White";
+            else winner = "No one";
+            new EndOfGameWindow(winner + " wins!");
+            statusLbl.setText("Game over.");
+            board.setLocked(true);
+        } else {
+            if (board.getCurrentPlayer().getPlayerNumber() == 0) statusLbl.setText("White's Turn");
+            else statusLbl.setText("Black's turn.");
+        }
+        if (AI) undoButton.setDisable(false);
+        board.nextTurn(); // advances to the next turn.
+
+        // now we check to see if the next turn is an AI, if so, let it run
+        // // TODO: 11/16/16 AI managed here
+        if (board.getCurrentPlayer().getType().equals("AI")){
+            board.setLocked(true); // lock the board so the user can't touch it.
+            for (Player player: board.getPlayers()){ // this will invert the players so the AI plays with the correct player
+                if (!player.equals(board.getCurrentPlayer()))  new AIThread(player, board).run();
+            }
+
+        }
+
+
     }
 
     // gets the current mouse location
@@ -299,7 +337,7 @@ public class Controller {
 
         // now we try to get a piece at these coordinates.
         // ensures we are on the board, otherwise resets all graphics in current state.
-        if (board.isLocked()) new WarningWindow("Game Over!","The game is over or the AI is thinking, either make a new game or be patient.");
+        if (board.isLocked()) new WarningWindow("Game Over!","The game is over or the AI is thinking, either make a \nnew game or be patient.");
         else {
                 if (mouse_x < 0 || mouse_y < 0 || mouse_x > 4 || mouse_y > 4) {
                     if (game){
@@ -328,32 +366,7 @@ public class Controller {
                                 freshBoard(); // update the board.
                                 drawPieces();
                                 clicked = false; // reset click
-                                if (!board.gameOver()) {
-                                    String winner = null;
-                                    // this portion determines the winner
-                                    int whitePlayerPieces = board.getPlayers()[1].getPieceCount();
-                                    int blackPlayerPieces = board.getPlayers()[0].getPieceCount();
-                                    if (whitePlayerPieces < blackPlayerPieces) winner = "Black";
-                                    else if (whitePlayerPieces > blackPlayerPieces) winner = "White";
-                                    else winner = "No one";
-                                    new EndOfGameWindow(winner + " wins!");
-                                    statusLbl.setText("Game over.");
-                                    board.setLocked(true);
-                                } else {
-                                    if (board.getCurrentPlayer().getPlayerNumber() == 0) statusLbl.setText("White's Turn");
-                                    else statusLbl.setText("Black's turn.");
-                                }
-                                if (AI) undoButton.setDisable(false);
-                                board.nextTurn(); // advances to the next turn.
-
-                                // now we check to see if the next turn is an AI, if so, let it run
-                                // // TODO: 11/16/16 AI managed here
-                                if (board.getCurrentPlayer().getType().equals("AI")){
-                                    board.setLocked(true); // lock the board so the user can't touch it.
-                                    new AIThread(board.getCurrentPlayer(), board).run();
-                                }
-                                    
-
+                                checkWinner();
                             } else { // else, clear the stuff.
                                 clicked = false;
                                 freshBoard();
@@ -815,12 +828,17 @@ public class Controller {
                 public void run() {
                     board.setLocked(false); // after the AI plays, unlock the board so the player can play
                     // updating the graphic elements
-                    board.makeMove(board.getPiece(specialCoord.getPiece().getCoords().getY(), specialCoord.getPiece().getCoords().getX()), specialCoord.getY(), specialCoord.getX());
-                    updateLastMoveImage();
-                    freshBoard();
-                    drawPieces();
-                    if (board.getCurrentPlayer().getPlayerNumber() == 0) statusLbl.setText("Black's Turn");
-                    else statusLbl.setText("White's turn.");
+                    if (specialCoord == null) checkWinner();
+                    else {
+                        undoBoard.push(board.copyOf()); // push onto the undo stack
+                        board.makeMove(board.getPiece(specialCoord.getPiece().getCoords().getY(), specialCoord.getPiece().getCoords().getX()), specialCoord.getY(), specialCoord.getX());
+                        updateLastMoveImage();
+                        freshBoard();
+                        drawPieces();
+                        checkWinner();
+                        if (board.getCurrentPlayer().getPlayerNumber() == 0) statusLbl.setText("Black's Turn");
+                        else statusLbl.setText("White's turn.");
+                    }
                 }
             });
         }
