@@ -14,18 +14,27 @@ public class Coordinate {
         this.coords[1] = y;
     }
 
+    // returns the coordinate array
     public int[] getCoords(){
         return coords;
     }
 
-    public void setCoords(int x, int y) {
+    // sets the coordinate array
+    void setCoords(int x, int y) {
         this.coords[0] = x;
         this.coords[1] = y;
     }
 
+    // gets the x coordinate
     public int getX(){return coords[0];}
 
+    // gets the y coordinate
     public int getY(){return coords[1];}
+
+    // for use in AI
+    public boolean equals(Coordinate coordinate) {
+        return (getX() == coordinate.getX() && getY() == coordinate.getY());
+    }
 
     @Override
     public String toString(){
