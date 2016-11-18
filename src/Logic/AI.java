@@ -15,11 +15,9 @@ public class AI {
     private MasterPiece[] bestMoves = new MasterPiece[0];
     private Coordinate[] attacks = new Coordinate[0];
     private MasterPiece[] bestAttacks = new MasterPiece[0];
-    private Board board;
 
 
     public AI(Player player, Board board) {
-        this.board = board;
         int lowestVal = 6;
         for (MasterPiece piece : player.getAttacks(board)) { // if we have attacks, this will find them.
             for (Coordinate attack : piece.getMoves(board)) {
@@ -69,6 +67,7 @@ public class AI {
     public SpecialCoord play(Board board) {
         // this method will determine which move to make with the given move set information.
 
+        //---------------------------------Attacking--------------------------------------------
         if (bestAttacks.length > 0) { // we have an attack! So no real thinking is needed
             int highPiece = 0; // start at zero so we can find our highest value piece
             int indexToUse = 0;
@@ -79,6 +78,8 @@ public class AI {
             }
             return new SpecialCoord(bestAttacks[indexToUse], attacks[indexToUse].getX(), attacks[indexToUse].getY());
         }
+
+        //-----------------------------------Moving--------------------------------------------
         else if (bestMoves.length > 0){ // if we don't have an attack
             Coordinate[] enemyMoves= new Coordinate[0]; // stores the enemy moves
             int highPiece = 0;
@@ -102,7 +103,10 @@ public class AI {
             while (!pieceFound){ // while we have not selected a piece to move with
                 indexToUse = 0;
                 for (MasterPiece piece: bestMoves){ // checking for our best piece to move.
-                    if (indexToUse == numberToBreakAt) break; // if we have already checked this piece, break
+                    if (indexToUse == numberToBreakAt) {
+                        if (numberToBreakAt == 0) pieceFound = true; // if we get through all of our pieces and find nothing, just take the first move of the first piece.
+                        break; // if we have already checked this piece, break
+                    }
                     if (piece.getValue() > highPiece){
                         highPiece = piece.getValue();
                     }else indexToUse ++;

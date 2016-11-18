@@ -139,6 +139,6 @@ public class Board {
         }
         if (whiteCount == 0 || blackCount ==0 ) bothPlayersHavePieces =false; // if one player or the other has no pieces, the game is over.
 
-        return (bothPlayersHavePieces && players[turnCounter].hasMove(this)); // all of these conditions must be true for the game to end.
+        return (bothPlayersHavePieces && this.getCurrentPlayer().hasMove(this)); // all of these conditions must be true for the game to end.
     }
 }

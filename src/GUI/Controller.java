@@ -30,6 +30,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import java.sql.SQLSyntaxErrorException;
 import java.util.Stack;
 
 /***
@@ -73,7 +75,7 @@ public class Controller {
     private String boardTheme = "RedBrown"; // theme info
     private String tableImage = "wooden";
     private boolean AI = false; // AI info
-    private boolean firstMove = true;
+    private Image newGameBoard;
 
     // pieces
     private Image whitePawn = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whitePawn.png"));
@@ -130,14 +132,14 @@ public class Controller {
         // this stuff is heavily try catched so the popping of one does not interfere with the other.
         if (!undoBoard.empty() && AI) { // if we are playing against an AI and the stack is not empty
             try {
-                redoBoard.push(board.copyOf());
+                redoBoard.push(board.copyOf()); // skips the AI turn
+                redoBoard.push(undoBoard.pop()); // puts the current board on the stack
                 board = undoBoard.pop(); // gets the last state of the board
             } catch (Exception e) { // ignore
             }
 
             try {
-                if (firstPop) undoImage.pop();
-                redoImage.push(boardStateView.getImage());
+                redoImage.push(undoImage.pop());
                 boardStateView.setImage(undoImage.pop()); // sets the old state image
                 boardStateView.autosize();
             } catch (Exception e) { // ignore
@@ -158,7 +160,8 @@ public class Controller {
     public void redo(){
         if (!redoBoard.empty() && AI) {
             try {
-                undoBoard.push(board.copyOf());
+                undoBoard.push(board.copyOf()); // pushing current board then skipping AI moves
+                undoBoard.push(redoBoard.pop());
                 board = redoBoard.pop(); // gets the last state of the board
             } catch (Exception e) { // ignore
             }
@@ -166,11 +169,11 @@ public class Controller {
             try {
                 if (firstPop) redoImage.pop();
                 undoImage.push(boardStateView.getImage());
+                undoImage.push(redoImage.pop());
                 boardStateView.setImage(redoImage.pop()); // sets the old state image
                 boardStateView.autosize();
             } catch (Exception e) { // ignore
             }
-            firstPop = false;
             freshBoard();
             drawPieces();
             undoButton.setDisable(false);
@@ -306,10 +309,9 @@ public class Controller {
             board.nextTurn(); // advances to the next turn.
 
             // now we check to see if the next turn is an AI, if so, let it run
-            // // TODO: 11/16/16 AI managed here
             if (board.getCurrentPlayer().getType().equals("AI")){
                 board.setLocked(true); // lock the board so the user can't touch it.
-                for (Player player: board.getPlayers()){ // this will invert the players so the AI plays with the correct player
+                for (Player player: board.getPlayers()){ // this will invert the players so the AI plays with the correct player, idk why I need to do this but I do
                     if (!player.equals(board.getCurrentPlayer()))  new AIThread(player, board).run();
                 }
             }
@@ -317,29 +319,28 @@ public class Controller {
         }
     }
 
-
     // gets the current mouse location
     public void getMouseHover(MouseEvent event) {
-        int mouse_x = (int)event.getSceneX();
-        int mouse_y = (int)event.getSceneY();
 
     }
 
     //gets the current location of the mouse click and does the appropriate actions
     public void getMouseClick(MouseEvent event) {
-        int mouse_x = (int) event.getSceneX();
-        int mouse_y = (int) event.getSceneY();
+        try {
+            int mouse_x = (int) event.getSceneX();
+            int mouse_y = (int) event.getSceneY();
 
-        // this will give us the index of the board position.
-        mouse_x = (mouse_x - 50) / 100 - 1;
-        mouse_y = (mouse_y + 20) / 100 - 1;
+            // this will give us the index of the board position.
+            mouse_x = (mouse_x - 50) / 100 - 1;
+            mouse_y = (mouse_y + 20) / 100 - 1;
 
-        // now we try to get a piece at these coordinates.
-        // ensures we are on the board, otherwise resets all graphics in current state.
-        if (board.isLocked()) new WarningWindow("Game Over!","The game is over or the AI is thinking, either make a \nnew game or be patient.");
-        else {
+            // now we try to get a piece at these coordinates.
+            // ensures we are on the board, otherwise resets all graphics in current state.
+            if (board.isLocked())
+                new WarningWindow("Game Over!", "The game is over or the AI is thinking, either make a \nnew game or be patient.");
+            else {
                 if (mouse_x < 0 || mouse_y < 0 || mouse_x > 4 || mouse_y > 4) {
-                    if (game){
+                    if (game) {
                         freshBoard();
                         drawPieces();
                     }
@@ -348,7 +349,7 @@ public class Controller {
                     currentMoveSet = null;
                     currentPiece = null;
 
-                }else if (clicked) { // if we have already selected a piece
+                } else if (clicked) { // if we have already selected a piece
                     if (currentMoveSet.length == 0) { // if we have no moves, clear the board of move options.
                         clicked = false;
                         freshBoard();
@@ -361,6 +362,9 @@ public class Controller {
                                     board.getPlayers()[board.getTurnCounter()].capturePiece(pieceAttacked); // remove the piece from the opponents list of pieces
                                 }
                                 board.makeMove(board.getPiece(currentPiece.getY(), currentPiece.getX()), mouse_y, mouse_x); // move the piece
+                                redoBoard = new Stack<>(); // dump the redo stack
+                                redoImage = new Stack<>(); // dump the redo images
+                                redoButton.setDisable(true); // disable the redo button because the stack is now empty
                                 updateLastMoveImage();
                                 freshBoard(); // update the board.
                                 drawPieces();
@@ -371,11 +375,11 @@ public class Controller {
                                 freshBoard();
                                 drawPieces();
                             }
+                        }
                     }
-                }
 
-                // if we have not already selected a piece and there is a piece at the current position, we also enforce turns here.
-            }else if (board.getPiece(mouse_y, mouse_x) != null && board.getTurnCounter() == board.getPiece(mouse_y, mouse_x).getPlayerID()) { // if we have picked a piece of the current player.
+                    // if we have not already selected a piece and there is a piece at the current position, we also enforce turns here.
+                } else if (board.getPiece(mouse_y, mouse_x) != null && board.getTurnCounter() == board.getPiece(mouse_y, mouse_x).getPlayerID()) { // if we have picked a piece of the current player.
 
                     graphics.strokeRect((mouse_x + 1) * 100 + 52, (mouse_y + 1) * 100 - 48, 98, 98);// highlight the piece tile in blue
 
@@ -385,7 +389,7 @@ public class Controller {
                             currentMoveSet = board.getPiece(mouse_y, mouse_x).getMoves(board); // store the moveset for the next run
                             for (Coordinate coordinate : currentMoveSet) { //for every move in the move set, highlight the spots.
                                 graphics.setStroke(Color.RED);
-                                graphics.strokeRect((coordinate.getX() + 1) * 100 + 52, (coordinate.getY() + 1) * 100 -48, 96, 96);
+                                graphics.strokeRect((coordinate.getX() + 1) * 100 + 52, (coordinate.getY() + 1) * 100 - 48, 96, 96);
                             }
                         }
                     } else { // if there are no attacks to be made, so any piece can move
@@ -402,8 +406,10 @@ public class Controller {
                     clicked = true; // we have clicked a piece
                 }
             }
+        }catch (NullPointerException e){
+            // ignore
         }
-
+    }
 
     // ------------------------------ Private internal classes ------------------------------
 
@@ -604,19 +610,20 @@ public class Controller {
                 Player black = new Player(playerOneType, 1);
                 board = new Board(white, black); // set the board up with white going first.
 
-                game = true; // we are now playing a game.
-                freshBoard(); // draw board and pieces, then update last board state
-                drawPieces();
-                updateLastMoveImage();
-
-                if (playerOneType.equals("AI") || playerTwoType.equals("AI") || playerOneType.equals("Human")) AI = true;
-
                 // dump the stacks from last run
                 undoBoard = new Stack<>();
                 undoImage = new Stack<>();
                 redoBoard = new Stack<>();
                 redoImage = new Stack<>();
-                // // TODO: 11/16/16 AI also mananged here
+
+                game = true; // we are now playing a game.
+                freshBoard(); // draw board and pieces, then update last board state
+                drawPieces();
+                updateLastMoveImage();
+
+                if ((playerOneType.equals("AI") || playerTwoType.equals("AI")) && (!(playerOneType.equals("AI") && playerTwoType.equals("AI")))) AI = true;
+
+
                 if (board.getCurrentPlayer().getType().equals("AI")){
                     board.setLocked(true); // locks the board so the user can't touch it.
                     for (Player player: board.getPlayers()){ // this will invert the players so the AI plays with the correct player
@@ -624,10 +631,8 @@ public class Controller {
                     }
                 }
                 primaryStage.close();
-
             }
         }
-           
     }
 
     private class EndOfGameWindow {
@@ -836,6 +841,7 @@ public class Controller {
                         graphics.strokeRect((specialCoord.getPiece().getCoords().getX() + 1) * 100 + 52, (specialCoord.getPiece().getCoords().getY() + 1) * 100 - 48, 98, 98);// highlight the piece tile in blue
                         if (board.getPiece(specialCoord.getY(), specialCoord.getX()) == null){ // if the space we are going to is empty
                             graphics.setStroke(Color.YELLOW);
+                            graphics.strokeRect((specialCoord.getX() + 1) * 100 + 52, (specialCoord.getY() + 1) * 100 - 48, 98, 98);// highlight the move yellow
                         }else{ // if the space we are going to is an attack
                             graphics.setStroke(Color.RED);
                             graphics.strokeRect((specialCoord.getX() + 1) * 100 + 52, (specialCoord.getY() + 1) * 100 - 48, 98, 98);// highlight the move red
