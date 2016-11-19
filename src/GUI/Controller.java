@@ -79,7 +79,8 @@ public class Controller {
     private String pieceTheme = "default";
     private boolean AI = false; // AI info
     private boolean start = true;
-    private Image startBoard;
+    boolean firstUndo = true;
+    private Image startImage;
 
     // pieces
     private Image whitePawn = new Image(getClass().getResourceAsStream("/Graphics/Images/"+pieceTheme+"/whitePawn.png"));
@@ -148,16 +149,15 @@ public class Controller {
         if (!undoBoard.empty() && AI) { // if we are playing against an AI and the stack is not empty
             try {
                 redoBoard.push(board.copyOf()); // skips the AI turn
-                redoBoard.push(undoBoard.pop()); // puts the current board on the stack
                 board = undoBoard.pop(); // gets the last state of the board
             } catch (Exception e) { // ignore
             }
 
             try {
-                redoImage.push(undoImage.pop());
-                redoImage.push(undoImage.pop());
-                if (!undoImage.empty())boardStateView.setImage(undoImage.pop()); // sets the old state image
-                else boardStateView.setImage(startBoard); // if our stack is empty, make the start image the image that appears
+                if (firstUndo) undoImage.pop();
+                redoImage.push(boardStateView.getImage());
+                if (undoImage.empty()) boardStateView.setImage(startImage);
+                else boardStateView.setImage(undoImage.pop());
                 boardStateView.autosize();
             } catch (Exception e) { // ignore
             }
@@ -165,6 +165,13 @@ public class Controller {
             drawPieces();
             redoButton.setDisable(false);
             if (undoBoard.empty()) undoButton.setDisable(true); // if we have emptied the stack, disable undo
+
+            // correcting the turn if we need to.
+            int correctTurn = 0;
+            for (Player player: board.getPlayers()){
+                if (!player.getType().equals("AI")) board.setTurnCounter(correctTurn);
+                else correctTurn ++;
+            }
         }else{ // we disable the buttons
             undoButton.setDisable(true);
             redoButton.setDisable(true);
@@ -176,14 +183,12 @@ public class Controller {
         if (!redoBoard.empty() && AI) {
             try {
                 undoBoard.push(board.copyOf()); // pushing current board then skipping AI moves
-                undoBoard.push(redoBoard.pop());
                 board = redoBoard.pop(); // gets the last state of the board
             } catch (Exception e) { // ignore
             }
 
             try {
-                undoImage.push(boardStateView.getImage());
-                undoImage.push(redoImage.pop());
+                undoImage.push(redoImage.peek());
                 boardStateView.setImage(redoImage.pop()); // sets the old state image
                 boardStateView.autosize();
             } catch (Exception e) { // ignore
@@ -192,6 +197,13 @@ public class Controller {
             drawPieces();
             undoButton.setDisable(false);
             if (redoBoard.empty()) redoButton.setDisable(true);
+
+            // correcting the turn if we need to.
+            int correctTurn = 0;
+            for (Player player: board.getPlayers()){
+                if (!player.getType().equals("AI")) board.setTurnCounter(correctTurn);
+                else correctTurn ++;
+            }
         }else redoButton.setDisable(true);
     }
 
@@ -287,9 +299,11 @@ public class Controller {
         WritableImage currentState = new WritableImage(reader, 150, 50, 500, 500);
 
         // shrinking image and displaying it, and adding it to the stack for undo
-        undoImage.push(currentState);
-        if (start) startBoard = currentState;
-        start = false;
+        if (board.getCurrentPlayer().getType().equals("AI"))undoImage.push(currentState);
+        if (start){
+            startImage = currentState;
+            start = false;
+        }
         if (game) {
             boardStateView.setImage(currentState);
             boardStateView.autosize();
@@ -398,6 +412,7 @@ public class Controller {
                                 redoBoard = new Stack<>(); // dump the redo stack
                                 redoImage = new Stack<>(); // dump the redo images
                                 redoButton.setDisable(true); // disable the redo button because the stack is now empty
+                                firstUndo = true;
                                 updateLastMoveImage();
                                 freshBoard(); // update the board.
                                 drawPieces();
@@ -633,9 +648,9 @@ public class Controller {
             String playerOneType = whiteOptions.getValue();
             String playerTwoType = blackOptions.getValue();
             
-            if (playerOneType.equals("None") || playerTwoType.equals("None")){ // if the player failed to set one of the players properly
+            if (playerOneType.equals("None") || playerTwoType.equals("None"))// if the player failed to set one of the players properly
                 new WarningWindow("Looks like there is something wrong with your settings...", "You have to apply settings for both players!");
-            }
+            else if (playerOneType.equals("AI") && playerTwoType.equals("AI")) new WarningWindow("Looks like there is something wrong with your settings...", "You have to play too, not just the computer!");
             else { // if the player has set up the right options for the game
                 statusLbl.setText("White's turn."); // sets the status label to who's turn it is
                 stateLbl.setOpacity(1); // makes this visible
@@ -875,7 +890,6 @@ public class Controller {
                     // updating the graphic elements
                     if (specialCoord == null) checkWinner();
                     else {
-                        undoBoard.push(board.copyOf()); // push onto the undo stack
                         // now we highlight the piece at its move for the last state image
                         graphics.strokeRect((specialCoord.getPiece().getCoords().getX() + 1) * 100 + 52, (specialCoord.getPiece().getCoords().getY() + 1) * 100 - 48, 98, 98);// highlight the piece tile in blue
                         if (board.getPiece(specialCoord.getY(), specialCoord.getX()) == null){ // if the space we are going to is empty

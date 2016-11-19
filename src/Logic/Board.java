@@ -42,8 +42,8 @@ public class Board {
         board[y][x] = piece;
     }
 
-    private void setBoard(MasterPiece[][] board) {
-        this.board = board;
+    public void setTurnCounter(int turn){
+        this.turnCounter = turn;
     }
 
     // gets the piece at the current location specified.
