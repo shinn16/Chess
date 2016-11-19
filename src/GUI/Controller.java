@@ -75,7 +75,6 @@ public class Controller {
     private String boardTheme = "RedBrown"; // theme info
     private String tableImage = "wooden";
     private boolean AI = false; // AI info
-    private Image newGameBoard;
 
     // pieces
     private Image whitePawn = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whitePawn.png"));
@@ -140,6 +139,7 @@ public class Controller {
 
             try {
                 redoImage.push(undoImage.pop());
+                redoImage.push(undoImage.pop());
                 boardStateView.setImage(undoImage.pop()); // sets the old state image
                 boardStateView.autosize();
             } catch (Exception e) { // ignore
@@ -167,7 +167,6 @@ public class Controller {
             }
 
             try {
-                if (firstPop) redoImage.pop();
                 undoImage.push(boardStateView.getImage());
                 undoImage.push(redoImage.pop());
                 boardStateView.setImage(redoImage.pop()); // sets the old state image
