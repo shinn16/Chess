@@ -65,7 +65,6 @@ public class Controller {
 
     // Board Shit and such
     private Board board; // the board for the game.
-    private boolean firstPop = true; // used with the stacks for undo and redo
     private GraphicsContext graphics; // for drawing
     private boolean clicked = false;
     private boolean game = false;
@@ -79,21 +78,23 @@ public class Controller {
     private String tableImage = "wooden";
     private String pieceTheme = "default";
     private boolean AI = false; // AI info
+    private boolean start = true;
+    private Image startBoard;
 
     // pieces
-    private Image whitePawn = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whitePawn.png"));
-    private Image whiteKnight = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteKnight.png"));
-    private Image whiteRook = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteRook.png"));
-    private Image whiteBishop = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteBishop.png"));
-    private Image whiteQueen = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteQueen.png"));
-    private Image whiteKing = new Image(getClass().getResourceAsStream("/Graphics/Images/default/whiteKing.png"));
+    private Image whitePawn = new Image(getClass().getResourceAsStream("/Graphics/Images/"+pieceTheme+"/whitePawn.png"));
+    private Image whiteKnight = new Image(getClass().getResourceAsStream("/Graphics/Images/"+pieceTheme+"/whiteKnight.png"));
+    private Image whiteRook = new Image(getClass().getResourceAsStream("/Graphics/Images/"+pieceTheme+"/whiteRook.png"));
+    private Image whiteBishop = new Image(getClass().getResourceAsStream("/Graphics/Images/"+pieceTheme+"/whiteBishop.png"));
+    private Image whiteQueen = new Image(getClass().getResourceAsStream("/Graphics/Images/"+pieceTheme+"/whiteQueen.png"));
+    private Image whiteKing = new Image(getClass().getResourceAsStream("/Graphics/Images/"+pieceTheme+"/whiteKing.png"));
 
-    private Image blackPawn = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackPawn.png"));
-    private Image blackKnight = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackKnight.png"));
-    private Image blackRook = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackRook.png"));
-    private Image blackBishop = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackBishop.png"));
-    private Image blackQueen = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackQueen.png"));
-    private Image blackKing = new Image(getClass().getResourceAsStream("/Graphics/Images/default/blackKing.png"));
+    private Image blackPawn = new Image(getClass().getResourceAsStream("/Graphics/Images/"+pieceTheme+"/blackPawn.png"));
+    private Image blackKnight = new Image(getClass().getResourceAsStream("/Graphics/Images/"+pieceTheme+"/blackKnight.png"));
+    private Image blackRook = new Image(getClass().getResourceAsStream("/Graphics/Images/"+pieceTheme+"/blackRook.png"));
+    private Image blackBishop = new Image(getClass().getResourceAsStream("/Graphics/Images/"+pieceTheme+"/blackBishop.png"));
+    private Image blackQueen = new Image(getClass().getResourceAsStream("/Graphics/Images/"+pieceTheme+"/blackQueen.png"));
+    private Image blackKing = new Image(getClass().getResourceAsStream("/Graphics/Images/"+pieceTheme+"/blackKing.png"));
 
 
 
@@ -155,15 +156,14 @@ public class Controller {
             try {
                 redoImage.push(undoImage.pop());
                 redoImage.push(undoImage.pop());
-                boardStateView.setImage(undoImage.pop()); // sets the old state image
+                if (!undoImage.empty())boardStateView.setImage(undoImage.pop()); // sets the old state image
+                else boardStateView.setImage(startBoard); // if our stack is empty, make the start image the image that appears
                 boardStateView.autosize();
             } catch (Exception e) { // ignore
             }
-            firstPop = false;
             freshBoard();
             drawPieces();
             redoButton.setDisable(false);
-            System.out.println(undoImage.empty());
             if (undoBoard.empty()) undoButton.setDisable(true); // if we have emptied the stack, disable undo
         }else{ // we disable the buttons
             undoButton.setDisable(true);
@@ -288,10 +288,11 @@ public class Controller {
 
         // shrinking image and displaying it, and adding it to the stack for undo
         undoImage.push(currentState);
+        if (start) startBoard = currentState;
+        start = false;
         if (game) {
             boardStateView.setImage(currentState);
             boardStateView.autosize();
-            firstPop = true;
         }
     }
 
@@ -299,6 +300,7 @@ public class Controller {
     private void checkWinner(){
         if (!board.gameOver()) {
             String winner = null;
+            Image winnerKing = null;
             // this portion determines the winner
             int whitePlayerPieces = 0;
             int blackPlayerPieces = 0;
@@ -310,10 +312,19 @@ public class Controller {
                     }
                 }
             }
-            if (whitePlayerPieces < blackPlayerPieces) winner = "Black";
-            else if (whitePlayerPieces > blackPlayerPieces) winner = "White";
-            else winner = "No one";
-            new EndOfGameWindow(winner + " wins!");
+            if (whitePlayerPieces < blackPlayerPieces){
+                winner = "Black wins!";
+                winnerKing = blackKing;
+            }
+            else if (whitePlayerPieces > blackPlayerPieces){
+                winner = "White wins!";
+                winnerKing = whiteKing;
+            }
+            else{
+                winner = "Draw!";
+                winnerKing = new Image(getClass().getResourceAsStream("/Graphics/Images/"+pieceTheme+"/draw.png"));
+            }
+            new EndOfGameWindow(winner, winnerKing);
             statusLbl.setText("Game over.");
             board.setLocked(true);
         } else {
@@ -323,13 +334,18 @@ public class Controller {
             board.nextTurn(); // advances to the next turn.
 
             // now we check to see if the next turn is an AI, if so, let it run
-            if (board.getCurrentPlayer().getType().equals("AI")){
-                board.setLocked(true); // lock the board so the user can't touch it.
-                for (Player player: board.getPlayers()){ // this will invert the players so the AI plays with the correct player, idk why I need to do this but I do
-                    if (!player.equals(board.getCurrentPlayer()))  new AIThread(player, board).run();
-                }
-            }
+           AICheck();
 
+        }
+    }
+
+    // checks to see if an AI call is needed
+    private void AICheck(){
+        if (board.getCurrentPlayer().getType().equals("AI")){
+            board.setLocked(true); // locks the board so the user can't touch it.
+            for (Player player: board.getPlayers()){ // this will invert the players so the AI plays with the correct player
+                if (!player.equals(board.getCurrentPlayer()))  new AIThread(player, board).run();
+            }
         }
     }
 
@@ -640,13 +656,8 @@ public class Controller {
 
                 if ((playerOneType.equals("AI") || playerTwoType.equals("AI")) && (!(playerOneType.equals("AI") && playerTwoType.equals("AI")))) AI = true;
 
+                AICheck();
 
-                if (board.getCurrentPlayer().getType().equals("AI")){
-                    board.setLocked(true); // locks the board so the user can't touch it.
-                    for (Player player: board.getPlayers()){ // this will invert the players so the AI plays with the correct player
-                        if (!player.equals(board.getCurrentPlayer()))  new AIThread(player, board).run();
-                    }
-                }
                 primaryStage.close();
             }
         }
@@ -659,19 +670,17 @@ public class Controller {
         private Image fireworks = new Image(getClass().getResourceAsStream("/Graphics/Images/fireworks.gif"));
         private ImageView leftWorks = new ImageView(fireworks);
         private ImageView rightWorks = new ImageView(fireworks);
+        private ImageView winnerKingView = new ImageView();
 
-        public EndOfGameWindow(String message) {
-
-            Scene scene;
-
+        private EndOfGameWindow(String message, Image winnerKing) {
+            winnerKingView.setImage(winnerKing);
             messageLabel.setText(message);
-
             okayButton.setOnAction(e -> primaryStage.close());
 
 
             // vbox
             VBox vertical = new VBox(20);
-            vertical.getChildren().addAll(messageLabel, okayButton);
+            vertical.getChildren().addAll(winnerKingView, messageLabel, okayButton);
             vertical.setPadding(new Insets(5, 5, 5, 5));
             vertical.setAlignment(Pos.CENTER);
 
@@ -680,7 +689,7 @@ public class Controller {
             layout.getChildren().addAll(leftWorks, vertical, rightWorks);
             layout.setAlignment(Pos.CENTER);
 
-            scene = new Scene(layout);
+            Scene scene = new Scene(layout);
             scene.getStylesheets().addAll("/Graphics/CSS/StyleSheet.css");
 
             primaryStage.setScene(scene);
