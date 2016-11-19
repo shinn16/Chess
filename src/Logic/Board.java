@@ -2,6 +2,7 @@ package Logic;
 
 import Pieces.Coordinate;
 import Pieces.MasterPiece;
+import javafx.application.Platform;
 
 /**
  * Board
@@ -37,7 +38,7 @@ public class Board {
         }
     }
 
-    public void setPiece(int y, int x, MasterPiece piece){
+    void setPiece(int y, int x, MasterPiece piece){
         board[y][x] = piece;
     }
 
@@ -137,8 +138,15 @@ public class Board {
                 }
             }
         }
+
+        boolean bothPlayersHaveMoves = true;
+
+        for (Player player: players){ // this checks to see if either player is stuck and cannot make a move.
+            if (player.getMoves(this).length == 0) bothPlayersHaveMoves = false; // if a player does not have a move, return false.
+        }
+
         if (whiteCount == 0 || blackCount ==0 ) bothPlayersHavePieces =false; // if one player or the other has no pieces, the game is over.
 
-        return (bothPlayersHavePieces && this.getCurrentPlayer().hasMove(this)); // all of these conditions must be true for the game to end.
+        return (bothPlayersHavePieces && bothPlayersHaveMoves); // all of these conditions must be true for the game to end.
     }
 }

@@ -30,8 +30,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
-import java.sql.SQLSyntaxErrorException;
 import java.util.Stack;
 
 /***
@@ -347,8 +345,11 @@ public class Controller {
                     clicked = false;
                     currentMoveSet = null;
                     currentPiece = null;
-
-                } else if (clicked) { // if we have already selected a piece
+                }else if (clicked && currentPiece.equals(new Coordinate(mouse_x, mouse_y))){ // for some reason this case needs to appear. Logically it shouldn't, but this is a quick fix.
+                    clicked = false;
+                    freshBoard(); // update the board.
+                    drawPieces();
+                }else if (clicked) { // if we have already selected a piece
                     if (currentMoveSet.length == 0) { // if we have no moves, clear the board of move options.
                         clicked = false;
                         freshBoard();
