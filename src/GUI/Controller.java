@@ -30,6 +30,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.Scanner;
 import java.util.Stack;
 
 /***
@@ -72,6 +77,7 @@ public class Controller {
     private Stack<Image> redoImage = new Stack<>();
     private String boardTheme = "RedBrown"; // theme info
     private String tableImage = "wooden";
+    private String pieceTheme = "default";
     private boolean AI = false; // AI info
 
     // pieces
@@ -91,8 +97,19 @@ public class Controller {
 
 
 
-    // this will initialize the change listeners and such
+    // this will initialize the change listeners and such at when the game is started.
    public void initialize() {
+
+       try { // try to apply the users settings from the last game.
+           Scanner settingsReader = new Scanner(new File("Settings.txt"));
+           boardTheme = settingsReader.nextLine(); // read the first line of the settings file and apply it to the board theme
+           tableImage = settingsReader.nextLine(); // second line is the table image
+           pieceTheme = settingsReader.nextLine(); //  third is piece theme.
+           settingsReader.close();
+       }catch (FileNotFoundException e){
+           // ignore, the game has never been played before or the default settings have never been changed.
+       }
+
        // update the status label
        statusLbl.setText("No game.");
 
@@ -100,7 +117,7 @@ public class Controller {
        graphics = canvas.getGraphicsContext2D();
 
        // painting on the table top and the empty board.
-       Image table = new Image(getClass().getResourceAsStream("/Graphics/Images/Tables/woodenTableTop.png"));
+       Image table = new Image(getClass().getResourceAsStream("/Graphics/Images/Tables/"+tableImage+"TableTop.png"));
        graphics.drawImage(table, 0, 0); // draws from the top part of the canvas.
        freshBoard();
     }
@@ -750,6 +767,12 @@ public class Controller {
             freshBoard();
             if (game) drawPieces(); // if there is a game on, draw the pieces.
 
+            try { // save the user's settings
+                PrintWriter settingsWriter = new PrintWriter(new File("Settings.txt"));
+                settingsWriter.print(boardTheme + "\n" + tableImage + "\n" + pieceTheme);
+                settingsWriter.close();
+            }catch (FileNotFoundException e) { // ignore
+            }
         }
 
         private void boardThemeMethod(){
@@ -759,6 +782,13 @@ public class Controller {
             freshBoard();
             if (game) drawPieces();
             updateLastMoveImage();
+
+            try { // save the user's settings
+                PrintWriter settingsWriter = new PrintWriter(new File("Settings.txt"));
+                settingsWriter.print(boardTheme + "\n" + tableImage + "\n" + pieceTheme);
+                settingsWriter.close();
+            }catch (FileNotFoundException e) { // ignore
+            }
         }
     }
 

@@ -1,2 +1,5 @@
-Make an AI / tread AI
 Use CSS to make pretty (optional)
+Fix undo redo image errors.
+Add more themes
+Add hover highlighting feature.
+Read from a settings file.
