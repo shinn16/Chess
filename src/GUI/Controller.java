@@ -78,8 +78,9 @@ public class Controller {
     private String tableImage = "wooden";
     private String pieceTheme = "default";
     private boolean AI = false; // AI info
-    private boolean start = true;
-    private Image startImage;
+    int oldMouseX = 0;
+    int oldMouseY = 0;
+
 
     // pieces
     private Image whitePawn = new Image(getClass().getResourceAsStream("/Graphics/Images/"+pieceTheme+"/whitePawn.png"));
@@ -154,8 +155,7 @@ public class Controller {
 
             try {
                 redoImage.push(boardStateView.getImage());
-                if (undoImage.empty()) boardStateView.setImage(startImage);
-                else boardStateView.setImage(undoImage.pop());
+                boardStateView.setImage(undoImage.pop());
                 boardStateView.autosize();
             } catch (Exception e) { // ignore
             }
@@ -298,10 +298,6 @@ public class Controller {
 
         // shrinking image and displaying it, and adding it to the stack for undo
         if (!board.getCurrentPlayer().getType().equals("AI"))undoImage.push(currentState);
-        if (start){
-            startImage = currentState;
-            start = false;
-        }
         if (game) {
             boardStateView.setImage(currentState);
             boardStateView.autosize();
@@ -339,6 +335,9 @@ public class Controller {
             new EndOfGameWindow(winner, winnerKing);
             statusLbl.setText("Game over.");
             board.setLocked(true);
+            game = false;
+            redoButton.setDisable(true);
+            undoButton.setDisable(true);
         } else {
             if (board.getCurrentPlayer().getPlayerNumber() == 0) statusLbl.setText("White's Turn");
             else statusLbl.setText("Black's turn.");
@@ -363,7 +362,30 @@ public class Controller {
 
     // gets the current mouse location
     public void getMouseHover(MouseEvent event) {
+       try {
+           if (game){ // if we are currently in a game
+               int mouse_x = (int) event.getSceneX();
+               int mouse_y = (int) event.getSceneY();
 
+               // this will give us the index of the board position.
+               mouse_x = (mouse_x - 50) / 100 - 1;
+               mouse_y = (mouse_y + 20) / 100 - 1;
+
+               if (!clicked) { // if the user has not already selected a piece to play with
+                    if (board.getPiece(mouse_y, mouse_x).getPlayerID() == board.getTurnCounter() &&
+                            mouse_x == oldMouseX && mouse_y == oldMouseY){ // if the current piece belongs to the player and this is the most recent spot we have been to
+                        graphics.strokeRect((mouse_x + 1) * 100 + 52, (mouse_y + 1) * 100 - 48, 98, 98);// highlight the piece tile in blue
+                    }else {
+                        oldMouseX = mouse_x;
+                        oldMouseY = mouse_y;
+                        freshBoard();
+                        drawPieces();
+                    }
+               }
+           }
+       }catch (Exception e){
+           // ignore
+       }
     }
 
     //gets the current location of the mouse click and does the appropriate actions
