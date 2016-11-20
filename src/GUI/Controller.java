@@ -78,8 +78,8 @@ public class Controller {
     private String tableImage = "wooden";
     private String pieceTheme = "default";
     private boolean AI = false; // AI info
-    int oldMouseX = 0;
-    int oldMouseY = 0;
+    private int oldMouseX = 0;
+    private int oldMouseY = 0;
 
 
     // pieces
@@ -297,8 +297,9 @@ public class Controller {
         WritableImage currentState = new WritableImage(reader, 150, 50, 500, 500);
 
         // shrinking image and displaying it, and adding it to the stack for undo
-        if (!board.getCurrentPlayer().getType().equals("AI"))undoImage.push(currentState);
+
         if (game) {
+            if (!board.getCurrentPlayer().getType().equals("AI"))undoImage.push(currentState);
             boardStateView.setImage(currentState);
             boardStateView.autosize();
         }

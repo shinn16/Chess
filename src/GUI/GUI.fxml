@@ -68,7 +68,7 @@
          </children></Pane>
    </center>
    <right>
-      <Pane prefHeight="200.0" prefWidth="300.0" styleClass="controlPane" BorderPane.alignment="CENTER">
+      <Pane fx:id="controlPane" prefHeight="200.0" prefWidth="300.0" BorderPane.alignment="CENTER">
          <children>
             <VBox alignment="CENTER" prefHeight="591.0" prefWidth="300.0" spacing="10.0">
                <children>
@@ -95,6 +95,10 @@
                </children>
             </VBox>
          </children>
+         <styleClass>
+            <String fx:value="controlPane" />
+            <String fx:value="controlPane2" />
+         </styleClass>
       </Pane>
    </right>
 </BorderPane>
