@@ -79,7 +79,6 @@ public class Controller {
     private String pieceTheme = "default";
     private boolean AI = false; // AI info
     private boolean start = true;
-    boolean firstUndo = true;
     private Image startImage;
 
     // pieces
@@ -154,7 +153,6 @@ public class Controller {
             }
 
             try {
-                if (firstUndo) undoImage.pop();
                 redoImage.push(boardStateView.getImage());
                 if (undoImage.empty()) boardStateView.setImage(startImage);
                 else boardStateView.setImage(undoImage.pop());
@@ -299,7 +297,7 @@ public class Controller {
         WritableImage currentState = new WritableImage(reader, 150, 50, 500, 500);
 
         // shrinking image and displaying it, and adding it to the stack for undo
-        if (board.getCurrentPlayer().getType().equals("AI"))undoImage.push(currentState);
+        if (!board.getCurrentPlayer().getType().equals("AI"))undoImage.push(currentState);
         if (start){
             startImage = currentState;
             start = false;
@@ -412,7 +410,6 @@ public class Controller {
                                 redoBoard = new Stack<>(); // dump the redo stack
                                 redoImage = new Stack<>(); // dump the redo images
                                 redoButton.setDisable(true); // disable the redo button because the stack is now empty
-                                firstUndo = true;
                                 updateLastMoveImage();
                                 freshBoard(); // update the board.
                                 drawPieces();
