@@ -355,10 +355,12 @@ public class Controller {
 
     // checks to see if an AI call is needed
     private void AICheck(){
-        if (board.getCurrentPlayer().getType().equals("AI")){
-            board.setLocked(true); // locks the board so the user can't touch it.
-            for (Player player: board.getPlayers()){ // this will invert the players so the AI plays with the correct player
-                if (!player.equals(board.getCurrentPlayer()))  new AIThread(player, board).run();
+        if (board.gameOver()){ // if we are still playing a game.
+            if (board.getCurrentPlayer().getType().equals("AI")){
+                board.setLocked(true); // locks the board so the user can't touch it.
+                for (Player player: board.getPlayers()){ // this will invert the players so the AI plays with the correct player
+                    if (!player.equals(board.getCurrentPlayer()))  new AIThread(player, board).run();
+                }
             }
         }
     }
@@ -374,16 +376,18 @@ public class Controller {
                mouse_x = (mouse_x - 50) / 100 - 1;
                mouse_y = (mouse_y + 20) / 100 - 1;
 
-               if (!clicked) { // if the user has not already selected a piece to play with
-                    if (board.getPiece(mouse_y, mouse_x).getPlayerID() == board.getTurnCounter() &&
-                            mouse_x == oldMouseX && mouse_y == oldMouseY){ // if the current piece belongs to the player and this is the most recent spot we have been to
-                        graphics.strokeRect((mouse_x + 1) * 100 + 52, (mouse_y + 1) * 100 - 48, 98, 98);// highlight the piece tile in blue
-                    }else {
-                        oldMouseX = mouse_x;
-                        oldMouseY = mouse_y;
-                        freshBoard();
-                        drawPieces();
-                    }
+               if (!board.isLocked()){ // if the board is not locked
+                   if (!clicked) { // if the user has not already selected a piece to play with
+                       if (board.getPiece(mouse_y, mouse_x).getPlayerID() == board.getTurnCounter() &&
+                               mouse_x == oldMouseX && mouse_y == oldMouseY){ // if the current piece belongs to the player and this is the most recent spot we have been to
+                           graphics.strokeRect((mouse_x + 1) * 100 + 52, (mouse_y + 1) * 100 - 48, 98, 98);// highlight the piece tile in blue
+                       }else {
+                           oldMouseX = mouse_x;
+                           oldMouseY = mouse_y;
+                           freshBoard();
+                           drawPieces();
+                       }
+                   }
                }
            }
        }catch (Exception e){
