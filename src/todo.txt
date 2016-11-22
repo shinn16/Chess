@@ -1,2 +1,0 @@
-Use CSS to make pretty (optional)
-Add more themes

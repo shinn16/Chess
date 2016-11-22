@@ -4,6 +4,8 @@ import Pieces.Coordinate;
 import Pieces.MasterPiece;
 import javafx.application.Platform;
 
+import java.util.Arrays;
+
 /**
  * Board
  *
@@ -15,6 +17,9 @@ public class Board {
     private int turnCounter = 1;
     private Player[] players = new Player[2];
     private boolean locked = false;
+    int movesWithoutAttack = 0;
+    int totalPieces = 20;
+    int lastTotal = 20;
 
     // constructor
     public Board(Player player1, Player player2){
@@ -130,23 +135,51 @@ public class Board {
         int blackCount = 0;
         int whiteCount = 0;
 
+        totalPieces = 0; // reset total
         for (MasterPiece[] row: this.getBoard()){ // check every piece on the board and count them up
             for (MasterPiece piece: row){
                 if (piece != null){
                     if (piece.getPlayerID() == 0) whiteCount ++;
                     else blackCount ++;
+                    totalPieces ++; // this will be used to check if an attack has been made.
                 }
             }
         }
-
-        boolean bothPlayersHaveMoves = true;
-
-        for (Player player: players){ // this checks to see if either player is stuck and cannot make a move.
-            if (player.getMoves(this).length == 0) bothPlayersHaveMoves = false; // if a player does not have a move, return false.
+        boolean Nodraw = true;
+        // checking for a stalemate
+        if (lastTotal == totalPieces){
+            movesWithoutAttack ++;
+            if (movesWithoutAttack == 10) Nodraw = false; // if we have 10 moves without an attack, end the game
+        }else { // save the current total for checking and reset moves without attack
+            lastTotal = totalPieces;
+            movesWithoutAttack = 0;
         }
+        boolean bothPlayersHaveMoves = true;
+        MasterPiece[] pieces1 = new MasterPiece[0];
+        MasterPiece[] pieces2 = new MasterPiece[0];
+        for (Player player: players){ // this checks to see if either player is stuck and cannot make a move.
+            for (MasterPiece[] row: this.getBoard()){
+                for (MasterPiece piece: row){
+                    if (piece != null){
+                        if (piece.getPlayerID() == player.getPlayerNumber()){
+                            if (piece.getMoves(this).length != 0){
+                                if (player.getPlayerNumber() == 0 && piece.getPlayerID() == 0){
+                                    pieces1 = Arrays.copyOf(pieces1, pieces1.length + 1);
+                                    pieces1[pieces1.length - 1] = piece;
+                                }else {
+                                    pieces2 = Arrays.copyOf(pieces2, pieces2.length + 1);
+                                    pieces2[pieces2.length - 1] = piece;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (pieces1.length == 0 || pieces2.length == 0) bothPlayersHaveMoves = false;
 
         if (whiteCount == 0 || blackCount ==0 ) bothPlayersHavePieces =false; // if one player or the other has no pieces, the game is over.
 
-        return (bothPlayersHavePieces && bothPlayersHaveMoves); // all of these conditions must be true for the game to end.
+        return (bothPlayersHavePieces && bothPlayersHaveMoves && Nodraw); // all of these conditions must be true for the game to end.
     }
 }

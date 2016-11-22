@@ -15,9 +15,11 @@ public class AI {
     private MasterPiece[] bestMoves = new MasterPiece[0];
     private Coordinate[] attacks = new Coordinate[0];
     private MasterPiece[] bestAttacks = new MasterPiece[0];
+    private Player player;
 
 
     public AI(Player player, Board board) {
+        this.player = player;
         int lowestVal = 6;
         for (MasterPiece piece : player.getAttacks(board)) { // if we have attacks, this will find them.
             for (Coordinate attack : piece.getMoves(board)) {
@@ -40,27 +42,40 @@ public class AI {
             }
         }if (bestAttacks.length == 0){ // if we have no attacks
             lowestVal = 0; // reassign lowestVal to 0 so we can use it to find our highest value piece that can move.
-            for (MasterPiece piece: player.getMoves(board)){
-                if (piece.getValue() > lowestVal){ // if the current piece is higher than the old highest, replace the value
-                    lowestVal = piece.getValue();
-                    moves = new Coordinate[0]; // dump the old moves and pieces
-                    bestMoves = new MasterPiece[1];
-                    bestMoves[0] = piece;
-                    for (Coordinate move: piece.getMoves(board)){
-                        moves = Arrays.copyOf(moves, moves.length + 1);
-                        moves[moves.length - 1] = move;
+            MasterPiece[] pieces = new MasterPiece[0]; // this will hold our pieces
+            for (MasterPiece[] row: board.getBoard()){
+                for (MasterPiece piece: row){
+                    if (piece != null){
+                        if (piece.getPlayerID() != player.getPlayerNumber()){ // if the pieces is ours
+                            pieces = Arrays.copyOf(pieces, pieces.length + 1); // add it to the array.
+                            pieces[pieces.length - 1] = piece;
+                        }
                     }
-                }else if (piece.getValue() == lowestVal){
-                    for (Coordinate move: piece.getMoves(board)){
-                        bestMoves = Arrays.copyOf(bestMoves, bestMoves.length + 1);
-                        bestMoves[bestMoves.length - 1] = piece;
-                        moves = Arrays.copyOf(moves, moves.length + 1);
-                        moves[moves.length - 1] = move;
+                }
+            }
+            for (MasterPiece piece: pieces){
+                if (piece.getMoves(board).length > 0){ // if the piece has moves
+                    if (piece.getValue() > lowestVal){ // if the current piece is higher than the old highest, replace the value
+                        lowestVal = piece.getValue();
+                        moves = new Coordinate[0]; // dump the old moves and pieces
+                        bestMoves = new MasterPiece[0];
+                        for (Coordinate move: piece.getMoves(board)){
+                            moves = Arrays.copyOf(moves, moves.length + 1);
+                            moves[moves.length - 1] = move;
+                            bestMoves = Arrays.copyOf(bestMoves, bestMoves.length + 1);
+                            bestMoves[bestMoves.length - 1] = piece;
+                        }
+                    }else if (piece.getValue() == lowestVal){
+                        for (Coordinate move: piece.getMoves(board)){
+                            bestMoves = Arrays.copyOf(bestMoves, bestMoves.length + 1);
+                            bestMoves[bestMoves.length - 1] = piece;
+                            moves = Arrays.copyOf(moves, moves.length + 1);
+                            moves[moves.length - 1] = move;
+                        }
                     }
                 }
             }
         }
-
     }
 
     // this method should play for the AI
@@ -71,50 +86,53 @@ public class AI {
         if (bestAttacks.length > 0) { // we have an attack! So no real thinking is needed
             int highPiece = 0; // start at zero so we can find our highest value piece
             int indexToUse = 0;
-            for (MasterPiece piece: bestAttacks){
-                if (piece.getValue() > highPiece){
-                    highPiece = piece.getValue();
-                }else indexToUse ++;
+            int counter = 0;
+            for (MasterPiece piece: bestAttacks){ // for every piece that has an attack
+                if (piece.getValue() > highPiece){ // if it is valued higher than the current high piece
+                    highPiece = piece.getValue(); // we set the new high value to be this piece
+                    indexToUse = counter; // we set the index to be used to this piece.
+                    counter ++;
+                }else if (piece.getValue() == highPiece) counter ++;
             }
             return new SpecialCoord(bestAttacks[indexToUse], attacks[indexToUse].getX(), attacks[indexToUse].getY());
         }
 
         //-----------------------------------Moving--------------------------------------------
-        else if (bestMoves.length > 0){ // if we don't have an attack
-            Coordinate[] enemyMoves= new Coordinate[0]; // stores the enemy moves
+        else if (bestMoves.length > 0) { // if we don't have an attack
+            Coordinate[] enemyMoves = new Coordinate[0]; // stores the enemy moves
+            MasterPiece[] enemyPieces = new MasterPiece[0];
             int highPiece = 0;
             int indexToUse = 0;
-            boolean pieceFound = false;
-            int numberToBreakAt = 6;
 
 
-            // extracting enemy move set
-            for (Player player: board.getPlayers()){ // this will find our enemy for us
-                if (player.getPlayerNumber() != bestMoves[0].getPlayerID()){
-                    for (MasterPiece piece: player.getMoves(board)){ // get all of their pieces with moves
-                        for (Coordinate move: piece.getMoves(board)){ // then add that move to the move array.
-                            enemyMoves = Arrays.copyOf(enemyMoves, enemyMoves.length + 1);
-                            enemyMoves[enemyMoves.length - 1] = move;
+            // getting the enemy
+            for (MasterPiece[] row: board.getBoard()){ // for every piece on the board, find enemy pieces.
+                for (MasterPiece piece: row){
+                    if (piece != null){
+                        if (piece.getPlayerID() == this.player.getPlayerNumber()){ // AI player is inverted, so you are the enemy here
+                            enemyPieces = Arrays.copyOf(enemyPieces, enemyPieces.length + 1);
+                            enemyPieces[enemyPieces.length - 1] = piece;
                         }
                     }
                 }
             }
-
-            while (!pieceFound){ // while we have not selected a piece to move with
-                indexToUse = 0;
-                for (MasterPiece piece: bestMoves){ // checking for our best piece to move.
-                    if (indexToUse == numberToBreakAt) {
-                        if (numberToBreakAt == 0) pieceFound = true; // if we get through all of our pieces and find nothing, just take the first move of the first piece.
-                        break; // if we have already checked this piece, break
+            // getting enemy moves
+            for (MasterPiece piece: enemyPieces){
+                for (Coordinate move: piece.getMoves(board)){
+                        enemyMoves = Arrays.copyOf(enemyMoves, enemyMoves.length + 1);
+                        enemyMoves[enemyMoves.length - 1] = move;
+                }
+            }
+            boolean done = false; // we are going to break the for loop when we find a move of ours that puts us in the way of fire.
+            for (int i = 0; i < bestMoves.length; i ++){
+                for (Coordinate enemyMove: enemyMoves){
+                    if (enemyMove.equals(moves[i])) {
+                        indexToUse = i;
+                        done = true;
+                        break;
                     }
-                    if (piece.getValue() > highPiece){
-                        highPiece = piece.getValue();
-                    }else indexToUse ++;
                 }
-                for (Coordinate enemyMove: enemyMoves){ // now we check the enemy move set
-                    if (enemyMove.equals(moves[indexToUse])) pieceFound = true; // if our piece can move there, then do it.
-                }
-                if (!pieceFound) numberToBreakAt = indexToUse; // if the current piece has no moves in enemy move set, then try again using a different piece.
+                if (done) break;
             }
             return new SpecialCoord(bestMoves[indexToUse], moves[indexToUse].getX(), moves[indexToUse].getY());
         }else return null;

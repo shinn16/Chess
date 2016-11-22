@@ -30,12 +30,14 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sun.java2d.loops.GraphicsPrimitive;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 import java.util.Stack;
+import java.util.concurrent.Exchanger;
 
 /***
  * Controller Class
@@ -216,6 +218,10 @@ public class Controller {
         graphics.setStroke(Color.BLACK); // settings up to draw a black border for the board.
         graphics.setLineWidth(5); // sets the weight of the line for the border
         graphics.strokeRect(150, 50, 500, 500); // draws rectangle
+        if (boardTheme.equals("glass")){
+            graphics.setGlobalAlpha(.60); // reduce the opacity if we are painting on the glass.
+            drawTable(); // redraw the table on top so we don't lose our opacity due to us drawing over it multiple times.
+        }
         // draws the board.
         for (int y = 0; y < 5; y ++){ // for the y
             for (int x = 0; x < 5; x ++){ // for the x
@@ -226,6 +232,7 @@ public class Controller {
                 }
             }
         }
+        graphics.setGlobalAlpha(1);
         graphics.setStroke(Color.AQUA); // new highlight color
         graphics.setLineWidth(2); // new line width.
     }
@@ -353,10 +360,12 @@ public class Controller {
 
     // checks to see if an AI call is needed
     private void AICheck(){
-        if (board.getCurrentPlayer().getType().equals("AI")){
-            board.setLocked(true); // locks the board so the user can't touch it.
-            for (Player player: board.getPlayers()){ // this will invert the players so the AI plays with the correct player
-                if (!player.equals(board.getCurrentPlayer()))  new AIThread(player, board).run();
+        if (board.gameOver()){ // if we are still playing a game.
+            if (board.getCurrentPlayer().getType().equals("AI")){
+                board.setLocked(true); // locks the board so the user can't touch it.
+                for (Player player: board.getPlayers()){ // this will invert the players so the AI plays with the correct player
+                    if (!player.equals(board.getCurrentPlayer()))  new AIThread(player, board).run();
+                }
             }
         }
     }
@@ -372,16 +381,18 @@ public class Controller {
                mouse_x = (mouse_x - 50) / 100 - 1;
                mouse_y = (mouse_y + 20) / 100 - 1;
 
-               if (!clicked) { // if the user has not already selected a piece to play with
-                    if (board.getPiece(mouse_y, mouse_x).getPlayerID() == board.getTurnCounter() &&
-                            mouse_x == oldMouseX && mouse_y == oldMouseY){ // if the current piece belongs to the player and this is the most recent spot we have been to
-                        graphics.strokeRect((mouse_x + 1) * 100 + 52, (mouse_y + 1) * 100 - 48, 98, 98);// highlight the piece tile in blue
-                    }else {
-                        oldMouseX = mouse_x;
-                        oldMouseY = mouse_y;
-                        freshBoard();
-                        drawPieces();
-                    }
+               if (!board.isLocked()){ // if the board is not locked
+                   if (!clicked) { // if the user has not already selected a piece to play with
+                       if (board.getPiece(mouse_y, mouse_x).getPlayerID() == board.getTurnCounter() &&
+                               mouse_x == oldMouseX && mouse_y == oldMouseY){ // if the current piece belongs to the player and this is the most recent spot we have been to
+                           graphics.strokeRect((mouse_x + 1) * 100 + 52, (mouse_y + 1) * 100 - 48, 98, 98);// highlight the piece tile in blue
+                       }else {
+                           oldMouseX = mouse_x;
+                           oldMouseY = mouse_y;
+                           freshBoard();
+                           drawPieces();
+                       }
+                   }
                }
            }
        }catch (Exception e){
@@ -603,6 +614,8 @@ public class Controller {
         private Label blackLbl = new Label("Black");
         private ComboBox<String> whiteOptions = new ComboBox<>();
         private ComboBox<String> blackOptions = new ComboBox<>();
+        private ComboBox<String> firstPlayer = new ComboBox<>();
+        private Label goesFirst = new Label("Goes First");
 
 
         private NewGameWindow() {
@@ -618,6 +631,8 @@ public class Controller {
             //settings up player options
             whiteOptions.getItems().addAll("Human", "AI");
             blackOptions.getItems().addAll("Human", "AI");
+            firstPlayer.getItems().addAll("White" , "Black");
+            firstPlayer.setValue("White");
 
 
             // layout setup
@@ -643,7 +658,7 @@ public class Controller {
             buttonsSection.setPadding(new Insets(5, 5, 5, 5)); // setting spacing around the Hbox
 
             // building main layout
-            layout.getChildren().addAll(whiteSection, blackSection, buttonsSection);
+            layout.getChildren().addAll(whiteSection, blackSection, goesFirst, firstPlayer, buttonsSection);
             layout.setAlignment(Pos.CENTER);
 
             // building window
@@ -653,7 +668,7 @@ public class Controller {
             primaryStage.setTitle("New Game");
             primaryStage.initModality(Modality.APPLICATION_MODAL); // sets the window to be modal, meaning the underlying window cannot be used until this one is closed.
             primaryStage.setWidth(245);
-            primaryStage.setHeight(160);
+            primaryStage.setHeight(210);
             primaryStage.setResizable(false); // this window cannot be resized.
             primaryStage.show(); // displays the window
         }
@@ -670,13 +685,20 @@ public class Controller {
             
             if (playerOneType.equals("None") || playerTwoType.equals("None"))// if the player failed to set one of the players properly
                 new WarningWindow("Looks like there is something wrong with your settings...", "You have to apply settings for both players!");
-            else if (playerOneType.equals("AI") && playerTwoType.equals("AI")) new WarningWindow("Looks like there is something wrong with your settings...", "You have to play too, not just the computer!");
             else { // if the player has set up the right options for the game
-                statusLbl.setText("White's turn."); // sets the status label to who's turn it is
+
                 stateLbl.setOpacity(1); // makes this visible
                 Player white = new Player(playerTwoType, 0); // set the player types
                 Player black = new Player(playerOneType, 1);
                 board = new Board(white, black); // set the board up with white going first.
+
+                if (firstPlayer.getValue().equals("White")) statusLbl.setText("White's turn."); // sets the status label to who's turn it is
+                else {
+                    board.setTurnCounter(0);
+                    statusLbl.setText("Black's turn.");
+                }
+
+
 
                 // dump the stacks from last run
                 undoBoard = new Stack<>();
@@ -699,6 +721,7 @@ public class Controller {
     }
 
     private class EndOfGameWindow {
+        private double width = 400;
         private Stage primaryStage = new Stage();
         private Label messageLabel = new Label();
         private Button okayButton = new Button("Okay");
@@ -711,6 +734,7 @@ public class Controller {
             winnerKingView.setImage(winnerKing);
             messageLabel.setText(message);
             okayButton.setOnAction(e -> primaryStage.close());
+            if (message.equals("Draw!"))width = 500; // we need a bigger window to accommodate the draw image.
 
 
             // vbox
@@ -729,7 +753,7 @@ public class Controller {
 
             primaryStage.setScene(scene);
             primaryStage.initModality(Modality.APPLICATION_MODAL); // sets the window to be modal, meaning the underlying window cannot be used until this one is closed.
-            primaryStage.setWidth(400);
+            primaryStage.setWidth(width);
             primaryStage.setHeight(250);
             primaryStage.setResizable(false); // this window cannot be resized.\
             primaryStage.setTitle("End of Game"); // window title
@@ -756,8 +780,8 @@ public class Controller {
             closeBtn.setPadding(new Insets(2, 5, 5 ,5));
 
             // adding objects to the comboBoxs, setting action of the box.
-            tableThemes.getItems().addAll("wooden", "marble"); // add all elements of the box here :)
-            boardThemes.getItems().addAll("Grey and White", "Red and Brown");
+            tableThemes.getItems().addAll("wooden", "marble", "space", "secret"); // add all elements of the box here :)
+            boardThemes.getItems().addAll("Grey and White", "Red and Brown", "Glass");
 
             // setting up tableTheme box
             tableThemes.setValue(tableImage); // sets the current value to the currently selected theme.
@@ -766,7 +790,8 @@ public class Controller {
 
             // setting up boardTheme board
             if (boardTheme.equals("RedBrown")) boardThemes.setValue("Red and Brown");
-            else boardThemes.setValue("Grey and White");
+            else if (boardTheme.equals("default"))boardThemes.setValue("Grey and White");
+            else boardThemes.setValue("Glass");
             boardThemes.setPrefSize(125, 25);
             boardThemes.setOnAction(e -> boardThemeMethod());
 
@@ -821,7 +846,8 @@ public class Controller {
 
         private void boardThemeMethod(){
             if (boardThemes.getValue().equals("Red and Brown")) boardTheme = "RedBrown";
-            else boardTheme = "default";
+            else if (boardThemes.getValue().equals("Grey and White"))boardTheme = "default";
+            else boardTheme = "glass";
             drawTable();
             freshBoard();
             if (game) drawPieces();
