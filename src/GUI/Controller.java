@@ -605,6 +605,8 @@ public class Controller {
         private Label blackLbl = new Label("Black");
         private ComboBox<String> whiteOptions = new ComboBox<>();
         private ComboBox<String> blackOptions = new ComboBox<>();
+        private ComboBox<String> firstPlayer = new ComboBox<>();
+        private Label goesFirst = new Label("Goes First");
 
 
         private NewGameWindow() {
@@ -620,6 +622,8 @@ public class Controller {
             //settings up player options
             whiteOptions.getItems().addAll("Human", "AI");
             blackOptions.getItems().addAll("Human", "AI");
+            firstPlayer.getItems().addAll("White" , "Black");
+            firstPlayer.setValue("White");
 
 
             // layout setup
@@ -645,7 +649,7 @@ public class Controller {
             buttonsSection.setPadding(new Insets(5, 5, 5, 5)); // setting spacing around the Hbox
 
             // building main layout
-            layout.getChildren().addAll(whiteSection, blackSection, buttonsSection);
+            layout.getChildren().addAll(whiteSection, blackSection, goesFirst, firstPlayer, buttonsSection);
             layout.setAlignment(Pos.CENTER);
 
             // building window
@@ -655,7 +659,7 @@ public class Controller {
             primaryStage.setTitle("New Game");
             primaryStage.initModality(Modality.APPLICATION_MODAL); // sets the window to be modal, meaning the underlying window cannot be used until this one is closed.
             primaryStage.setWidth(245);
-            primaryStage.setHeight(160);
+            primaryStage.setHeight(210);
             primaryStage.setResizable(false); // this window cannot be resized.
             primaryStage.show(); // displays the window
         }
@@ -673,11 +677,19 @@ public class Controller {
             if (playerOneType.equals("None") || playerTwoType.equals("None"))// if the player failed to set one of the players properly
                 new WarningWindow("Looks like there is something wrong with your settings...", "You have to apply settings for both players!");
             else { // if the player has set up the right options for the game
-                statusLbl.setText("White's turn."); // sets the status label to who's turn it is
+
                 stateLbl.setOpacity(1); // makes this visible
                 Player white = new Player(playerTwoType, 0); // set the player types
                 Player black = new Player(playerOneType, 1);
                 board = new Board(white, black); // set the board up with white going first.
+
+                if (firstPlayer.getValue().equals("White")) statusLbl.setText("White's turn."); // sets the status label to who's turn it is
+                else {
+                    board.setTurnCounter(0);
+                    statusLbl.setText("Black's turn.");
+                }
+
+
 
                 // dump the stacks from last run
                 undoBoard = new Stack<>();
@@ -700,6 +712,7 @@ public class Controller {
     }
 
     private class EndOfGameWindow {
+        private double width = 400;
         private Stage primaryStage = new Stage();
         private Label messageLabel = new Label();
         private Button okayButton = new Button("Okay");
@@ -712,6 +725,7 @@ public class Controller {
             winnerKingView.setImage(winnerKing);
             messageLabel.setText(message);
             okayButton.setOnAction(e -> primaryStage.close());
+            if (message.equals("Draw!"))width = 500; // we need a bigger window to accommodate the draw image.
 
 
             // vbox
@@ -730,7 +744,7 @@ public class Controller {
 
             primaryStage.setScene(scene);
             primaryStage.initModality(Modality.APPLICATION_MODAL); // sets the window to be modal, meaning the underlying window cannot be used until this one is closed.
-            primaryStage.setWidth(400);
+            primaryStage.setWidth(width);
             primaryStage.setHeight(250);
             primaryStage.setResizable(false); // this window cannot be resized.\
             primaryStage.setTitle("End of Game"); // window title

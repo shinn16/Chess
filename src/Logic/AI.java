@@ -40,7 +40,6 @@ public class AI {
                 }
                 // otherwise we ignore the piece.
             }
-
         }if (bestAttacks.length == 0){ // if we have no attacks
             lowestVal = 0; // reassign lowestVal to 0 so we can use it to find our highest value piece that can move.
             MasterPiece[] pieces = new MasterPiece[0]; // this will hold our pieces
@@ -124,8 +123,7 @@ public class AI {
                         enemyMoves[enemyMoves.length - 1] = move;
                 }
             }
-
-            boolean done = false;
+            boolean done = false; // we are going to break the for loop when we find a move of ours that puts us in the way of fire.
             for (int i = 0; i < bestMoves.length; i ++){
                 for (Coordinate enemyMove: enemyMoves){
                     if (enemyMove.equals(moves[i])) {
@@ -133,15 +131,10 @@ public class AI {
                         done = true;
                         break;
                     }
-
                 }
                 if (done) break;
             }
-
-
-            SpecialCoord special = new SpecialCoord(bestMoves[indexToUse], moves[indexToUse].getX(), moves[indexToUse].getY());
-            System.out.println(special.toString());
-            return special;
+            return new SpecialCoord(bestMoves[indexToUse], moves[indexToUse].getX(), moves[indexToUse].getY());
         }else return null;
 
     }
