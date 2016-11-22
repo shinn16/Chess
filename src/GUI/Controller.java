@@ -218,6 +218,10 @@ public class Controller {
         graphics.setStroke(Color.BLACK); // settings up to draw a black border for the board.
         graphics.setLineWidth(5); // sets the weight of the line for the border
         graphics.strokeRect(150, 50, 500, 500); // draws rectangle
+        if (boardTheme.equals("glass")){
+            graphics.setGlobalAlpha(.60); // reduce the opacity if we are painting on the glass.
+            drawTable(); // redraw the table on top so we don't lose our opacity due to us drawing over it multiple times.
+        }
         // draws the board.
         for (int y = 0; y < 5; y ++){ // for the y
             for (int x = 0; x < 5; x ++){ // for the x
@@ -228,6 +232,7 @@ public class Controller {
                 }
             }
         }
+        graphics.setGlobalAlpha(1);
         graphics.setStroke(Color.AQUA); // new highlight color
         graphics.setLineWidth(2); // new line width.
     }
@@ -775,8 +780,8 @@ public class Controller {
             closeBtn.setPadding(new Insets(2, 5, 5 ,5));
 
             // adding objects to the comboBoxs, setting action of the box.
-            tableThemes.getItems().addAll("wooden", "marble"); // add all elements of the box here :)
-            boardThemes.getItems().addAll("Grey and White", "Red and Brown");
+            tableThemes.getItems().addAll("wooden", "marble", "space", "secret"); // add all elements of the box here :)
+            boardThemes.getItems().addAll("Grey and White", "Red and Brown", "Glass");
 
             // setting up tableTheme box
             tableThemes.setValue(tableImage); // sets the current value to the currently selected theme.
@@ -785,7 +790,8 @@ public class Controller {
 
             // setting up boardTheme board
             if (boardTheme.equals("RedBrown")) boardThemes.setValue("Red and Brown");
-            else boardThemes.setValue("Grey and White");
+            else if (boardTheme.equals("default"))boardThemes.setValue("Grey and White");
+            else boardThemes.setValue("Glass");
             boardThemes.setPrefSize(125, 25);
             boardThemes.setOnAction(e -> boardThemeMethod());
 
@@ -840,7 +846,8 @@ public class Controller {
 
         private void boardThemeMethod(){
             if (boardThemes.getValue().equals("Red and Brown")) boardTheme = "RedBrown";
-            else boardTheme = "default";
+            else if (boardThemes.getValue().equals("Grey and White"))boardTheme = "default";
+            else boardTheme = "glass";
             drawTable();
             freshBoard();
             if (game) drawPieces();
