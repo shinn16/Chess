@@ -30,12 +30,14 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sun.java2d.loops.GraphicsPrimitive;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 import java.util.Stack;
+import java.util.concurrent.Exchanger;
 
 /***
  * Controller Class
@@ -670,7 +672,6 @@ public class Controller {
             
             if (playerOneType.equals("None") || playerTwoType.equals("None"))// if the player failed to set one of the players properly
                 new WarningWindow("Looks like there is something wrong with your settings...", "You have to apply settings for both players!");
-            else if (playerOneType.equals("AI") && playerTwoType.equals("AI")) new WarningWindow("Looks like there is something wrong with your settings...", "You have to play too, not just the computer!");
             else { // if the player has set up the right options for the game
                 statusLbl.setText("White's turn."); // sets the status label to who's turn it is
                 stateLbl.setOpacity(1); // makes this visible

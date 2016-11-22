@@ -15,9 +15,11 @@ public class AI {
     private MasterPiece[] bestMoves = new MasterPiece[0];
     private Coordinate[] attacks = new Coordinate[0];
     private MasterPiece[] bestAttacks = new MasterPiece[0];
+    private Player player;
 
 
     public AI(Player player, Board board) {
+        this.player = player;
         int lowestVal = 6;
         for (MasterPiece piece : player.getAttacks(board)) { // if we have attacks, this will find them.
             for (Coordinate attack : piece.getMoves(board)) {
@@ -44,11 +46,12 @@ public class AI {
                 if (piece.getValue() > lowestVal){ // if the current piece is higher than the old highest, replace the value
                     lowestVal = piece.getValue();
                     moves = new Coordinate[0]; // dump the old moves and pieces
-                    bestMoves = new MasterPiece[1];
-                    bestMoves[0] = piece;
+                    bestMoves = new MasterPiece[0];
                     for (Coordinate move: piece.getMoves(board)){
                         moves = Arrays.copyOf(moves, moves.length + 1);
                         moves[moves.length - 1] = move;
+                        bestMoves = Arrays.copyOf(bestMoves, bestMoves.length + 1);
+                        bestMoves[bestMoves.length - 1] = piece;
                     }
                 }else if (piece.getValue() == lowestVal){
                     for (Coordinate move: piece.getMoves(board)){
@@ -80,8 +83,8 @@ public class AI {
         }
 
         //-----------------------------------Moving--------------------------------------------
-        else if (bestMoves.length > 0){ // if we don't have an attack
-            Coordinate[] enemyMoves= new Coordinate[0]; // stores the enemy moves
+        else if (bestMoves.length > 0) { // if we don't have an attack
+            Coordinate[] enemyMoves = new Coordinate[0]; // stores the enemy moves
             int highPiece = 0;
             int indexToUse = 0;
             boolean pieceFound = false;
@@ -89,12 +92,32 @@ public class AI {
 
 
             // extracting enemy move set
-            for (Player player: board.getPlayers()){ // this will find our enemy for us
-                if (player.getPlayerNumber() != bestMoves[0].getPlayerID()){
-                    for (MasterPiece piece: player.getMoves(board)){ // get all of their pieces with moves
-                        for (Coordinate move: piece.getMoves(board)){ // then add that move to the move array.
-                            enemyMoves = Arrays.copyOf(enemyMoves, enemyMoves.length + 1);
-                            enemyMoves[enemyMoves.length - 1] = move;
+            for (MasterPiece[] row : board.getBoard()) {
+                for (MasterPiece piece : row) {
+                    if (piece != null){
+                        if (piece.getPlayerID() != player.getPlayerNumber()) {
+                            for (Coordinate move : piece.getMoves(board)) {
+                                if (piece.toString().contains("Pawn")) {// if the piece is a pawn, we have a different move set for attacks
+                                    if (player.getPlayerNumber() == 0) {
+                                        Coordinate move1 = new Coordinate(move.getX() + 1, move.getY() + 1);
+                                        enemyMoves = Arrays.copyOf(enemyMoves, enemyMoves.length + 1);
+                                        enemyMoves[enemyMoves.length - 1] = move1;
+                                        Coordinate move2 = new Coordinate(move.getX() - 1, move.getY() + 1);
+                                        enemyMoves = Arrays.copyOf(enemyMoves, enemyMoves.length + 1);
+                                        enemyMoves[enemyMoves.length - 1] = move2;
+                                    } else { // if it is the white player, do the same.
+                                        Coordinate move1 = new Coordinate(move.getX() + 1, move.getY() - 1);
+                                        Coordinate move2 = new Coordinate(move.getX() - 1, move.getY() - 1);
+                                        enemyMoves = Arrays.copyOf(enemyMoves, enemyMoves.length + 1);
+                                        enemyMoves[enemyMoves.length - 1] = move1;
+                                        enemyMoves = Arrays.copyOf(enemyMoves, enemyMoves.length + 1);
+                                        enemyMoves[enemyMoves.length - 1] = move2;
+                                    }
+                                } else {
+                                    enemyMoves = Arrays.copyOf(enemyMoves, enemyMoves.length + 1);
+                                    enemyMoves[enemyMoves.length - 1] = move;
+                                }
+                            }
                         }
                     }
                 }

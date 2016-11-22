@@ -4,6 +4,8 @@ import Pieces.Coordinate;
 import Pieces.MasterPiece;
 import javafx.application.Platform;
 
+import java.util.Arrays;
+
 /**
  * Board
  *
@@ -138,12 +140,29 @@ public class Board {
                 }
             }
         }
-
         boolean bothPlayersHaveMoves = true;
-
+        MasterPiece[] pieces1 = new MasterPiece[0];
+        MasterPiece[] pieces2 = new MasterPiece[0];
         for (Player player: players){ // this checks to see if either player is stuck and cannot make a move.
-            if (player.getMoves(this).length == 0) bothPlayersHaveMoves = false; // if a player does not have a move, return false.
+            for (MasterPiece[] row: this.getBoard()){
+                for (MasterPiece piece: row){
+                    if (piece != null){
+                        if (piece.getPlayerID() == player.getPlayerNumber()){
+                            if (piece.getMoves(this).length != 0){
+                                if (player.getPlayerNumber() == 0 && piece.getPlayerID() == 0){
+                                    pieces1 = Arrays.copyOf(pieces1, pieces1.length + 1);
+                                    pieces1[pieces1.length - 1] = piece;
+                                }else {
+                                    pieces2 = Arrays.copyOf(pieces2, pieces2.length + 1);
+                                    pieces2[pieces2.length - 1] = piece;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
+        if (pieces1.length == 0 || pieces2.length == 0) bothPlayersHaveMoves = false;
 
         if (whiteCount == 0 || blackCount ==0 ) bothPlayersHavePieces =false; // if one player or the other has no pieces, the game is over.
 
